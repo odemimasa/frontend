@@ -43,7 +43,8 @@ function TxHistoryItem({
 
   const currentTime = new Date();
   const subsDurationTime = new Date(
-    new Date(paid_at).getTime() + totalDurationInMs
+    new Date(status === "PAID" ? paid_at : expired_at).getTime() +
+      totalDurationInMs
   );
 
   const subsDurationISOString = formatDate(

@@ -56,6 +56,9 @@ function TimeZoneForm({ setOpen }: TimeZoneFormProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      timeZone: user!.timeZone,
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {

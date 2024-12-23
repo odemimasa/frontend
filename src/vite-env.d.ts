@@ -2,13 +2,13 @@
 
 interface ImportMetaEnv {
   readonly VITE_BACKEND_URL: string;
-  readonly FIREBASE_API_KEY: string;
-  readonly FIREBASE_AUTH_DOMAIN: string;
-  readonly FIREBASE_PROJECT_ID: string;
-  readonly FIREBASE_STORAGE_BUCKET: string;
-  readonly FIREBASE_MESSAGE_SENDER_ID: string;
-  readonly FIREBASE_APP_ID: string;
-  readonly FIREBASE_MEASUREMENT_ID: string;
+  readonly VITE_FIREBASE_API_KEY: string;
+  readonly VITE_FIREBASE_AUTH_DOMAIN: string;
+  readonly VITE_FIREBASE_PROJECT_ID: string;
+  readonly VITE_FIREBASE_STORAGE_BUCKET: string;
+  readonly VITE_FIREBASE_MESSAGE_SENDER_ID: string;
+  readonly VITE_FIREBASE_APP_ID: string;
+  readonly VITE_FIREBASE_MEASUREMENT_ID: string;
 }
 
 interface ImportMeta {
