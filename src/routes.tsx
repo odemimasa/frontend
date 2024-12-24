@@ -1,6 +1,8 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 import { RootLayout } from "@components/RootLayout";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const Home = lazy(() => import("./pages/Home"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -17,7 +19,13 @@ const ErrorBoundary = lazy(() =>
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,
+    element: (
+      <>
+        <RootLayout />
+        <Analytics />
+        <SpeedInsights />
+      </>
+    ),
     errorElement: (
       <Suspense fallback={<></>}>
         <ErrorBoundary />
