@@ -33,7 +33,7 @@ export default function Home(): JSX.Element {
 
   return (
     <>
-      <div className="bg-[url('/hero.jpg')] h-screen bg-cover bg-center">
+      <div className="bg-[url('https://ec3q29jlfx8dke21.public.blob.vercel-storage.com/hero-OlNNIpWiRVqYVPZVfSeoTdSNzjRqBh.jpg')] h-screen bg-cover bg-center">
         <div className="relative z-10 h-full flex flex-col justify-center items-center mx-6">
           <h1 className="text-white font-bold text-center text-4xl ">
             Mengingatkan Ibadah, Mengingatkan Kebaikan
@@ -48,7 +48,7 @@ export default function Home(): JSX.Element {
 
       <div
         id="login-section"
-        className="bg-[url('/sunset.jpg')] bg-cover bg-center mt-32 px-6 py-16"
+        className="bg-[url('https://ec3q29jlfx8dke21.public.blob.vercel-storage.com/sunset-TfWM2wgOqUOYBYYM8D6FSw56IY0zCs.jpg')] bg-cover bg-center mt-32 px-6 py-16"
       >
         <div className="bg-white/90 rounded-2xl overflow-hidden pb-6">
           <div className="bg-black/75 grid place-items-center rounded-b-[40px] h-14 mb-6">

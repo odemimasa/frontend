@@ -1,7 +1,11 @@
 function Surah() {
   return (
     <article className="my-32 mx-6 flex flex-col justify-center items-center">
-      <img src="surah.png" alt="Surah Al-'Asr" className="mb-8" />
+      <img
+        src="https://ec3q29jlfx8dke21.public.blob.vercel-storage.com/surah-UgQZqpwmfjmaCr8M0bcGBEdEKdNMIg.png"
+        alt="Surah Al-'Asr"
+        className="mb-8"
+      />
       <p className="text-[#363636] font-medium text-center text-lg mb-3">
         (1) Demi masa, (2) sungguh, manusia berada dalam kerugian, (3) kecuali
         orang-orang yang beriman dan mengerjakan kebajikan serta saling

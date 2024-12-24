@@ -8,7 +8,7 @@ function Footer() {
     <div className="bg-black py-12 px-6">
       <div className="flex justify-center items-center gap-4 mb-12">
         <img
-          src="demi-masa-logo.png"
+          src="https://ec3q29jlfx8dke21.public.blob.vercel-storage.com/demi-masa-logo-hqkMxwY4lciC0StHA05IUeeWvw3jfq.png"
           alt="Logo Aplikasi Demi Masa"
           className="w-12"
         />

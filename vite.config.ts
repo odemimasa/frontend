@@ -19,7 +19,6 @@ export default defineConfig({
       "@libs": path.resolve(__dirname, "./src/libs"),
       "@utils": path.resolve(__dirname, "./src/utils"),
       "@customTypes": path.resolve(__dirname, "./src/types"),
-      "@public": path.resolve(__dirname, "./src/public"),
     },
   },
 });

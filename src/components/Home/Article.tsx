@@ -2,7 +2,7 @@ function Article() {
   return (
     <article className="my-32 mx-6">
       <img
-        src="article-image.jpg"
+        src="https://ec3q29jlfx8dke21.public.blob.vercel-storage.com/article-image-Io4gZrGOHdfLF3Eq5UqTEB2r5el43D.jpg"
         alt="Gambar Masjid"
         className="w-full h-48 object-cover object-center rounded-2xl mb-8"
       />

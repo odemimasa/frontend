@@ -11,8 +11,7 @@
       "@hooks/*": ["./src/hooks/*"],
       "@libs/*": ["./src/libs/*"],
       "@utils/*": ["./src/utils/*"],
-      "@customTypes/*": ["./src/types/*"],
-      "@public/*": ["./public/*"]
+      "@customTypes/*": ["./src/types/*"]
     }
   }
 }
