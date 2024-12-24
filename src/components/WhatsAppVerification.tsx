@@ -47,7 +47,7 @@ function WhatsAppVerification({ setOpen }: WhatsAppVerificationProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      phoneNumber: user!.phoneNumber,
+      phoneNumber: user!.phoneNumber !== "" ? user!.phoneNumber : "+62",
       pin: "",
     },
   });
