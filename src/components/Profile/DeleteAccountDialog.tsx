@@ -1,7 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -9,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@components/shadcn/AlertDialog";
-import { buttonVariants } from "@components/shadcn/Button";
+import { Button, buttonVariants } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useAxios } from "@hooks/useAxios";
 import { useStore } from "@hooks/useStore";
@@ -87,17 +86,15 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
             Batal
           </AlertDialogCancel>
 
-          <AlertDialogAction
+          <Button
             disabled={isLoading}
             onClick={handleDeleteAccount}
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "bg-transparent hover:bg-transparent border-[#D9534F] text-[#D9534F] hover:text-[#D9534F] w-full"
-            )}
             type="button"
+            variant="outline"
+            className="bg-transparent hover:bg-transparent border-[#D9534F] text-[#D9534F] hover:text-[#D9534F] w-full"
           >
             {isLoading ? "Loading..." : "Hapus"}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
