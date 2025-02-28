@@ -101,24 +101,29 @@ function RootLayout(): JSX.Element {
       return;
     }
 
-    if (user !== undefined) {
-      if (
-        (user.phoneVerified === false || user.timeZone === undefined) &&
-        location.pathname !== "/profile-completion"
-      ) {
-        navigate("/profile-completion");
-        return;
-      }
-
-      if (
-        user.phoneVerified &&
-        user.timeZone !== undefined &&
-        (location.pathname === "/profile-completion" ||
-          location.pathname === "/")
-      ) {
-        navigate("/dashboard");
-      }
+    if (user !== undefined && location.pathname === "/") {
+      navigate("/dashboard");
+      return;
     }
+
+    // if (user !== undefined) {
+    //   if (
+    //     (user.phoneVerified === false || user.timeZone === undefined) &&
+    //     location.pathname !== "/profile-completion"
+    //   ) {
+    //     navigate("/profile-completion");
+    //     return;
+    //   }
+
+    //   if (
+    //     user.phoneVerified &&
+    //     user.timeZone !== undefined &&
+    //     (location.pathname === "/profile-completion" ||
+    //       location.pathname === "/")
+    //   ) {
+    //     navigate("/dashboard");
+    //   }
+    // }
   }, [isLoading, user, location, navigate]);
 
   if (isLoading) {
