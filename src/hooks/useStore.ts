@@ -16,6 +16,8 @@ interface User {
   phoneVerified: boolean;
   accountType: AccountType;
   timeZone: IndonesiaTimeZone | undefined;
+  latitude: number;
+  longitude: number;
 }
 
 type TransactionStatus = "UNPAID" | "PAID" | "FAILED" | "EXPIRED" | "REFUND";

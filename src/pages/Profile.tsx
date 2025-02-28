@@ -1,24 +1,27 @@
+import { Location } from "@components/Icons/Location";
 import { Logout } from "@components/Icons/Logout";
 import { Mail } from "@components/Icons/Mail";
 import { PersonCircle } from "@components/Icons/PersonCircle";
 import { Button } from "@components/shadcn/Button";
+import { useToast } from "@hooks/shadcn/useToast";
 import { useStore } from "@hooks/useStore";
 import { auth } from "@libs/firebase";
 import {
-  ClockIcon,
   ExclamationTriangleIcon,
-  Pencil1Icon,
   TrashIcon,
+  UpdateIcon,
 } from "@radix-ui/react-icons";
+import axios from "axios";
+import axiosRetry from "axios-retry";
 import { lazy, useState } from "react";
 
-const UpdateProfileDialog = lazy(() =>
-  import("@components/Profile/UpdateProfileDialog").then(
-    ({ UpdateProfileDialog }) => ({
-      default: UpdateProfileDialog,
-    })
-  )
-);
+// const UpdateProfileDialog = lazy(() =>
+//   import("@components/Profile/UpdateProfileDialog").then(
+//     ({ UpdateProfileDialog }) => ({
+//       default: UpdateProfileDialog,
+//     })
+//   )
+// );
 
 const DeleteAccountDialog = lazy(() =>
   import("@components/Profile/DeleteAccountDialog").then(
@@ -35,21 +38,93 @@ const DeleteAccountDialog = lazy(() =>
 //   )
 // );
 
+interface ReverseGeocodingResult {
+  results: {
+    city: string;
+    timezone: {
+      name: string;
+    };
+  }[];
+}
+
 export default function Profile() {
   // const subsDuration = useStore((state) => state.subsDuration);
   const user = useStore((state) => state.user);
-  let timeZone = "";
-  if (user?.timeZone === "Asia/Jakarta") {
-    timeZone = "WIB";
-  } else if (user?.timeZone === "Asia/Makassar") {
-    timeZone = "WITA";
-  } else {
-    timeZone = "WIT";
-  }
+  const { toast } = useToast();
 
-  const [updateWAOpened, setUpdateWAOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [updateWAOpened, setUpdateWAOpened] = useState(false);
   const [deleteAccountOpened, setDeleteAccountOpened] = useState(false);
   // const [pricingListOpened, setPricingListOpened] = useState(false);
+
+  const updateLocation = async () => {
+    if (!navigator.geolocation) {
+      toast({
+        description: "Fitur lokasi tidak didukung oleh peramban kamu.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        setIsLoading(true);
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        // TODO: update the geocoordinate in the server
+
+        localStorage.setItem("latitude", latitude.toString());
+        localStorage.setItem("longitude", longitude.toString());
+
+        const client = axios.create();
+        axiosRetry(client, {
+          retries: 3,
+          retryDelay: axiosRetry.exponentialDelay,
+        });
+
+        // TODO: reverse geocoding should be moved in the server
+        const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&type=city&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
+        try {
+          const response = await client.get<ReverseGeocodingResult>(url);
+          localStorage.setItem("city", response.data.results[0].city);
+          localStorage.setItem(
+            "timezone",
+            response.data.results[0].timezone.name
+          );
+
+          toast({
+            description: "Berhasil memperbarui lokasi.",
+            variant: "default",
+          });
+        } catch (error) {
+          toast({
+            description: "Gagal memperbarui lokasi.",
+            variant: "destructive",
+          });
+
+          console.error(
+            new Error("failed to reverse geocoding", { cause: error })
+          );
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      (error) => {
+        let description = "Gagal memperbarui lokasi.";
+        if (error instanceof GeolocationPositionError) {
+          description =
+            "Gagal memperbarui lokasi. Izinkan aplikasi untuk mengakses lokasi kamu.";
+        }
+
+        toast({
+          variant: "destructive",
+          description,
+        });
+      },
+      { enableHighAccuracy: false, timeout: 5000, maximumAge: 0 }
+    );
+  };
 
   return (
     <>
@@ -61,23 +136,23 @@ export default function Profile() {
           <h2 className="text-[#7B7B7B] font-medium">Data Diri</h2>
         </div>
 
-        <Button
+        {/* <Button
           onClick={() => setUpdateWAOpened(true)}
           type="button"
           className="bg-[#BF8E50] hover:bg-[#BF8E50]/90 flex justify-center items-center gap-2"
         >
           <Pencil1Icon className="text-white" />
           Edit
-        </Button>
+        </Button> */}
 
-        {updateWAOpened ? (
+        {/* {updateWAOpened ? (
           <UpdateProfileDialog
             open={updateWAOpened}
             setOpen={setUpdateWAOpened}
           />
         ) : (
           <></>
-        )}
+        )} */}
       </div>
 
       <div className="flex items-center gap-3 border border-[#C2C2C2] rounded-2xl p-3.5 mx-6">
@@ -100,13 +175,31 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 border border-[#C2C2C2] rounded-2xl p-3.5 mx-6">
-        <ClockIcon className="text-[#333333] w-8 h-8" />
+      <div className="flex justify-between items-center border border-[#C2C2C2] rounded-2xl p-3.5 mx-6">
+        <div className="flex justify-between items-center gap-3">
+          <Location className="text-[#333333] w-8 h-8" />
 
-        <div>
-          <h3 className="text-[#7B7B7B] font-medium text-xs">Zona Waktu</h3>
-          <p className="text-[#7B7B7B] font-bold text-sm">{timeZone}</p>
+          <div>
+            <h3 className="text-[#7B7B7B] font-medium text-xs">Lokasi</h3>
+            <p className="text-[#7B7B7B] font-bold text-sm">
+              {localStorage.getItem("city") ?? "Unknown"}
+            </p>
+          </div>
         </div>
+
+        <Button
+          onClick={() => updateLocation()}
+          disabled={isLoading}
+          type="button"
+          className="bg-[#BF8E50] hover:bg-[#BF8E50]/90 flex justify-center items-center gap-2"
+        >
+          {isLoading ? (
+            <div className="animate-spin w-4 h-4 border-2 border-white/25 border-b-white rounded-full"></div>
+          ) : (
+            <UpdateIcon className="w-4 h-4" />
+          )}
+          Perbarui
+        </Button>
       </div>
 
       {/* <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
