@@ -1,11 +1,6 @@
-import { History } from "@components/Icons/History";
 import { Logout } from "@components/Icons/Logout";
+import { Mail } from "@components/Icons/Mail";
 import { PersonCircle } from "@components/Icons/PersonCircle";
-import { ShoppingBag } from "@components/Icons/ShoppingBag";
-import { Wallet } from "@components/Icons/Wallet";
-import { WhatsApp } from "@components/Icons/WhatsApp";
-import { TxHistory } from "@components/Profile/TxHistory";
-import { Badge } from "@components/shadcn/Badge";
 import { Button } from "@components/shadcn/Button";
 import { useStore } from "@hooks/useStore";
 import { auth } from "@libs/firebase";
@@ -32,16 +27,16 @@ const DeleteAccountDialog = lazy(() =>
     })
   )
 );
-const PricingListDialog = lazy(() =>
-  import("@components/Profile/PricingListDialog").then(
-    ({ PricingListDialog }) => ({
-      default: PricingListDialog,
-    })
-  )
-);
+// const PricingListDialog = lazy(() =>
+//   import("@components/Profile/PricingListDialog").then(
+//     ({ PricingListDialog }) => ({
+//       default: PricingListDialog,
+//     })
+//   )
+// );
 
 export default function Profile() {
-  const subsDuration = useStore((state) => state.subsDuration);
+  // const subsDuration = useStore((state) => state.subsDuration);
   const user = useStore((state) => state.user);
   let timeZone = "";
   if (user?.timeZone === "Asia/Jakarta") {
@@ -54,7 +49,7 @@ export default function Profile() {
 
   const [updateWAOpened, setUpdateWAOpened] = useState(false);
   const [deleteAccountOpened, setDeleteAccountOpened] = useState(false);
-  const [pricingListOpened, setPricingListOpened] = useState(false);
+  // const [pricingListOpened, setPricingListOpened] = useState(false);
 
   return (
     <>
@@ -92,18 +87,16 @@ export default function Profile() {
           <h3 className="text-[#7B7B7B] font-medium text-xs">
             Assalamu'alaikum
           </h3>
-          <p className="text-[#7B7B7B] font-bold text-sm">{user?.email}</p>
+          <p className="text-[#7B7B7B] font-bold text-sm">{user?.name}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-3 border border-[#C2C2C2] rounded-2xl p-3.5 mx-6 my-3.5">
-        <WhatsApp className="fill-[#333333] w-8 h-8" />
+        <Mail className="fill-[#333333] w-8 h-8" />
 
         <div>
-          <h3 className="text-[#7B7B7B] font-medium text-xs">WhatsApp</h3>
-          <p className="text-[#7B7B7B] font-bold text-sm">
-            {user?.phoneNumber}
-          </p>
+          <h3 className="text-[#7B7B7B] font-medium text-xs">Email</h3>
+          <p className="text-[#7B7B7B] font-bold text-sm">{user?.email}</p>
         </div>
       </div>
 
@@ -116,12 +109,12 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
+      {/* <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
         <ShoppingBag className="fill-[#333333] w-5 h-5" />
         <h2 className="text-[#7B7B7B] font-medium">Paket Saya</h2>
-      </div>
+      </div> */}
 
-      {user?.accountType === "PREMIUM" ? (
+      {/* {user?.accountType === "PREMIUM" ? (
         <div className="bg-[#BF8E50] rounded-2xl p-6 mx-6">
           <Badge className="bg-white hover:bg-white text-black">Premium</Badge>
 
@@ -167,14 +160,34 @@ export default function Profile() {
             <></>
           )}
         </div>
-      )}
+      )} */}
 
-      <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
+      {/* <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
         <History className="fill-[#333333] w-5 h-5" />
         <h2 className="text-[#7B7B7B] font-medium">Riwayat Transaksi</h2>
+      </div> */}
+
+      {/* <TxHistory /> */}
+
+      <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
+        <Logout className="fill-[#333333] w-5 h-5" />
+        <h2 className="text-[#7B7B7B] font-medium">Keluar</h2>
       </div>
 
-      <TxHistory />
+      <div className="border border-[#E1E1E1] rounded-2xl p-6 mx-6">
+        <p className="text-black text-center text-sm mb-4">
+          Ingin keluar akun? klik tombol di bawah ini
+        </p>
+
+        <Button
+          onClick={() => auth.signOut()}
+          type="button"
+          variant="outline"
+          className="text-[#2F3D4A] w-full"
+        >
+          Keluar
+        </Button>
+      </div>
 
       <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
         <TrashIcon className="text-[#333333] w-5 h-5" />
@@ -203,26 +216,6 @@ export default function Profile() {
         ) : (
           <></>
         )}
-      </div>
-
-      <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
-        <Logout className="fill-[#333333] w-5 h-5" />
-        <h2 className="text-[#7B7B7B] font-medium">Keluar</h2>
-      </div>
-
-      <div className="border border-[#E1E1E1] rounded-2xl p-6 mx-6">
-        <p className="text-black text-center text-sm mb-4">
-          Ingin keluar akun? klik tombol di bawah ini
-        </p>
-
-        <Button
-          onClick={() => auth.signOut()}
-          type="button"
-          variant="outline"
-          className="text-[#2F3D4A] w-full"
-        >
-          Keluar
-        </Button>
       </div>
     </>
   );
