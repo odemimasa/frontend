@@ -2,12 +2,38 @@ import { Skeleton } from "@components/shadcn/Skeleton";
 import { useStore, type Prayer } from "@hooks/useStore";
 import { lazy, useEffect, useMemo, useState } from "react";
 import { CalculationMethod, Coordinates, Madhab, PrayerTimes } from "adhan";
+import { useToast } from "@hooks/shadcn/useToast";
+import { useAxios } from "@hooks/useAxios";
 
 const PrayerItem = lazy(() =>
   import("@components/Dashboard/PrayerItem").then(({ PrayerItem }) => ({
     default: PrayerItem,
   }))
 );
+
+function getPrayerTimesAndCurrentDate(
+  latitude: number,
+  longitude: number
+): { prayerTimes: PrayerTimes; currentDate: Date } {
+  const coordinates = new Coordinates(latitude, longitude);
+  const params = CalculationMethod.Singapore();
+  params.madhab = Madhab.Shafi;
+  const date = new Date();
+
+  let prayerTimes = new PrayerTimes(coordinates, date, params);
+  const currentDate = prayerTimes.date;
+
+  const currentHours = prayerTimes.date.getHours();
+  const fajrHours = prayerTimes.fajr.getHours();
+
+  if (currentHours < fajrHours) {
+    const previousDate = new Date(prayerTimes.date);
+    previousDate.setDate(prayerTimes.date.getDate() - 1);
+    prayerTimes = new PrayerTimes(coordinates, previousDate, params);
+  }
+
+  return { prayerTimes, currentDate };
+}
 
 interface PrayerCompletionIndicatorProps
   extends Pick<Prayer, "status" | "unix_time"> {
@@ -43,63 +69,91 @@ function PrayerList() {
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  // const { toast } = useToast();
-  // const createAxiosInstance = useAxios();
+  const { toast } = useToast();
+  const createAxiosInstance = useAxios();
 
   useEffect(() => {
     setIsLoading(true);
-    const coordinates = new Coordinates(user!.latitude, user!.longitude);
-    const params = CalculationMethod.Singapore();
-    params.madhab = Madhab.Shafi;
-    const date = new Date();
+    const { prayerTimes, currentDate } = getPrayerTimesAndCurrentDate(
+      user!.latitude,
+      user!.longitude
+    );
 
-    let prayerTimes = new PrayerTimes(coordinates, date, params);
-    setCurrentDate(prayerTimes.date);
+    (async () => {
+      try {
+        const resp = await createAxiosInstance().get<
+          Pick<Prayer, "id" | "name" | "status">[]
+        >(
+          `/prayers?year=${currentDate.getFullYear()}&month=${currentDate.getMonth() + 1}&day=${currentDate.getDate()}`,
+          { headers: { Authorization: `Bearer ${user!.idToken}` } }
+        );
 
-    const currentHours = prayerTimes.date.getHours();
-    const fajrHours = prayerTimes.fajr.getHours();
+        if (resp.status === 200) {
+          const prayers: Prayer[] = [
+            {
+              id: prayerTimes.fajr.toISOString(),
+              name: "Subuh",
+              unix_time: prayerTimes.fajr.getTime(),
+              status: undefined,
+            },
+            {
+              id: prayerTimes.dhuhr.toISOString(),
+              name: "Zuhur",
+              unix_time: prayerTimes.dhuhr.getTime(),
+              status: undefined,
+            },
+            {
+              id: prayerTimes.asr.toISOString(),
+              name: "Asar",
+              unix_time: prayerTimes.asr.getTime(),
+              status: undefined,
+            },
+            {
+              id: prayerTimes.maghrib.toISOString(),
+              name: "Magrib",
+              unix_time: prayerTimes.maghrib.getTime(),
+              status: undefined,
+            },
+            {
+              id: prayerTimes.isha.toISOString(),
+              name: "Isya",
+              unix_time: prayerTimes.isha.getTime(),
+              status: undefined,
+            },
+          ];
 
-    if (currentHours < fajrHours) {
-      const previousDate = new Date(prayerTimes.date);
-      previousDate.setDate(prayerTimes.date.getDate() - 1);
-      prayerTimes = new PrayerTimes(coordinates, previousDate, params);
-    }
+          setCurrentDate(currentDate);
+          setPrayers(() => {
+            return prayers.map((item) => {
+              for (const prayer of resp.data) {
+                if (prayer.name !== item.name) {
+                  continue;
+                }
 
-    setPrayers([
-      {
-        id: prayerTimes.fajr.toISOString(),
-        name: "Subuh",
-        unix_time: prayerTimes.fajr.getTime(),
-        status: undefined,
-      },
-      {
-        id: prayerTimes.dhuhr.toISOString(),
-        name: "Zuhur",
-        unix_time: prayerTimes.dhuhr.getTime(),
-        status: undefined,
-      },
-      {
-        id: prayerTimes.asr.toISOString(),
-        name: "Asar",
-        unix_time: prayerTimes.asr.getTime(),
-        status: undefined,
-      },
-      {
-        id: prayerTimes.maghrib.toISOString(),
-        name: "Magrib",
-        unix_time: prayerTimes.maghrib.getTime(),
-        status: undefined,
-      },
-      {
-        id: prayerTimes.isha.toISOString(),
-        name: "Isya",
-        unix_time: prayerTimes.isha.getTime(),
-        status: undefined,
-      },
-    ]);
+                item.id = prayer.id;
+                item.status = prayer.status;
+              }
 
-    setIsLoading(false);
-  }, [user, setPrayers]);
+              return item;
+            });
+          });
+        } else if (resp.status === 400) {
+          throw new Error("invalid query params");
+        } else {
+          throw new Error(`unknown response status code ${resp.status}`);
+        }
+      } catch (error) {
+        console.error(new Error("failed to get prayers", { cause: error }));
+
+        toast({
+          description: "Gagal menampilkan daftar ibadah salat.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [user, setPrayers, toast, createAxiosInstance]);
 
   if (isLoading) {
     return (
@@ -135,7 +189,7 @@ function PrayerList() {
       <div className="flex flex-col gap-3 mb-6">
         {prayers.map((item) => (
           <PrayerItem
-            key={item.id + ":prayer"}
+            key={item.id}
             id={item.id}
             name={item.name}
             status={item.status}
