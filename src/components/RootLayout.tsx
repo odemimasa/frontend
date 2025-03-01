@@ -1,28 +1,12 @@
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { Toaster } from "@components/shadcn/Toaster";
-import {
-  useStore,
-  type AccountType,
-  type IndonesiaTimeZone,
-  type User,
-} from "@hooks/useStore";
+import { useStore, type AccountType, type User } from "@hooks/useStore";
 import { useAxios } from "@hooks/useAxios";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "@firebase/auth";
 import { auth } from "@libs/firebase";
 import { useToast } from "@hooks/shadcn/useToast";
 import { NavigationBar } from "./NavigationBar";
-import axios from "axios";
-import axiosRetry from "axios-retry";
-
-interface ReverseGeocodingResult {
-  results: {
-    city: string;
-    timezone: {
-      name: string;
-    };
-  }[];
-}
 
 function RootLayout(): JSX.Element {
   const user = useStore((state) => state.user);
@@ -46,7 +30,8 @@ function RootLayout(): JSX.Element {
             account_type: AccountType;
             upgraded_at: string;
             expired_at: string;
-            time_zone: IndonesiaTimeZone;
+            time_zone: string;
+            city: string;
           }>(
             "/login",
             { id_token: idToken },
@@ -65,92 +50,10 @@ function RootLayout(): JSX.Element {
             phoneNumber: "",
             phoneVerified: false,
             accountType: "FREE",
-            timeZone: undefined,
-            latitude: -6.17511,
-            longitude: 106.865036,
+            timeZone: resp.data.time_zone,
+            city: resp.data.city,
             idToken,
           };
-
-          const existingLatitude = Number(
-            localStorage.getItem("latitude") ?? "0"
-          );
-
-          const existingLongitude = Number(
-            localStorage.getItem("longitude") ?? "0"
-          );
-
-          if (
-            loggedUser.latitude !== existingLatitude ||
-            loggedUser.longitude !== existingLongitude
-          ) {
-            if (!navigator.geolocation) {
-              toast({
-                description: "Fitur lokasi tidak didukung oleh peramban kamu.",
-                variant: "destructive",
-              });
-              return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-              async (position) => {
-                setIsLoading(true);
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                // TODO: update the geocoordinate in the server
-
-                localStorage.setItem("latitude", latitude.toString());
-                localStorage.setItem("longitude", longitude.toString());
-
-                const client = axios.create();
-                axiosRetry(client, {
-                  retries: 3,
-                  retryDelay: axiosRetry.exponentialDelay,
-                });
-
-                // TODO: reverse geocoding should be moved in the server
-                const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&type=city&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
-                try {
-                  const response =
-                    await client.get<ReverseGeocodingResult>(url);
-                  localStorage.setItem("city", response.data.results[0].city);
-                  localStorage.setItem(
-                    "timezone",
-                    response.data.results[0].timezone.name
-                  );
-
-                  toast({
-                    description: "Berhasil memperbarui lokasi.",
-                    variant: "default",
-                  });
-                } catch (error) {
-                  toast({
-                    description: "Gagal memperbarui lokasi.",
-                    variant: "destructive",
-                  });
-
-                  console.error(
-                    new Error("failed to reverse geocoding", { cause: error })
-                  );
-                } finally {
-                  setIsLoading(false);
-                }
-              },
-              (error) => {
-                let description = "Gagal memperbarui lokasi.";
-                if (error instanceof GeolocationPositionError) {
-                  description =
-                    "Gagal memperbarui lokasi. Izinkan aplikasi untuk mengakses lokasi kamu.";
-                }
-
-                toast({
-                  variant: "destructive",
-                  description,
-                });
-              },
-              { enableHighAccuracy: false, timeout: 5000, maximumAge: 0 }
-            );
-          }
 
           if (resp.status == 201) {
             setUser(loggedUser);
@@ -160,7 +63,6 @@ function RootLayout(): JSX.Element {
               phoneNumber: resp.data.phone_number ?? "",
               phoneVerified: resp.data.phone_verified,
               accountType: resp.data.account_type,
-              timeZone: resp.data.time_zone,
             });
           } else if (resp.status === 400) {
             throw new Error("invalid json body");

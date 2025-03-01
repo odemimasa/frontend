@@ -182,7 +182,7 @@ export default function Profile() {
           <div>
             <h3 className="text-[#7B7B7B] font-medium text-xs">Lokasi</h3>
             <p className="text-[#7B7B7B] font-bold text-sm">
-              {localStorage.getItem("city") ?? "Unknown"}
+              {user?.city ?? "Unknown"}
             </p>
           </div>
         </div>
