@@ -17,6 +17,8 @@ interface User {
   accountType: AccountType;
   timeZone: string;
   city: string;
+  latitude: number;
+  longitude: number;
 }
 
 type TransactionStatus = "UNPAID" | "PAID" | "FAILED" | "EXPIRED" | "REFUND";

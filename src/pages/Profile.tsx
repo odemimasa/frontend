@@ -4,6 +4,7 @@ import { Mail } from "@components/Icons/Mail";
 import { PersonCircle } from "@components/Icons/PersonCircle";
 import { Button } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
+import { useAxios } from "@hooks/useAxios";
 import { useStore } from "@hooks/useStore";
 import { auth } from "@libs/firebase";
 import {
@@ -11,8 +12,6 @@ import {
   TrashIcon,
   UpdateIcon,
 } from "@radix-ui/react-icons";
-import axios from "axios";
-import axiosRetry from "axios-retry";
 import { lazy, useState } from "react";
 
 // const UpdateProfileDialog = lazy(() =>
@@ -38,18 +37,12 @@ const DeleteAccountDialog = lazy(() =>
 //   )
 // );
 
-interface ReverseGeocodingResult {
-  results: {
-    city: string;
-    timezone: {
-      name: string;
-    };
-  }[];
-}
-
 export default function Profile() {
   // const subsDuration = useStore((state) => state.subsDuration);
   const user = useStore((state) => state.user);
+  const setUser = useStore((state) => state.setUser);
+
+  const createAxiosInstance = useAxios();
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -72,31 +65,35 @@ export default function Profile() {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        // TODO: update the geocoordinate in the server
-
-        localStorage.setItem("latitude", latitude.toString());
-        localStorage.setItem("longitude", longitude.toString());
-
-        const client = axios.create();
-        axiosRetry(client, {
-          retries: 3,
-          retryDelay: axiosRetry.exponentialDelay,
-        });
-
-        // TODO: reverse geocoding should be moved in the server
-        const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&type=city&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
         try {
-          const response = await client.get<ReverseGeocodingResult>(url);
-          localStorage.setItem("city", response.data.results[0].city);
-          localStorage.setItem(
-            "timezone",
-            response.data.results[0].timezone.name
+          const resp = await createAxiosInstance().put<{
+            time_zone: string;
+            city: string;
+          }>(
+            `/users/${user?.id}/coordinates`,
+            {
+              latitude,
+              longitude,
+            },
+            { headers: { Authorization: `Bearer ${user!.idToken}` } }
           );
 
-          toast({
-            description: "Berhasil memperbarui lokasi.",
-            variant: "default",
-          });
+          if (resp.status === 200) {
+            setUser({
+              ...user!,
+              timeZone: resp.data.time_zone,
+              city: resp.data.city,
+              latitude,
+              longitude,
+            });
+
+            toast({
+              description: "Berhasil memperbarui lokasi.",
+              variant: "default",
+            });
+          } else {
+            throw new Error(`unknown response status code ${resp.status}`);
+          }
         } catch (error) {
           toast({
             description: "Gagal memperbarui lokasi.",
@@ -104,7 +101,7 @@ export default function Profile() {
           });
 
           console.error(
-            new Error("failed to reverse geocoding", { cause: error })
+            new Error("failed to update user location", { cause: error })
           );
         } finally {
           setIsLoading(false);

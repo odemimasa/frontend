@@ -32,6 +32,8 @@ function RootLayout(): JSX.Element {
             expired_at: string;
             time_zone: string;
             city: string;
+            latitude: number;
+            longitude: number;
           }>(
             "/login",
             { id_token: idToken },
@@ -52,6 +54,8 @@ function RootLayout(): JSX.Element {
             accountType: "FREE",
             timeZone: resp.data.time_zone,
             city: resp.data.city,
+            latitude: resp.data.latitude,
+            longitude: resp.data.longitude,
             idToken,
           };
 
