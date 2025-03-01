@@ -1,9 +1,7 @@
 import { Skeleton } from "@components/shadcn/Skeleton";
-import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { useStore, type Prayer } from "@hooks/useStore";
-import { getCurrentTime } from "@utils/index";
 import { lazy, useEffect, useMemo, useState } from "react";
+import { CalculationMethod, Coordinates, Madhab, PrayerTimes } from "adhan";
 
 const PrayerItem = lazy(() =>
   import("@components/Dashboard/PrayerItem").then(({ PrayerItem }) => ({
@@ -43,45 +41,65 @@ function PrayerList() {
   const prayers = useStore((state) => state.prayers);
   const setPrayers = useStore((state) => state.setPrayers);
 
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-  const createAxiosInstance = useAxios();
-
-  const currentUnixTime = useMemo((): number => {
-    return Math.round(
-      getCurrentTime(user!.timeZone as string).getTime() / 1000
-    );
-  }, [user]);
+  // const { toast } = useToast();
+  // const createAxiosInstance = useAxios();
 
   useEffect(() => {
-    if (prayers !== undefined) return;
-    (async () => {
-      setIsLoading(true);
-      try {
-        const resp = await createAxiosInstance().get<Prayer[]>(
-          `/prayers/today?time_zone=${user!.timeZone}`,
-          { headers: { Authorization: `Bearer ${user!.idToken}` } }
-        );
+    setIsLoading(true);
+    const coordinates = new Coordinates(user!.latitude, user!.longitude);
+    const params = CalculationMethod.Singapore();
+    params.madhab = Madhab.Shafi;
+    const date = new Date();
 
-        if (resp.status === 200) {
-          setPrayers(resp.data);
-        } else {
-          throw new Error(`unknown response status code ${resp.status}`);
-        }
-      } catch (error) {
-        console.error(
-          new Error("failed to get today prayer", { cause: error })
-        );
+    let prayerTimes = new PrayerTimes(coordinates, date, params);
+    setCurrentDate(prayerTimes.date);
 
-        toast({
-          description: "Gagal menampilkan daftar ibadah salat hari ini.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [prayers, setPrayers, user, toast, createAxiosInstance]);
+    const currentHours = prayerTimes.date.getHours();
+    const fajrHours = prayerTimes.fajr.getHours();
+
+    if (currentHours < fajrHours) {
+      const previousDate = new Date(prayerTimes.date);
+      previousDate.setDate(prayerTimes.date.getDate() - 1);
+      prayerTimes = new PrayerTimes(coordinates, previousDate, params);
+    }
+
+    setPrayers([
+      {
+        id: prayerTimes.fajr.toISOString(),
+        name: "Subuh",
+        unix_time: prayerTimes.fajr.getTime(),
+        status: undefined,
+      },
+      {
+        id: prayerTimes.dhuhr.toISOString(),
+        name: "Zuhur",
+        unix_time: prayerTimes.dhuhr.getTime(),
+        status: undefined,
+      },
+      {
+        id: prayerTimes.asr.toISOString(),
+        name: "Asar",
+        unix_time: prayerTimes.asr.getTime(),
+        status: undefined,
+      },
+      {
+        id: prayerTimes.maghrib.toISOString(),
+        name: "Magrib",
+        unix_time: prayerTimes.maghrib.getTime(),
+        status: undefined,
+      },
+      {
+        id: prayerTimes.isha.toISOString(),
+        name: "Isya",
+        unix_time: prayerTimes.isha.getTime(),
+        status: undefined,
+      },
+    ]);
+
+    setIsLoading(false);
+  }, [user, setPrayers]);
 
   if (isLoading) {
     return (
@@ -122,7 +140,7 @@ function PrayerList() {
             name={item.name}
             status={item.status}
             unix_time={item.unix_time}
-            currentUnixTime={currentUnixTime}
+            currentUnixTime={currentDate.getTime()}
           />
         ))}
       </div>
@@ -135,7 +153,7 @@ function PrayerList() {
         {prayers.map((item) => (
           <PrayerCompletionIndicator
             key={item.id + ":completion"}
-            currentUnixTime={currentUnixTime}
+            currentUnixTime={currentDate.getTime()}
             status={item.status}
             unix_time={item.unix_time}
           />
