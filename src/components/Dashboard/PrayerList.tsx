@@ -4,6 +4,7 @@ import { lazy, useEffect, useMemo, useState } from "react";
 import { CalculationMethod, Coordinates, Madhab, PrayerTimes } from "adhan";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useAxios } from "@hooks/useAxios";
+import { getCurrentDate } from "@utils/index";
 
 const PrayerItem = lazy(() =>
   import("@components/Dashboard/PrayerItem").then(({ PrayerItem }) => ({
@@ -11,18 +12,13 @@ const PrayerItem = lazy(() =>
   }))
 );
 
-function getPrayerTimesAndCurrentDate(
-  latitude: number,
-  longitude: number
-): { prayerTimes: PrayerTimes; currentDate: Date } {
+function getPrayerTimes(latitude: number, longitude: number): PrayerTimes {
   const coordinates = new Coordinates(latitude, longitude);
   const params = CalculationMethod.Singapore();
   params.madhab = Madhab.Shafi;
   const date = new Date();
 
   let prayerTimes = new PrayerTimes(coordinates, date, params);
-  const currentDate = prayerTimes.date;
-
   const currentHours = prayerTimes.date.getHours();
   const fajrHours = prayerTimes.fajr.getHours();
 
@@ -32,21 +28,21 @@ function getPrayerTimesAndCurrentDate(
     prayerTimes = new PrayerTimes(coordinates, previousDate, params);
   }
 
-  return { prayerTimes, currentDate };
+  return prayerTimes;
 }
 
 interface PrayerCompletionIndicatorProps
-  extends Pick<Prayer, "status" | "unix_time"> {
-  currentUnixTime: number;
+  extends Pick<Prayer, "status" | "date"> {
+  currentDate: Date;
 }
 
 function PrayerCompletionIndicator({
-  currentUnixTime,
   status,
-  unix_time,
+  date,
+  currentDate,
 }: PrayerCompletionIndicatorProps) {
   const boxColor = useMemo((): string => {
-    if (currentUnixTime > unix_time && status !== undefined) {
+    if (currentDate.getTime() > date.getTime() && status !== undefined) {
       if (status === "ON_TIME") {
         return "bg-[#238471]";
       } else if (status === "LATE") {
@@ -57,7 +53,7 @@ function PrayerCompletionIndicator({
     } else {
       return "bg-[#ECECEC]";
     }
-  }, [status, unix_time, currentUnixTime]);
+  }, [status, date, currentDate]);
 
   return <div className={`${boxColor} w-12 h-6`}></div>;
 }
@@ -67,17 +63,17 @@ function PrayerList() {
   const prayers = useStore((state) => state.prayers);
   const setPrayers = useStore((state) => state.setPrayers);
 
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const createAxiosInstance = useAxios();
 
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [sunriseDate, setSunriseDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     setIsLoading(true);
-    const { prayerTimes, currentDate } = getPrayerTimesAndCurrentDate(
-      user!.latitude,
-      user!.longitude
-    );
+    const prayerTimes = getPrayerTimes(user!.latitude, user!.longitude);
+    const currentDate = getCurrentDate(user!.timeZone);
 
     (async () => {
       try {
@@ -93,36 +89,38 @@ function PrayerList() {
             {
               id: prayerTimes.fajr.toISOString(),
               name: "Subuh",
-              unix_time: prayerTimes.fajr.getTime(),
+              date: prayerTimes.fajr,
               status: undefined,
             },
             {
               id: prayerTimes.dhuhr.toISOString(),
               name: "Zuhur",
-              unix_time: prayerTimes.dhuhr.getTime(),
+              date: prayerTimes.dhuhr,
               status: undefined,
             },
             {
               id: prayerTimes.asr.toISOString(),
               name: "Asar",
-              unix_time: prayerTimes.asr.getTime(),
+              date: prayerTimes.asr,
               status: undefined,
             },
             {
               id: prayerTimes.maghrib.toISOString(),
               name: "Magrib",
-              unix_time: prayerTimes.maghrib.getTime(),
+              date: prayerTimes.maghrib,
               status: undefined,
             },
             {
               id: prayerTimes.isha.toISOString(),
               name: "Isya",
-              unix_time: prayerTimes.isha.getTime(),
+              date: prayerTimes.isha,
               status: undefined,
             },
           ];
 
           setCurrentDate(currentDate);
+          setSunriseDate(prayerTimes.sunrise);
+
           setPrayers(() => {
             return prayers.map((item) => {
               for (const prayer of resp.data) {
@@ -187,14 +185,17 @@ function PrayerList() {
       <h2 className="text-[#1A6355] font-bold text-xl mb-3">Daftar Salat</h2>
 
       <div className="flex flex-col gap-3 mb-6">
-        {prayers.map((item) => (
+        {prayers.map((item, index) => (
           <PrayerItem
             key={item.id}
             id={item.id}
             name={item.name}
             status={item.status}
-            unix_time={item.unix_time}
-            currentUnixTime={currentDate.getTime()}
+            date={item.date}
+            currentDate={currentDate}
+            sunriseDate={sunriseDate}
+            prayers={prayers}
+            index={index}
           />
         ))}
       </div>
@@ -207,9 +208,9 @@ function PrayerList() {
         {prayers.map((item) => (
           <PrayerCompletionIndicator
             key={item.id + ":completion"}
-            currentUnixTime={currentDate.getTime()}
             status={item.status}
-            unix_time={item.unix_time}
+            date={item.date}
+            currentDate={currentDate}
           />
         ))}
       </div>

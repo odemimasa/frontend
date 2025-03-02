@@ -1,6 +1,9 @@
 import { Button } from "@components/shadcn/Button";
-import { type Prayer } from "@hooks/useStore";
+import { useToast } from "@hooks/shadcn/useToast";
+import { useAxios } from "@hooks/useAxios";
+import { useStore, type Prayer, type PrayerStatus } from "@hooks/useStore";
 import { BoxIcon, CheckboxIcon } from "@radix-ui/react-icons";
+import { getCurrentDate } from "@utils/index";
 import { useState } from "react";
 
 function formatTimeFromUnixMilliseconds(unixTimeMs: number) {
@@ -13,92 +16,108 @@ function formatTimeFromUnixMilliseconds(unixTimeMs: number) {
 }
 
 interface PrayerItemProps extends Prayer {
-  currentUnixTime: number;
+  currentDate: Date;
+  sunriseDate: Date;
+  prayers: Prayer[];
+  index: number;
 }
 
 function PrayerItem({
-  currentUnixTime,
   id,
   name,
-  unix_time,
+  date,
   status,
+  currentDate,
+  sunriseDate,
+  prayers,
+  index,
 }: PrayerItemProps) {
-  // const user = useStore((state) => state.user);
-  // const setPrayers = useStore((state) => state.setPrayers);
-  // const setPrayerStatistic = useStore((state) => state.setPrayerStatistic);
+  const user = useStore((state) => state.user);
+  const setPrayers = useStore((state) => state.setPrayers);
+  const setPrayerStatistic = useStore((state) => state.setPrayerStatistic);
 
   const [isLoading, setIsLoading] = useState(false);
-  // const { toast } = useToast();
-  // const createAxiosInstance = useAxios();
-
-  // const handleCheckPrayer = async () => {
-  //   setIsLoading(true);
-  //   const checkedAt = Math.round(
-  //     getCurrentTime(user!.timeZone as string).getTime() / 1000
-  //   );
-
-  //   try {
-  //     const resp = await createAxiosInstance().put<{ status: PrayerStatus }>(
-  //       `/prayers/${id}`,
-  //       {
-  //         prayer_name: name,
-  //         prayer_unix_time: unix_time,
-  //         time_zone: user!.timeZone,
-  //         checked_at: checkedAt,
-  //         account_type: user!.accountType,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${user!.idToken}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (resp.status === 200) {
-  //       toast({
-  //         description: `Berhasil mencentang ibadah salat ${name}.`,
-  //         variant: "default",
-  //       });
-
-  //       setPrayers((prayers) => {
-  //         const idx = prayers!.findIndex((item) => item.id === id);
-  //         prayers![idx].status = resp.data.status;
-  //         return prayers;
-  //       });
-
-  //       setPrayerStatistic((prayerStatistic) => {
-  //         const statistic = prayerStatistic!.get(name)!;
-  //         if (resp.data.status === "ON_TIME") {
-  //           statistic[2]++;
-  //         } else if (resp.data.status === "LATE") {
-  //           statistic[1]++;
-  //         } else {
-  //           statistic[0]++;
-  //         }
-
-  //         prayerStatistic!.set(name, statistic);
-  //         return prayerStatistic;
-  //       });
-  //     } else if (resp.status === 400) {
-  //       throw new Error("invalid request body");
-  //     } else {
-  //       throw new Error(`unknown response status code ${resp.status}`);
-  //     }
-  //   } catch (error) {
-  //     console.error(new Error("failed to update prayer", { cause: error }));
-  //     toast({
-  //       description: `Gagal mencentang ibadah salat ${name}.`,
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const { toast } = useToast();
+  const createAxiosInstance = useAxios();
 
   const handleCheckPrayer = async () => {
     setIsLoading(true);
-    console.log(id);
+
+    let endTime = 0;
+    if (name === "Subuh") {
+      endTime = sunriseDate.getTime() / 1000;
+    } else {
+      endTime = prayers[index + 1].date.getTime() / 1000;
+    }
+
+    const currentPrayerTime = date.getTime() / 1000;
+    const prayerTimeDifference = endTime - currentPrayerTime;
+    const idealTime = prayerTimeDifference * 0.75;
+
+    const checkedDate = getCurrentDate(user!.timeZone);
+    const checkedTime = checkedDate.getTime() / 1000;
+    const checkedTimeDifference = checkedTime - currentPrayerTime;
+
+    let status: PrayerStatus = "MISSED";
+    if (checkedTime > endTime) {
+      status = "MISSED";
+    } else if (idealTime - checkedTimeDifference >= 0) {
+      status = "ON_TIME";
+    } else if (idealTime - checkedTimeDifference < 0) {
+      status = "LATE";
+    }
+
+    try {
+      const resp = await createAxiosInstance().put(
+        `/prayers/${id}`,
+        { id, status },
+        {
+          headers: {
+            Authorization: `Bearer ${user!.idToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (resp.status === 200) {
+        toast({
+          description: `Berhasil mencentang ibadah salat ${name}.`,
+          variant: "default",
+        });
+
+        setPrayers((prayers) => {
+          const idx = prayers!.findIndex((item) => item.id === id);
+          prayers![idx].status = status;
+          return prayers;
+        });
+
+        setPrayerStatistic((prayerStatistic) => {
+          const statistic = prayerStatistic!.get(name)!;
+          if (status === "ON_TIME") {
+            statistic[2]++;
+          } else if (status === "LATE") {
+            statistic[1]++;
+          } else {
+            statistic[0]++;
+          }
+
+          prayerStatistic!.set(name, statistic);
+          return prayerStatistic;
+        });
+      } else if (resp.status === 400) {
+        throw new Error("invalid request body");
+      } else {
+        throw new Error(`unknown response status code ${resp.status}`);
+      }
+    } catch (error) {
+      console.error(new Error("failed to update prayer", { cause: error }));
+      toast({
+        description: `Gagal mencentang ibadah salat ${name}.`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -106,13 +125,15 @@ function PrayerItem({
       <div className="flex flex-col gap-1">
         <h4 className="text-[#363636] font-bold">Salat {name}</h4>
         <time className="text-sm text-[#363636]/75">
-          {formatTimeFromUnixMilliseconds(unix_time)}
+          {formatTimeFromUnixMilliseconds(date.getTime())}
         </time>
       </div>
 
       <Button
         disabled={
-          isLoading || currentUnixTime < unix_time || status !== undefined
+          isLoading ||
+          currentDate.getTime() < date.getTime() ||
+          status !== undefined
         }
         onClick={handleCheckPrayer}
         type="button"

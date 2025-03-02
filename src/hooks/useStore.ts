@@ -55,7 +55,7 @@ type PrayerName = "Subuh" | "Zuhur" | "Asar" | "Magrib" | "Isya";
 interface Prayer {
   id: string;
   name: PrayerName;
-  unix_time: number;
+  date: Date;
   status: PrayerStatus | undefined;
 }
 

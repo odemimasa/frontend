@@ -7,7 +7,7 @@ import {
   type PrayerName,
   type PrayerStatistic as PrayerStatisticType,
 } from "@hooks/useStore";
-import { getCurrentTime } from "@utils/index";
+import { getCurrentDate } from "@utils/index";
 import { lazy, useEffect, useState } from "react";
 
 const PrayerLeaderboard = lazy(() =>
@@ -64,7 +64,7 @@ function PrayerReport() {
   useEffect(() => {
     if (prayerStatistic !== undefined) return;
     setIsLoading(true);
-    const currentTime = getCurrentTime(user!.timeZone as string);
+    const currentTime = getCurrentDate(user!.timeZone as string);
 
     (async () => {
       try {
