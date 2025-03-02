@@ -42,7 +42,7 @@ function createPrayerStatistic(
       statistic[2]++;
     } else if (prayer.status === "LATE") {
       statistic[1]++;
-    } else {
+    } else if (prayer.status === "MISSED") {
       statistic[0]++;
     }
 
@@ -68,6 +68,7 @@ function PrayerReport() {
 
     (async () => {
       try {
+        // TODO: it can be improved so that it only query the completed prayers of this month
         const resp = await createAxiosInstance().get<
           Pick<Prayer, "id" | "name" | "status">[]
         >(

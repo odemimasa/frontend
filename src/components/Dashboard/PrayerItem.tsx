@@ -97,7 +97,7 @@ function PrayerItem({
             statistic[2]++;
           } else if (status === "LATE") {
             statistic[1]++;
-          } else {
+          } else if (status === "MISSED") {
             statistic[0]++;
           }
 

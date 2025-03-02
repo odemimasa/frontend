@@ -71,6 +71,7 @@ function PrayerList() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (prayers !== undefined) return;
     setIsLoading(true);
     const prayerTimes = getPrayerTimes(user!.latitude, user!.longitude);
     const currentDate = getCurrentDate(user!.timeZone);
@@ -151,7 +152,7 @@ function PrayerList() {
         setIsLoading(false);
       }
     })();
-  }, [user, setPrayers, toast, createAxiosInstance]);
+  }, [user, setPrayers, toast, createAxiosInstance, prayers]);
 
   if (isLoading) {
     return (
