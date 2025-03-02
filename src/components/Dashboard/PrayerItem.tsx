@@ -3,7 +3,7 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { useAxios } from "@hooks/useAxios";
 import { useStore, type Prayer, type PrayerStatus } from "@hooks/useStore";
 import { BoxIcon, CheckboxIcon } from "@radix-ui/react-icons";
-import { getCurrentDate } from "@utils/index";
+import { getCurrentDate, getPrayerTimes } from "@utils/index";
 import { useState } from "react";
 
 function formatTimeFromUnixMilliseconds(unixTimeMs: number) {
@@ -46,6 +46,17 @@ function PrayerItem({
     let endTime = 0;
     if (name === "Subuh") {
       endTime = sunriseDate.getTime() / 1000;
+    } else if (name === "Isya") {
+      const nextDate = new Date(date);
+      nextDate.setDate(date.getDate() + 1);
+
+      const nextPrayerTimes = getPrayerTimes(
+        user!.latitude,
+        user!.longitude,
+        nextDate
+      );
+
+      endTime = nextPrayerTimes.fajr.getTime() / 1000;
     } else {
       endTime = prayers[index + 1].date.getTime() / 1000;
     }

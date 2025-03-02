@@ -1,35 +1,15 @@
 import { Skeleton } from "@components/shadcn/Skeleton";
 import { useStore, type Prayer } from "@hooks/useStore";
 import { lazy, useEffect, useMemo, useState } from "react";
-import { CalculationMethod, Coordinates, Madhab, PrayerTimes } from "adhan";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useAxios } from "@hooks/useAxios";
-import { getCurrentDate } from "@utils/index";
+import { getCurrentDate, getPrayerTimes } from "@utils/index";
 
 const PrayerItem = lazy(() =>
   import("@components/Dashboard/PrayerItem").then(({ PrayerItem }) => ({
     default: PrayerItem,
   }))
 );
-
-function getPrayerTimes(latitude: number, longitude: number): PrayerTimes {
-  const coordinates = new Coordinates(latitude, longitude);
-  const params = CalculationMethod.Singapore();
-  params.madhab = Madhab.Shafi;
-  const date = new Date();
-
-  let prayerTimes = new PrayerTimes(coordinates, date, params);
-  const currentHours = prayerTimes.date.getHours();
-  const fajrHours = prayerTimes.fajr.getHours();
-
-  if (currentHours < fajrHours) {
-    const previousDate = new Date(prayerTimes.date);
-    previousDate.setDate(prayerTimes.date.getDate() - 1);
-    prayerTimes = new PrayerTimes(coordinates, previousDate, params);
-  }
-
-  return prayerTimes;
-}
 
 interface PrayerCompletionIndicatorProps
   extends Pick<Prayer, "status" | "date"> {
