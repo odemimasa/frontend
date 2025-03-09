@@ -1,9 +1,7 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -12,31 +10,36 @@ import { Button, buttonVariants } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useStore } from "@hooks/useStore";
 import { cn } from "@libs/shadcn";
-import axiosRetry from "axios-retry";
-import type { AxiosError } from "axios";
-import { useAuthContext } from "../../contexts/AuthProvider";
 import { tokenStorage } from "@utils/token";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { useAuthContext } from "../../contexts/AuthProvider";
 
-interface DeleteAccountDialogProps {
+interface LogoutDialogProps {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
+function LogoutDialog({ open, setOpen }: LogoutDialogProps) {
   const user = useStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
+  const { retryWithoutRefresh } = useAuthContext();
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
 
-  const handleDeleteAccount = async () => {
+  const handleLogout = async () => {
     setIsLoading(true);
     try {
-      const res = await retryWithRefresh.delete(`/users/${user?.id}`);
+      const refreshToken = tokenStorage.getRefreshToken();
+      const res = await retryWithoutRefresh.post(
+        "/auth/logout",
+        { user_id: user?.id },
+        { headers: { Authorization: `Bearer ${refreshToken}` } }
+      );
+
       if (res.status === 200) {
         setOpen(false);
         toast({
           description:
-            "Akun berhasil dihapus. Kamu akan diarahkan ke halaman Beranda dalam 3 detik.",
+            "Logout berhasil. Kamu akan diarahkan ke halaman Beranda dalam 3 detik.",
           variant: "default",
         });
 
@@ -45,22 +48,30 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
           tokenStorage.removeRefreshToken();
           window.location.reload();
         }, 3000);
-      }
-    } catch (error) {
-      const status = (error as AxiosError).response?.status;
-      if (
-        axiosRetry.isNetworkError(error as AxiosError) ||
-        (status || 0) >= 500
-      ) {
+      } else if (res.status === 400) {
+        throw new Error("invalid request body");
+      } else if (res.status === 401) {
+        setOpen(false);
         toast({
-          description: "Gagal menghapus akun, silakan coba kembali.",
+          description:
+            "Sesi telah berakhir. Kamu akan diarahkan ke halaman Beranda dalam 3 detik.",
           variant: "destructive",
         });
-      }
 
-      console.error(
-        new Error("failed to delete user account", { cause: error })
-      );
+        setTimeout(() => {
+          tokenStorage.removeAccessToken();
+          tokenStorage.removeRefreshToken();
+          window.location.reload();
+        }, 3000);
+      } else {
+        throw new Error(`unhandled response status ${res.status}`);
+      }
+    } catch (error) {
+      console.error(new Error("failed to logout", { cause: error }));
+      toast({
+        description: "Logout gagal, silakan coba kembali.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -70,12 +81,7 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent className="max-w-sm">
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            Apakah kamu yakin ingin menghapus akun?
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Kami akan menghapus semua data kamu secara permanen.
-          </AlertDialogDescription>
+          <AlertDialogTitle>Apakah kamu yakin ingin logout?</AlertDialogTitle>
         </AlertDialogHeader>
 
         <AlertDialogFooter className="gap-4">
@@ -92,12 +98,12 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
 
           <Button
             disabled={isLoading}
-            onClick={handleDeleteAccount}
+            onClick={handleLogout}
             type="button"
             variant="outline"
             className="bg-transparent hover:bg-transparent border-[#D9534F] text-[#D9534F] hover:text-[#D9534F] w-full"
           >
-            {isLoading ? "Loading..." : "Hapus"}
+            {isLoading ? "Loading..." : "Logout"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -105,4 +111,4 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
   );
 }
 
-export { DeleteAccountDialog };
+export { LogoutDialog };

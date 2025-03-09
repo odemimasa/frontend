@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router";
 import { RootLayout } from "@components/RootLayout";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { AuthProvider } from "./contexts/AuthProvider";
 
 const Home = lazy(() => import("./pages/Home"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -20,11 +21,11 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <>
+      <AuthProvider>
         <RootLayout />
         <Analytics />
         <SpeedInsights />
-      </>
+      </AuthProvider>
     ),
     errorElement: (
       <Suspense fallback={<></>}>

@@ -44,12 +44,14 @@ function LoginAndRegister() {
         }
       } catch (error) {
         console.error(
-          new Error("failed to register with google account", { cause: error })
+          new Error(
+            `failed to ${isRegisterView ? "register" : "login"} with google account`,
+            { cause: error }
+          )
         );
 
         toast({
-          description:
-            "Gagal registrasi menggunakan akun Google, silakan coba kembali.",
+          description: `Gagal ${isRegisterView ? "registrasi" : "login"} menggunakan akun Google, silakan coba kembali.`,
           variant: "destructive",
         });
       } finally {

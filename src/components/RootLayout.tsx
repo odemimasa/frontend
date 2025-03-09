@@ -5,11 +5,12 @@ import { useEffect, useState } from "react";
 import { useToast } from "@hooks/shadcn/useToast";
 import { NavigationBar } from "./NavigationBar";
 import { tokenStorage } from "@utils/token";
-import { retryWithRefresh } from "@utils/retry";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
+import { useAuthContext } from "../contexts/AuthProvider";
 
 function RootLayout(): JSX.Element {
+  const { retryWithRefresh } = useAuthContext();
   const user = useStore((state) => state.user);
   const setUser = useStore((state) => state.setUser);
 
@@ -50,7 +51,7 @@ function RootLayout(): JSX.Element {
         setIsLoading(false);
       }
     })();
-  }, [setUser, toast]);
+  }, [setUser, toast, retryWithRefresh]);
 
   useEffect(() => {
     if (isLoading) {

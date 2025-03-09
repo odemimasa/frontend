@@ -1,26 +1,11 @@
-import { Location } from "@components/Icons/Location";
 import { Logout } from "@components/Icons/Logout";
 import { Mail } from "@components/Icons/Mail";
 import { PersonCircle } from "@components/Icons/PersonCircle";
+import { UserLocation } from "@components/Profile/UserLocation";
 import { Button } from "@components/shadcn/Button";
-import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { useStore } from "@hooks/useStore";
-import {
-  ExclamationTriangleIcon,
-  TrashIcon,
-  UpdateIcon,
-} from "@radix-ui/react-icons";
-import { tokenStorage } from "@utils/token";
+import { ExclamationTriangleIcon, TrashIcon } from "@radix-ui/react-icons";
 import { lazy, useState } from "react";
-
-// const UpdateProfileDialog = lazy(() =>
-//   import("@components/Profile/UpdateProfileDialog").then(
-//     ({ UpdateProfileDialog }) => ({
-//       default: UpdateProfileDialog,
-//     })
-//   )
-// );
 
 const DeleteAccountDialog = lazy(() =>
   import("@components/Profile/DeleteAccountDialog").then(
@@ -28,6 +13,12 @@ const DeleteAccountDialog = lazy(() =>
       default: DeleteAccountDialog,
     })
   )
+);
+
+const LogoutDialog = lazy(() =>
+  import("@components/Profile/LogoutDialog").then(({ LogoutDialog }) => ({
+    default: LogoutDialog,
+  }))
 );
 // const PricingListDialog = lazy(() =>
 //   import("@components/Profile/PricingListDialog").then(
@@ -40,92 +31,9 @@ const DeleteAccountDialog = lazy(() =>
 export default function Profile() {
   // const subsDuration = useStore((state) => state.subsDuration);
   const user = useStore((state) => state.user);
-  const setUser = useStore((state) => state.setUser);
-
-  const createAxiosInstance = useAxios();
-  const { toast } = useToast();
-
-  const [isLoading, setIsLoading] = useState(false);
-  // const [updateWAOpened, setUpdateWAOpened] = useState(false);
   const [deleteAccountOpened, setDeleteAccountOpened] = useState(false);
+  const [logoutOpened, setLogoutOpened] = useState(false);
   // const [pricingListOpened, setPricingListOpened] = useState(false);
-
-  const updateLocation = async () => {
-    if (!navigator.geolocation) {
-      toast({
-        description: "Fitur lokasi tidak didukung oleh peramban kamu.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        setIsLoading(true);
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        try {
-          const resp = await createAxiosInstance().put<{
-            time_zone: string;
-            city: string;
-          }>(
-            `/users/${user?.id}/coordinates`,
-            {
-              latitude,
-              longitude,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${tokenStorage.getAccessToken()}`,
-              },
-            }
-          );
-
-          if (resp.status === 200) {
-            setUser({
-              ...user!,
-              timezone: resp.data.time_zone,
-              city: resp.data.city,
-              latitude,
-              longitude,
-            });
-
-            toast({
-              description: "Berhasil memperbarui lokasi.",
-              variant: "default",
-            });
-          } else {
-            throw new Error(`unknown response status code ${resp.status}`);
-          }
-        } catch (error) {
-          toast({
-            description: "Gagal memperbarui lokasi.",
-            variant: "destructive",
-          });
-
-          console.error(
-            new Error("failed to update user location", { cause: error })
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      (error) => {
-        let description = "Gagal memperbarui lokasi.";
-        if (error instanceof GeolocationPositionError) {
-          description =
-            "Gagal memperbarui lokasi. Izinkan aplikasi untuk mengakses lokasi kamu.";
-        }
-
-        toast({
-          variant: "destructive",
-          description,
-        });
-      },
-      { enableHighAccuracy: false, timeout: 5000, maximumAge: 0 }
-    );
-  };
 
   return (
     <>
@@ -136,24 +44,6 @@ export default function Profile() {
           <PersonCircle className="text-[#333333] w-5 h-5" />
           <h2 className="text-[#7B7B7B] font-medium">Data Diri</h2>
         </div>
-
-        {/* <Button
-          onClick={() => setUpdateWAOpened(true)}
-          type="button"
-          className="bg-[#BF8E50] hover:bg-[#BF8E50]/90 flex justify-center items-center gap-2"
-        >
-          <Pencil1Icon className="text-white" />
-          Edit
-        </Button> */}
-
-        {/* {updateWAOpened ? (
-          <UpdateProfileDialog
-            open={updateWAOpened}
-            setOpen={setUpdateWAOpened}
-          />
-        ) : (
-          <></>
-        )} */}
       </div>
 
       <div className="flex items-center gap-3 border border-[#C2C2C2] rounded-2xl p-3.5 mx-6">
@@ -176,32 +66,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center border border-[#C2C2C2] rounded-2xl p-3.5 mx-6">
-        <div className="flex justify-between items-center gap-3">
-          <Location className="text-[#333333] w-8 h-8" />
-
-          <div>
-            <h3 className="text-[#7B7B7B] font-medium text-xs">Lokasi</h3>
-            <p className="text-[#7B7B7B] font-bold text-sm">
-              {user?.city ?? "Unknown"}
-            </p>
-          </div>
-        </div>
-
-        <Button
-          onClick={() => updateLocation()}
-          disabled={isLoading}
-          type="button"
-          className="bg-[#BF8E50] hover:bg-[#BF8E50]/90 flex justify-center items-center gap-2"
-        >
-          {isLoading ? (
-            <div className="animate-spin w-4 h-4 border-2 border-white/25 border-b-white rounded-full"></div>
-          ) : (
-            <UpdateIcon className="w-4 h-4" />
-          )}
-          Perbarui
-        </Button>
-      </div>
+      <UserLocation />
 
       {/* <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
         <ShoppingBag className="fill-[#333333] w-5 h-5" />
@@ -274,13 +139,19 @@ export default function Profile() {
         </p>
 
         <Button
-          onClick={() => console.log("LOGOUT")}
+          onClick={() => setLogoutOpened(true)}
           type="button"
           variant="outline"
           className="text-[#2F3D4A] w-full"
         >
           Keluar
         </Button>
+
+        {logoutOpened ? (
+          <LogoutDialog open={logoutOpened} setOpen={setLogoutOpened} />
+        ) : (
+          <></>
+        )}
       </div>
 
       <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
