@@ -1,6 +1,8 @@
 import { Logout } from "@components/Icons/Logout";
 import { Mail } from "@components/Icons/Mail";
 import { PersonCircle } from "@components/Icons/PersonCircle";
+import { ShoppingBag } from "@components/Icons/ShoppingBag";
+import { Subscription } from "@components/Profile/Subscription";
 import { UserLocation } from "@components/Profile/UserLocation";
 import { Button } from "@components/shadcn/Button";
 import { useStore } from "@hooks/useStore";
@@ -20,20 +22,11 @@ const LogoutDialog = lazy(() =>
     default: LogoutDialog,
   }))
 );
-// const PricingListDialog = lazy(() =>
-//   import("@components/Profile/PricingListDialog").then(
-//     ({ PricingListDialog }) => ({
-//       default: PricingListDialog,
-//     })
-//   )
-// );
 
 export default function Profile() {
-  // const subsDuration = useStore((state) => state.subsDuration);
   const user = useStore((state) => state.user);
   const [deleteAccountOpened, setDeleteAccountOpened] = useState(false);
   const [logoutOpened, setLogoutOpened] = useState(false);
-  // const [pricingListOpened, setPricingListOpened] = useState(false);
 
   return (
     <>
@@ -68,58 +61,12 @@ export default function Profile() {
 
       <UserLocation />
 
-      {/* <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
+      <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
         <ShoppingBag className="fill-[#333333] w-5 h-5" />
         <h2 className="text-[#7B7B7B] font-medium">Paket Saya</h2>
-      </div> */}
+      </div>
 
-      {/* {user?.accountType === "PREMIUM" ? (
-        <div className="bg-[#BF8E50] rounded-2xl p-6 mx-6">
-          <Badge className="bg-white hover:bg-white text-black">Premium</Badge>
-
-          <p className="text-white text-sm mt-3.5">
-            Berlaku hingga: <strong>{subsDuration}</strong>
-          </p>
-
-          <Button
-            disabled
-            type="button"
-            className="bg-white hover:bg-white/90 text-[#363636] mt-3.5"
-          >
-            <Wallet className="fill-[#363636]" />
-            Beli Paket
-          </Button>
-        </div>
-      ) : (
-        <div className="border border-[#C2C2C2] rounded-2xl p-6  mx-6">
-          <Badge variant="outline" className="text-black border-[#E1E1E1]">
-            Free
-          </Badge>
-
-          <p className="text-[#363636] font-bold text-sm mt-3.5">
-            Beli Paket Premiun, Nikmati Semua Layanan
-          </p>
-
-          <Button
-            onClick={() => setPricingListOpened(true)}
-            type="button"
-            variant="outline"
-            className="text-[#363636] border-[#2F3D4A] mt-3.5"
-          >
-            <Wallet className="fill-[#363636]" />
-            Beli Paket
-          </Button>
-
-          {pricingListOpened ? (
-            <PricingListDialog
-              open={pricingListOpened}
-              setOpen={setPricingListOpened}
-            />
-          ) : (
-            <></>
-          )}
-        </div>
-      )} */}
+      <Subscription />
 
       {/* <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
         <History className="fill-[#333333] w-5 h-5" />

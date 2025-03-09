@@ -5,12 +5,14 @@ import { CheckIcon, Cross2Icon } from "@radix-ui/react-icons";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { Dialog, DialogContent } from "@components/shadcn/Dialog";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { useStore, type SubscriptionPlan } from "@hooks/useStore";
 import {
   SubscriptionPlans,
   SubscriptionPlanSkeleton,
 } from "./SubscriptionPlan";
+import { useAuthContext } from "../../contexts/AuthProvider";
+import axiosRetry from "axios-retry";
+import type { AxiosError } from "axios";
 
 interface PricingListDialogProps {
   open: boolean;
@@ -18,15 +20,13 @@ interface PricingListDialogProps {
 }
 
 function PricingListDialog({ open, setOpen }: PricingListDialogProps) {
-  const user = useStore((state) => state.user);
   const subscriptionPlans = useStore((state) => state.subscriptionPlans);
   const setSubscriptionPlans = useStore((state) => state.setSubscriptionPlans);
 
   const [couponCode, setCouponCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
+  const { retryWithRefresh } = useAuthContext();
 
   useEffect(() => {
     if (subscriptionPlans !== undefined) return;
@@ -34,54 +34,45 @@ function PricingListDialog({ open, setOpen }: PricingListDialogProps) {
 
     (async () => {
       try {
-        const resp = await createAxiosInstance().get<SubscriptionPlan[]>(
-          "/subscription-plans",
-          { headers: { Authorization: `Bearer ${user!.idToken}` } }
-        );
-
-        if (resp.status !== 200) {
-          throw new Error(`unknown response status code ${resp.status}`);
-        }
-
-        if (resp.data.length !== 0) {
+        const res = await retryWithRefresh.get<SubscriptionPlan[]>("/plans");
+        if (res.status === 200 && res.data.length !== 0) {
           const subsPlan = new Map<string, SubscriptionPlan[]>();
-
-          for (let i = 0; i < resp.data.length; i++) {
-            const subsPlanName = resp.data[i].name;
+          for (let i = 0; i < res.data.length; i++) {
+            const subsPlanName = res.data[i].name;
             const result = subsPlan.get(subsPlanName);
 
             if (result === undefined) {
               subsPlan.set(
                 subsPlanName,
-                new Array<SubscriptionPlan>(resp.data[i])
+                new Array<SubscriptionPlan>(res.data[i])
               );
             } else {
-              subsPlan.set(subsPlanName, [...result, resp.data[i]]);
+              subsPlan.set(subsPlanName, [...result, res.data[i]]);
             }
           }
 
           setSubscriptionPlans(subsPlan);
         }
       } catch (error) {
+        const status = (error as AxiosError).response?.status;
+        if (
+          axiosRetry.isNetworkError(error as AxiosError) ||
+          (status || 0) >= 500
+        ) {
+          toast({
+            description: "Gagal menampilkan subscription plans.",
+            variant: "destructive",
+          });
+        }
+
         console.error(
           new Error("failed to get subscription plans", { cause: error })
         );
-
-        toast({
-          description: "Gagal menampilkan subscription plans",
-          variant: "destructive",
-        });
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [
-    toast,
-    createAxiosInstance,
-    user,
-    setSubscriptionPlans,
-    subscriptionPlans,
-  ]);
+  }, [toast, setSubscriptionPlans, subscriptionPlans, retryWithRefresh]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -1,12 +1,5 @@
 import { create } from "zustand";
 
-type IndonesiaTimeZone = "Asia/Jakarta" | "Asia/Makassar" | "Asia/Jayapura";
-const WIBTimeZone: IndonesiaTimeZone = "Asia/Jakarta";
-const WITATimeZone: IndonesiaTimeZone = "Asia/Makassar";
-const WITTimeZone: IndonesiaTimeZone = "Asia/Jayapura";
-
-type AccountType = "FREE" | "PREMIUM";
-
 interface User {
   id: string;
   email: string;
@@ -18,16 +11,24 @@ interface User {
   created_at: string;
 }
 
-type TransactionStatus = "UNPAID" | "PAID" | "FAILED" | "EXPIRED" | "REFUND";
+type PaymentStatus = "paid" | "expired" | "failed" | "refund";
 
-interface Transaction {
+interface ActiveInvoice {
   id: string;
-  status: TransactionStatus;
+  ref_id: string;
+  coupon_code: string;
+  total_amount: number;
   qr_url: string;
-  paid_at: string;
-  expired_at: string;
-  price: number;
-  duration_in_months: number;
+  expires_at: string;
+  created_at: string;
+}
+
+interface Payment {
+  id: string;
+  invoice_id: string;
+  amount_paid: number;
+  status: PaymentStatus;
+  created_at: string;
 }
 
 interface SubscriptionPlan {
@@ -35,6 +36,7 @@ interface SubscriptionPlan {
   name: string;
   price: number;
   duration_in_months: number;
+  created_at: string;
 }
 
 type SubscriptionPlanMap = Map<string, SubscriptionPlan[]>;
@@ -62,24 +64,34 @@ interface Prayer {
 // the third index is the number of on time salat
 type PrayerStatistic = Map<PrayerName, number[]>;
 
+interface ActiveSubscription {
+  id: string;
+  plan_id: string;
+  payment_id: string;
+  start_date: string;
+  end_date: string;
+}
+
 interface States {
   user: User | undefined;
-  transactions: Transaction[] | undefined;
+  payments: Payment[] | undefined;
   subscriptionPlans: SubscriptionPlanMap | undefined;
   toDoLists: ToDoList[] | undefined;
   prayers: Prayer[] | undefined;
   prayerStatistic: PrayerStatistic | undefined;
   subsDuration: string;
+  activeSubscription: ActiveSubscription | undefined;
+  activeInvoice: ActiveInvoice | undefined;
 }
 
 interface Actions {
   setUser: (
     user: ((user: User | undefined) => User | undefined) | User | undefined
   ) => void;
-  setTransactions: (
-    transactions:
-      | ((transactions: Transaction[] | undefined) => Transaction[] | undefined)
-      | Transaction[]
+  setPayments: (
+    payments:
+      | ((payments: Payment[] | undefined) => Payment[] | undefined)
+      | Payment[]
       | undefined
   ) => void;
   setSubscriptionPlans: (
@@ -111,16 +123,34 @@ interface Actions {
       | undefined
   ) => void;
   setSubsDuration: (prayerStatistic: string) => void;
+  setActiveSubscription: (
+    activeSubscription:
+      | ((
+          activeSubscription: ActiveSubscription | undefined
+        ) => ActiveSubscription | undefined)
+      | ActiveSubscription
+      | undefined
+  ) => void;
+  setActiveInvoice: (
+    activeInvoice:
+      | ((
+          activeInvoice: ActiveInvoice | undefined
+        ) => ActiveInvoice | undefined)
+      | ActiveInvoice
+      | undefined
+  ) => void;
 }
 
 const useStore = create<States & Actions>((set) => ({
   user: undefined,
-  transactions: undefined,
+  payments: undefined,
   subscriptionPlans: undefined,
   toDoLists: undefined,
   prayers: undefined,
   prayerStatistic: undefined,
   subsDuration: "",
+  activeSubscription: undefined,
+  activeInvoice: undefined,
   setUser: (user) => {
     set((state) => {
       if (typeof user === "function") {
@@ -129,12 +159,12 @@ const useStore = create<States & Actions>((set) => ({
       return { user };
     });
   },
-  setTransactions: (transactions) => {
+  setPayments: (payments) => {
     set((state) => {
-      if (typeof transactions === "function") {
-        return { transactions: transactions(state.transactions) };
+      if (typeof payments === "function") {
+        return { payments: payments(state.payments) };
       }
-      return { transactions };
+      return { payments };
     });
   },
   setSubscriptionPlans: (subscriptionPlans) => {
@@ -182,20 +212,39 @@ const useStore = create<States & Actions>((set) => ({
       return { subsDuration };
     });
   },
+  setActiveSubscription: (activeSubscription) => {
+    set((state) => {
+      if (typeof activeSubscription === "function") {
+        return {
+          activeSubscription: activeSubscription(state.activeSubscription),
+        };
+      }
+      return { activeSubscription };
+    });
+  },
+  setActiveInvoice: (activeInvoice) => {
+    set((state) => {
+      if (typeof activeInvoice === "function") {
+        return {
+          activeInvoice: activeInvoice(state.activeInvoice),
+        };
+      }
+      return { activeInvoice };
+    });
+  },
 }));
 
-export { useStore, WIBTimeZone, WITATimeZone, WITTimeZone };
+export { useStore };
 export type {
   User,
-  AccountType,
-  Transaction,
-  TransactionStatus,
+  PaymentStatus,
   SubscriptionPlan,
   SubscriptionPlanMap,
-  IndonesiaTimeZone,
   ToDoList,
   Prayer,
   PrayerStatus,
   PrayerStatistic,
   PrayerName,
+  ActiveSubscription,
+  ActiveInvoice,
 };

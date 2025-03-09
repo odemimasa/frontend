@@ -33,4 +33,17 @@ function capitalizeWord(word: string): string {
   return firstLetter.toUpperCase() + word.slice(1);
 }
 
-export { getCurrentDate, getPrayerTimes, capitalizeWord };
+function formatISODate(isoString: string, timezone: string) {
+  const date = new Date(isoString);
+
+  const formatter = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: timezone,
+  });
+
+  return formatter.format(date);
+}
+
+export { getCurrentDate, getPrayerTimes, capitalizeWord, formatISODate };
