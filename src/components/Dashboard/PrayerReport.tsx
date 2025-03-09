@@ -1,6 +1,5 @@
 import { Skeleton } from "@components/shadcn/Skeleton";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import {
   useStore,
   type Prayer,
@@ -8,6 +7,9 @@ import {
   type PrayerStatistic as PrayerStatisticType,
 } from "@hooks/useStore";
 import { getCurrentDate } from "@utils/index";
+import { retryWithRefresh } from "@utils/retry";
+import type { AxiosError } from "axios";
+import axiosRetry from "axios-retry";
 import { lazy, useEffect, useState } from "react";
 
 const PrayerLeaderboard = lazy(() =>
@@ -30,19 +32,19 @@ function createPrayerStatistic(
   prayers: Pick<Prayer, "id" | "name" | "status">[]
 ): PrayerStatisticType {
   const prayerStatistic = new Map<PrayerName, number[]>();
-  prayerStatistic.set("Subuh", [0, 0, 0]);
-  prayerStatistic.set("Zuhur", [0, 0, 0]);
-  prayerStatistic.set("Asar", [0, 0, 0]);
-  prayerStatistic.set("Magrib", [0, 0, 0]);
-  prayerStatistic.set("Isya", [0, 0, 0]);
+  prayerStatistic.set("subuh", [0, 0, 0]);
+  prayerStatistic.set("zuhur", [0, 0, 0]);
+  prayerStatistic.set("asar", [0, 0, 0]);
+  prayerStatistic.set("magrib", [0, 0, 0]);
+  prayerStatistic.set("isya", [0, 0, 0]);
 
   for (const prayer of prayers) {
     const statistic = prayerStatistic.get(prayer.name)!;
-    if (prayer.status === "ON_TIME") {
+    if (prayer.status === "on_time") {
       statistic[2]++;
-    } else if (prayer.status === "LATE") {
+    } else if (prayer.status === "late") {
       statistic[1]++;
-    } else if (prayer.status === "MISSED") {
+    } else if (prayer.status === "missed") {
       statistic[0]++;
     }
 
@@ -59,44 +61,43 @@ function PrayerReport() {
 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
 
   useEffect(() => {
     if (prayerStatistic !== undefined) return;
     setIsLoading(true);
-    const currentTime = getCurrentDate(user!.timeZone as string);
+    const currentTime = getCurrentDate(user!.timezone);
 
     (async () => {
       try {
-        // TODO: it can be improved so that it only query the completed prayers of this month
-        const resp = await createAxiosInstance().get<
+        const res = await retryWithRefresh.get<
           Pick<Prayer, "id" | "name" | "status">[]
         >(
-          `/prayers?year=${currentTime.getFullYear()}&month=${currentTime.getMonth() + 1}`,
-          { headers: { Authorization: `Bearer ${user!.idToken}` } }
+          `/prayers?year=${currentTime.getFullYear()}&month=${currentTime.getMonth() + 1}`
         );
 
-        if (resp.status === 200) {
-          setPrayerStatistic(createPrayerStatistic(resp.data));
-        } else if (resp.status === 400) {
-          throw new Error("invalid query params");
-        } else {
-          throw new Error(`unknown response status code ${resp.status}`);
+        if (res.status === 200) {
+          setPrayerStatistic(createPrayerStatistic(res.data));
         }
       } catch (error) {
+        const status = (error as AxiosError).response?.status;
+        if (
+          axiosRetry.isNetworkError(error as AxiosError) ||
+          (status || 0) >= 500
+        ) {
+          toast({
+            description: "Gagal menampilkan statistik ibadah salat.",
+            variant: "destructive",
+          });
+        }
+
         console.error(
           new Error("failed to get this month prayers", { cause: error })
         );
-
-        toast({
-          description: "Gagal menampilkan statistik ibadah salat.",
-          variant: "destructive",
-        });
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [prayerStatistic, setPrayerStatistic, user, toast, createAxiosInstance]);
+  }, [prayerStatistic, setPrayerStatistic, user, toast]);
 
   if (isLoading) {
     return (

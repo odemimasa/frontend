@@ -6,6 +6,8 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { NavigationBar } from "./NavigationBar";
 import { tokenStorage } from "@utils/token";
 import { retryWithRefresh } from "@utils/retry";
+import type { AxiosError } from "axios";
+import axiosRetry from "axios-retry";
 
 function RootLayout(): JSX.Element {
   const user = useStore((state) => state.user);
@@ -25,23 +27,25 @@ function RootLayout(): JSX.Element {
         if (accessToken === "" || refreshToken === "") {
           tokenStorage.removeAccessToken();
           tokenStorage.removeRefreshToken();
-          setUser(undefined);
         } else {
           const res = await retryWithRefresh.get<User>("/users/me");
           if (res.status === 200) {
             setUser(res.data);
-          } else if (res.status === 401) {
-            setUser(undefined);
-          } else {
-            throw new Error(`unhandled response status ${res.status}`);
           }
         }
       } catch (error) {
+        const status = (error as AxiosError).response?.status;
+        if (
+          axiosRetry.isNetworkError(error as AxiosError) ||
+          (status || 0) >= 500
+        ) {
+          toast({
+            description: "Gagal mendapatkan data pengguna.",
+            variant: "destructive",
+          });
+        }
+
         console.error(new Error("failed to get me", { cause: error }));
-        toast({
-          description: "Gagal mendapatkan data pengguna.",
-          variant: "destructive",
-        });
       } finally {
         setIsLoading(false);
       }

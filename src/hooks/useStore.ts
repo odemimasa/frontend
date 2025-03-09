@@ -46,14 +46,14 @@ interface ToDoList {
   checked: boolean;
 }
 
-type PrayerStatus = "ON_TIME" | "LATE" | "MISSED";
-type PrayerName = "Subuh" | "Zuhur" | "Asar" | "Magrib" | "Isya";
+type PrayerStatus = "pending" | "on_time" | "late" | "missed";
+type PrayerName = "subuh" | "zuhur" | "asar" | "magrib" | "isya";
 
 interface Prayer {
   id: string;
   name: PrayerName;
+  status: PrayerStatus;
   date: Date;
-  status: PrayerStatus | undefined;
 }
 
 // the value of the map will only have 3 length

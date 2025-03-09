@@ -9,7 +9,7 @@ function getLargestPrayerStatus(
   prayerStatuses: PrayerStatus[]
 ): PrayerName | undefined {
   const largestPrayerStatus: PrayerStatus = {
-    prayerName: "Subuh",
+    prayerName: "subuh",
     numOfStatus: 0,
   };
 
@@ -30,70 +30,70 @@ function PrayerLeaderboard() {
 
   const mostOnTimePrayer = getLargestPrayerStatus([
     {
-      prayerName: "Subuh",
-      numOfStatus: prayerStatistic!.get("Subuh")![2],
+      prayerName: "subuh",
+      numOfStatus: prayerStatistic!.get("subuh")![2],
     },
     {
-      prayerName: "Zuhur",
-      numOfStatus: prayerStatistic!.get("Zuhur")![2],
+      prayerName: "zuhur",
+      numOfStatus: prayerStatistic!.get("zuhur")![2],
     },
     {
-      prayerName: "Asar",
-      numOfStatus: prayerStatistic!.get("Asar")![2],
+      prayerName: "asar",
+      numOfStatus: prayerStatistic!.get("asar")![2],
     },
     {
-      prayerName: "Magrib",
-      numOfStatus: prayerStatistic!.get("Magrib")![2],
+      prayerName: "magrib",
+      numOfStatus: prayerStatistic!.get("magrib")![2],
     },
     {
-      prayerName: "Isya",
-      numOfStatus: prayerStatistic!.get("Isya")![2],
+      prayerName: "isya",
+      numOfStatus: prayerStatistic!.get("isya")![2],
     },
   ]);
 
   const mostLatePrayer = getLargestPrayerStatus([
     {
-      prayerName: "Subuh",
-      numOfStatus: prayerStatistic!.get("Subuh")![1],
+      prayerName: "subuh",
+      numOfStatus: prayerStatistic!.get("subuh")![1],
     },
     {
-      prayerName: "Zuhur",
-      numOfStatus: prayerStatistic!.get("Zuhur")![1],
+      prayerName: "zuhur",
+      numOfStatus: prayerStatistic!.get("zuhur")![1],
     },
     {
-      prayerName: "Asar",
-      numOfStatus: prayerStatistic!.get("Asar")![1],
+      prayerName: "asar",
+      numOfStatus: prayerStatistic!.get("asar")![1],
     },
     {
-      prayerName: "Magrib",
-      numOfStatus: prayerStatistic!.get("Magrib")![1],
+      prayerName: "magrib",
+      numOfStatus: prayerStatistic!.get("magrib")![1],
     },
     {
-      prayerName: "Isya",
-      numOfStatus: prayerStatistic!.get("Isya")![1],
+      prayerName: "isya",
+      numOfStatus: prayerStatistic!.get("isya")![1],
     },
   ]);
 
   const mostMissedPrayer = getLargestPrayerStatus([
     {
-      prayerName: "Subuh",
-      numOfStatus: prayerStatistic!.get("Subuh")![0],
+      prayerName: "subuh",
+      numOfStatus: prayerStatistic!.get("subuh")![0],
     },
     {
-      prayerName: "Zuhur",
-      numOfStatus: prayerStatistic!.get("Zuhur")![0],
+      prayerName: "zuhur",
+      numOfStatus: prayerStatistic!.get("zuhur")![0],
     },
     {
-      prayerName: "Asar",
-      numOfStatus: prayerStatistic!.get("Asar")![0],
+      prayerName: "asar",
+      numOfStatus: prayerStatistic!.get("asar")![0],
     },
     {
-      prayerName: "Magrib",
-      numOfStatus: prayerStatistic!.get("Magrib")![0],
+      prayerName: "magrib",
+      numOfStatus: prayerStatistic!.get("magrib")![0],
     },
     {
-      prayerName: "Isya",
-      numOfStatus: prayerStatistic!.get("Isya")![0],
+      prayerName: "isya",
+      numOfStatus: prayerStatistic!.get("isya")![0],
     },
   ]);
 
@@ -110,7 +110,7 @@ function PrayerLeaderboard() {
               2
             </div>
 
-            <span className="text-[#363636] text-sm">
+            <span className="text-[#363636] text-sm capitalize">
               {mostLatePrayer ?? "Kosong"}
             </span>
           </div>
@@ -122,7 +122,7 @@ function PrayerLeaderboard() {
               1
             </div>
 
-            <span className="text-[#363636] text-sm">
+            <span className="text-[#363636] text-sm capitalize">
               {mostOnTimePrayer ?? "Kosong"}
             </span>
           </div>
@@ -134,7 +134,7 @@ function PrayerLeaderboard() {
               3
             </div>
 
-            <span className="text-[#363636] text-sm">
+            <span className="text-[#363636] text-sm capitalize">
               {mostMissedPrayer ?? "Kosong"}
             </span>
           </div>
@@ -152,7 +152,7 @@ function PrayerLeaderboard() {
               Ibadah salat paling tepat waktu:
             </p>
 
-            <p className="text-[#7B7B7B] font-bold text-sm">
+            <p className="text-[#7B7B7B] font-bold text-sm capitalize">
               {mostOnTimePrayer ?? "Kosong"}
             </p>
           </div>
@@ -168,7 +168,7 @@ function PrayerLeaderboard() {
               Ibadah salat paling sering terlambat:
             </p>
 
-            <p className="text-[#7B7B7B] font-bold text-sm">
+            <p className="text-[#7B7B7B] font-bold text-sm capitalize">
               {mostLatePrayer ?? "Kosong"}
             </p>
           </div>
@@ -184,7 +184,7 @@ function PrayerLeaderboard() {
               Ibadah salat sering tidak terlaksana:
             </p>
 
-            <p className="text-[#7B7B7B] font-bold text-sm">
+            <p className="text-[#7B7B7B] font-bold text-sm capitalize">
               {mostMissedPrayer ?? "Kosong"}
             </p>
           </div>

@@ -28,4 +28,9 @@ function getPrayerTimes(
   return prayerTimes;
 }
 
-export { getCurrentDate, getPrayerTimes };
+function capitalizeWord(word: string): string {
+  const firstLetter = word[0];
+  return firstLetter.toUpperCase() + word.slice(1);
+}
+
+export { getCurrentDate, getPrayerTimes, capitalizeWord };

@@ -2,8 +2,10 @@ import { Skeleton } from "@components/shadcn/Skeleton";
 import { useStore, type Prayer } from "@hooks/useStore";
 import { lazy, useEffect, useMemo, useState } from "react";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { getCurrentDate, getPrayerTimes } from "@utils/index";
+import { retryWithRefresh } from "@utils/retry";
+import type { AxiosError } from "axios";
+import axiosRetry from "axios-retry";
 
 const PrayerItem = lazy(() =>
   import("@components/Dashboard/PrayerItem").then(({ PrayerItem }) => ({
@@ -22,10 +24,10 @@ function PrayerCompletionIndicator({
   currentDate,
 }: PrayerCompletionIndicatorProps) {
   const boxColor = useMemo((): string => {
-    if (currentDate.getTime() > date.getTime() && status !== undefined) {
-      if (status === "ON_TIME") {
+    if (currentDate.getTime() > date.getTime() && status !== "pending") {
+      if (status === "on_time") {
         return "bg-[#238471]";
-      } else if (status === "LATE") {
+      } else if (status === "late") {
         return "bg-[#F0AD4E]";
       } else {
         return "bg-[#D9534F]";
@@ -44,7 +46,6 @@ function PrayerList() {
   const setPrayers = useStore((state) => state.setPrayers);
 
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [sunriseDate, setSunriseDate] = useState(new Date());
@@ -54,48 +55,47 @@ function PrayerList() {
     if (prayers !== undefined) return;
     setIsLoading(true);
     const prayerTimes = getPrayerTimes(user!.latitude, user!.longitude);
-    const currentDate = getCurrentDate(user!.timeZone);
+    const currentDate = getCurrentDate(user!.timezone);
 
     (async () => {
       try {
-        const resp = await createAxiosInstance().get<
+        const res = await retryWithRefresh.get<
           Pick<Prayer, "id" | "name" | "status">[]
         >(
-          `/prayers?year=${currentDate.getFullYear()}&month=${currentDate.getMonth() + 1}&day=${currentDate.getDate()}`,
-          { headers: { Authorization: `Bearer ${user!.idToken}` } }
+          `/prayers?year=${currentDate.getFullYear()}&month=${currentDate.getMonth() + 1}&day=${currentDate.getDate()}`
         );
 
-        if (resp.status === 200) {
+        if (res.status === 200) {
           const prayers: Prayer[] = [
             {
               id: prayerTimes.fajr.toISOString(),
-              name: "Subuh",
+              name: "subuh",
               date: prayerTimes.fajr,
-              status: undefined,
+              status: "pending",
             },
             {
               id: prayerTimes.dhuhr.toISOString(),
-              name: "Zuhur",
+              name: "zuhur",
               date: prayerTimes.dhuhr,
-              status: undefined,
+              status: "pending",
             },
             {
               id: prayerTimes.asr.toISOString(),
-              name: "Asar",
+              name: "asar",
               date: prayerTimes.asr,
-              status: undefined,
+              status: "pending",
             },
             {
               id: prayerTimes.maghrib.toISOString(),
-              name: "Magrib",
+              name: "magrib",
               date: prayerTimes.maghrib,
-              status: undefined,
+              status: "pending",
             },
             {
               id: prayerTimes.isha.toISOString(),
-              name: "Isya",
+              name: "isya",
               date: prayerTimes.isha,
-              status: undefined,
+              status: "pending",
             },
           ];
 
@@ -104,7 +104,7 @@ function PrayerList() {
 
           setPrayers(() => {
             return prayers.map((item) => {
-              for (const prayer of resp.data) {
+              for (const prayer of res.data) {
                 if (prayer.name !== item.name) {
                   continue;
                 }
@@ -116,23 +116,25 @@ function PrayerList() {
               return item;
             });
           });
-        } else if (resp.status === 400) {
-          throw new Error("invalid query params");
-        } else {
-          throw new Error(`unknown response status code ${resp.status}`);
         }
       } catch (error) {
-        console.error(new Error("failed to get prayers", { cause: error }));
+        const status = (error as AxiosError).response?.status;
+        if (
+          axiosRetry.isNetworkError(error as AxiosError) ||
+          (status || 0) >= 500
+        ) {
+          toast({
+            description: "Gagal menampilkan daftar salat hari ini.",
+            variant: "destructive",
+          });
+        }
 
-        toast({
-          description: "Gagal menampilkan daftar ibadah salat.",
-          variant: "destructive",
-        });
+        console.error(new Error("failed to get prayers", { cause: error }));
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [user, setPrayers, toast, createAxiosInstance, prayers]);
+  }, [user, setPrayers, toast, prayers]);
 
   if (isLoading) {
     return (

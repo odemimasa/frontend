@@ -1,9 +1,11 @@
 import { Button } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { useStore, type Prayer, type PrayerStatus } from "@hooks/useStore";
 import { BoxIcon, CheckboxIcon } from "@radix-ui/react-icons";
-import { getCurrentDate, getPrayerTimes } from "@utils/index";
+import { capitalizeWord, getCurrentDate, getPrayerTimes } from "@utils/index";
+import { retryWithRefresh } from "@utils/retry";
+import type { AxiosError } from "axios";
+import axiosRetry from "axios-retry";
 import { useState } from "react";
 
 function formatTimeFromUnixMilliseconds(unixTimeMs: number) {
@@ -38,15 +40,14 @@ function PrayerItem({
 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
 
   const handleCheckPrayer = async () => {
     setIsLoading(true);
 
     let endTime = 0;
-    if (name === "Subuh") {
+    if (name === "subuh") {
       endTime = sunriseDate.getTime() / 1000;
-    } else if (name === "Isya") {
+    } else if (name === "isya") {
       const nextDate = new Date(date);
       nextDate.setDate(date.getDate() + 1);
 
@@ -65,34 +66,29 @@ function PrayerItem({
     const prayerTimeDifference = endTime - currentPrayerTime;
     const idealTime = prayerTimeDifference * 0.75;
 
-    const checkedDate = getCurrentDate(user!.timeZone);
+    const checkedDate = getCurrentDate(user!.timezone);
     const checkedTime = checkedDate.getTime() / 1000;
     const checkedTimeDifference = checkedTime - currentPrayerTime;
 
-    let status: PrayerStatus = "MISSED";
+    let status: PrayerStatus = "pending";
     if (checkedTime > endTime) {
-      status = "MISSED";
+      status = "missed";
     } else if (idealTime - checkedTimeDifference >= 0) {
-      status = "ON_TIME";
+      status = "on_time";
     } else if (idealTime - checkedTimeDifference < 0) {
-      status = "LATE";
+      status = "late";
     }
 
     try {
-      const resp = await createAxiosInstance().put(
+      const res = await retryWithRefresh.put(
         `/prayers/${id}`,
         { id, status },
-        {
-          headers: {
-            Authorization: `Bearer ${user!.idToken}`,
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      if (resp.status === 200) {
+      if (res.status === 200) {
         toast({
-          description: `Berhasil mencentang ibadah salat ${name}.`,
+          description: `Berhasil mencentang ibadah salat ${capitalizeWord(name)}.`,
           variant: "default",
         });
 
@@ -103,29 +99,35 @@ function PrayerItem({
         });
 
         setPrayerStatistic((prayerStatistic) => {
-          const statistic = prayerStatistic!.get(name)!;
-          if (status === "ON_TIME") {
-            statistic[2]++;
-          } else if (status === "LATE") {
-            statistic[1]++;
-          } else if (status === "MISSED") {
-            statistic[0]++;
+          if (prayerStatistic !== undefined) {
+            const statistic = prayerStatistic.get(name)!;
+            if (status === "on_time") {
+              statistic[2]++;
+            } else if (status === "late") {
+              statistic[1]++;
+            } else if (status === "missed") {
+              statistic[0]++;
+            }
+
+            prayerStatistic!.set(name, statistic);
           }
 
-          prayerStatistic!.set(name, statistic);
           return prayerStatistic;
         });
-      } else if (resp.status === 400) {
-        throw new Error("invalid request body");
-      } else {
-        throw new Error(`unknown response status code ${resp.status}`);
       }
     } catch (error) {
+      const status = (error as AxiosError).response?.status;
+      if (
+        axiosRetry.isNetworkError(error as AxiosError) ||
+        (status || 0) >= 500
+      ) {
+        toast({
+          description: `Gagal mencentang ibadah salat ${capitalizeWord(name)}.`,
+          variant: "destructive",
+        });
+      }
+
       console.error(new Error("failed to update prayer", { cause: error }));
-      toast({
-        description: `Gagal mencentang ibadah salat ${name}.`,
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }
@@ -134,7 +136,7 @@ function PrayerItem({
   return (
     <div className="break-words border border-[#E1E1E1] rounded-lg flex justify-between items-center p-3">
       <div className="flex flex-col gap-1">
-        <h4 className="text-[#363636] font-bold">Salat {name}</h4>
+        <h4 className="text-[#363636] font-bold capitalize">Salat {name}</h4>
         <time className="text-sm text-[#363636]/75">
           {formatTimeFromUnixMilliseconds(date.getTime())}
         </time>
@@ -144,14 +146,14 @@ function PrayerItem({
         disabled={
           isLoading ||
           currentDate.getTime() < date.getTime() ||
-          status !== undefined
+          status !== "pending"
         }
         onClick={handleCheckPrayer}
         type="button"
         variant="link"
         className="[&_svg]:size-6"
       >
-        {status !== undefined ? (
+        {status !== "pending" ? (
           <CheckboxIcon className="text-[#1F1F1F]" />
         ) : (
           <BoxIcon className="text-[#1F1F1F]" />
