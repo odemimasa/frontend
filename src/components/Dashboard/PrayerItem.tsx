@@ -3,10 +3,10 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { useStore, type Prayer, type PrayerStatus } from "@hooks/useStore";
 import { BoxIcon, CheckboxIcon } from "@radix-ui/react-icons";
 import { capitalizeWord, getCurrentDate, getPrayerTimes } from "@utils/index";
-import { retryWithRefresh } from "@utils/retry";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
 import { useState } from "react";
+import { useAuthContext } from "../../contexts/AuthProvider";
 
 function formatTimeFromUnixMilliseconds(unixTimeMs: number) {
   const date = new Date(unixTimeMs);
@@ -34,6 +34,7 @@ function PrayerItem({
   prayers,
   index,
 }: PrayerItemProps) {
+  const { retryWithRefresh } = useAuthContext();
   const user = useStore((state) => state.user);
   const setPrayers = useStore((state) => state.setPrayers);
   const setPrayerStatistic = useStore((state) => state.setPrayerStatistic);

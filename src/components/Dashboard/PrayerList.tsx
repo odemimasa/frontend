@@ -3,9 +3,9 @@ import { useStore, type Prayer } from "@hooks/useStore";
 import { lazy, useEffect, useMemo, useState } from "react";
 import { useToast } from "@hooks/shadcn/useToast";
 import { getCurrentDate, getPrayerTimes } from "@utils/index";
-import { retryWithRefresh } from "@utils/retry";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
+import { useAuthContext } from "../../contexts/AuthProvider";
 
 const PrayerItem = lazy(() =>
   import("@components/Dashboard/PrayerItem").then(({ PrayerItem }) => ({
@@ -41,6 +41,7 @@ function PrayerCompletionIndicator({
 }
 
 function PrayerList() {
+  const { retryWithRefresh } = useAuthContext();
   const user = useStore((state) => state.user);
   const prayers = useStore((state) => state.prayers);
   const setPrayers = useStore((state) => state.setPrayers);
@@ -134,7 +135,7 @@ function PrayerList() {
         setIsLoading(false);
       }
     })();
-  }, [user, setPrayers, toast, prayers]);
+  }, [user, setPrayers, toast, prayers, retryWithRefresh]);
 
   if (isLoading) {
     return (
