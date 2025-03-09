@@ -6,12 +6,12 @@ import { Button } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useAxios } from "@hooks/useAxios";
 import { useStore } from "@hooks/useStore";
-import { auth } from "@libs/firebase";
 import {
   ExclamationTriangleIcon,
   TrashIcon,
   UpdateIcon,
 } from "@radix-ui/react-icons";
+import { tokenStorage } from "@utils/token";
 import { lazy, useState } from "react";
 
 // const UpdateProfileDialog = lazy(() =>
@@ -75,13 +75,17 @@ export default function Profile() {
               latitude,
               longitude,
             },
-            { headers: { Authorization: `Bearer ${user!.idToken}` } }
+            {
+              headers: {
+                Authorization: `Bearer ${tokenStorage.getAccessToken()}`,
+              },
+            }
           );
 
           if (resp.status === 200) {
             setUser({
               ...user!,
-              timeZone: resp.data.time_zone,
+              timezone: resp.data.time_zone,
               city: resp.data.city,
               latitude,
               longitude,
@@ -270,7 +274,7 @@ export default function Profile() {
         </p>
 
         <Button
-          onClick={() => auth.signOut()}
+          onClick={() => console.log("LOGOUT")}
           type="button"
           variant="outline"
           className="text-[#2F3D4A] w-full"

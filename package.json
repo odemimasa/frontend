@@ -14,8 +14,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@firebase/app": "^0.10.16",
-    "@firebase/auth": "^1.8.1",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -29,6 +27,7 @@
     "@vercel/speed-insights": "^1.1.0",
     "adhan": "^4.4.3",
     "axios": "^1.7.7",
+    "axios-auth-refresh": "^3.3.6",
     "axios-retry": "^4.5.0",
     "chart.js": "^4.4.7",
     "class-variance-authority": "^0.7.0",

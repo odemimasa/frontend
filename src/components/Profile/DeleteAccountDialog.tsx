@@ -12,8 +12,8 @@ import { Button, buttonVariants } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useAxios } from "@hooks/useAxios";
 import { useStore } from "@hooks/useStore";
-import { auth } from "@libs/firebase";
 import { cn } from "@libs/shadcn";
+import { tokenStorage } from "@utils/token";
 
 interface DeleteAccountDialogProps {
   open: boolean;
@@ -31,7 +31,7 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
     setIsLoading(true);
     try {
       const resp = await createAxiosInstance().delete(`/users/${user?.id}`, {
-        headers: { Authorization: `Bearer ${user!.idToken}` },
+        headers: { Authorization: `Bearer ${tokenStorage.getAccessToken()}` },
       });
 
       if (resp.status === 200) {
@@ -43,7 +43,7 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
         });
 
         setTimeout(() => {
-          auth.signOut();
+          console.log("LOGOUT");
         }, 3000);
       } else {
         throw new Error("user not found");

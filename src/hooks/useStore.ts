@@ -8,17 +8,14 @@ const WITTimeZone: IndonesiaTimeZone = "Asia/Jayapura";
 type AccountType = "FREE" | "PREMIUM";
 
 interface User {
-  idToken: string;
   id: string;
-  name: string;
   email: string;
-  phoneNumber: string;
-  phoneVerified: boolean;
-  accountType: AccountType;
-  timeZone: string;
-  city: string;
+  name: string;
   latitude: number;
   longitude: number;
+  city: string;
+  timezone: string;
+  created_at: string;
 }
 
 type TransactionStatus = "UNPAID" | "PAID" | "FAILED" | "EXPIRED" | "REFUND";

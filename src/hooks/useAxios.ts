@@ -1,8 +1,6 @@
 import { useCallback } from "react";
 import axios, { AxiosError, type AxiosInstance } from "axios";
 import axiosRetry from "axios-retry";
-import { auth } from "@libs/firebase";
-import { onAuthStateChanged } from "@firebase/auth";
 import { useToast } from "./shadcn/useToast";
 
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -40,22 +38,7 @@ function useAxios() {
             }
           }
         },
-        onRetry: (retryCount, error, req) => {
-          if (
-            retryCount === 1 &&
-            error.response &&
-            error.response.status === 401
-          ) {
-            onAuthStateChanged(auth, async (user) => {
-              if (user !== null) {
-                req.headers = {
-                  ...req.headers,
-                  Authorization: `Bearer ${await user.getIdToken()}`,
-                };
-              }
-            });
-          }
-
+        onRetry: (retryCount, error) => {
           if (
             retryCount === 2 &&
             error.response &&
@@ -93,7 +76,7 @@ function useAxios() {
               });
 
               setTimeout(() => {
-                auth.signOut();
+                console.log("LOGOUT");
               }, 3000);
             } else if (error.response.status >= 500) {
               toast({
