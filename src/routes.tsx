@@ -7,7 +7,6 @@ import { AuthProvider } from "./contexts/AuthProvider";
 
 const Home = lazy(() => import("./pages/Home"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const ProfileCompletion = lazy(() => import("./pages/ProfileCompletion"));
 const Profile = lazy(() => import("./pages/Profile"));
 const ToDoList = lazy(() => import("./pages/ToDoList"));
 
@@ -47,15 +46,6 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<></>}>
             <Dashboard />
-          </Suspense>
-        ),
-      },
-
-      {
-        path: "profile-completion",
-        element: (
-          <Suspense fallback={<></>}>
-            <ProfileCompletion />
           </Suspense>
         ),
       },
