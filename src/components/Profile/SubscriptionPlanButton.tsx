@@ -29,6 +29,7 @@ function SubscriptionPlanButton({
   name,
   price,
   duration_in_months,
+  created_at,
   couponCode,
   setOpen,
 }: SubscriptionPlanButtonProps) {
@@ -62,7 +63,10 @@ function SubscriptionPlanButton({
       if (res.status === 201) {
         setOpen(false);
         setDialogOpened(false);
-        setActiveInvoice(res.data);
+        setActiveInvoice({
+          ...res.data,
+          plan: { id, name, price, duration_in_months, created_at },
+        });
 
         toast({
           description: `Berhasil membuat tagihan untuk berlangganan paket ${name}.`,

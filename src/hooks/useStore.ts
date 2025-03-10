@@ -15,6 +15,7 @@ type PaymentStatus = "paid" | "expired" | "failed" | "refund";
 
 interface ActiveInvoice {
   id: string;
+  plan: SubscriptionPlan;
   ref_id: string;
   coupon_code: string;
   total_amount: number;
@@ -247,4 +248,5 @@ export type {
   PrayerName,
   ActiveSubscription,
   ActiveInvoice,
+  Payment,
 };

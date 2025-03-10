@@ -1,12 +1,19 @@
+import { History } from "@components/Icons/History";
 import { Logout } from "@components/Icons/Logout";
 import { Mail } from "@components/Icons/Mail";
 import { PersonCircle } from "@components/Icons/PersonCircle";
 import { ShoppingBag } from "@components/Icons/ShoppingBag";
+import { ActiveInvoice } from "@components/Profile/ActiveInvoice";
 import { Subscription } from "@components/Profile/Subscription";
+import { TxHistory } from "@components/Profile/TxHistory";
 import { UserLocation } from "@components/Profile/UserLocation";
 import { Button } from "@components/shadcn/Button";
 import { useStore } from "@hooks/useStore";
-import { ExclamationTriangleIcon, TrashIcon } from "@radix-ui/react-icons";
+import {
+  ExclamationTriangleIcon,
+  FileTextIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
 import { lazy, useState } from "react";
 
 const DeleteAccountDialog = lazy(() =>
@@ -68,12 +75,19 @@ export default function Profile() {
 
       <Subscription />
 
-      {/* <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
+      <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
+        <FileTextIcon className="text-[#333333] w-5 h-5" />
+        <h2 className="text-[#7B7B7B] font-medium">Tagihan Saya</h2>
+      </div>
+
+      <ActiveInvoice />
+
+      <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
         <History className="fill-[#333333] w-5 h-5" />
         <h2 className="text-[#7B7B7B] font-medium">Riwayat Transaksi</h2>
-      </div> */}
+      </div>
 
-      {/* <TxHistory /> */}
+      <TxHistory />
 
       <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
         <Logout className="fill-[#333333] w-5 h-5" />

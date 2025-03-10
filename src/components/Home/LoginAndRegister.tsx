@@ -1,11 +1,12 @@
 import { Button } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useStore, type User } from "@hooks/useStore";
-import { retryWithoutRefresh } from "@utils/retry";
 import { tokenStorage } from "@utils/token";
 import { useCallback, useEffect, useState } from "react";
+import { useAuthContext } from "../../contexts/AuthProvider";
 
 function LoginAndRegister() {
+  const { retryWithoutRefresh } = useAuthContext();
   const [isRegisterView, setIsRegisterView] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

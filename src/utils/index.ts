@@ -46,4 +46,29 @@ function formatISODate(isoString: string, timezone: string) {
   return formatter.format(date);
 }
 
-export { getCurrentDate, getPrayerTimes, capitalizeWord, formatISODate };
+function formatISODateTime(isoString: string, timezone: string) {
+  const date = new Date(isoString);
+
+  const dateFormatter = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: timezone,
+  });
+
+  const timeFormatter = new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: timezone,
+  });
+
+  return `${dateFormatter.format(date)}, ${timeFormatter.format(date)}`;
+}
+
+export {
+  getCurrentDate,
+  getPrayerTimes,
+  capitalizeWord,
+  formatISODate,
+  formatISODateTime,
+};

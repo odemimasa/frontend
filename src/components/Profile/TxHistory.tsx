@@ -1,148 +1,100 @@
 import { Badge } from "@components/shadcn/Badge";
-import { Button } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
-import { useStore, type Transaction } from "@hooks/useStore";
-import { toZonedTime } from "date-fns-tz";
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useStore, type Payment } from "@hooks/useStore";
+import type { AxiosError } from "axios";
+import axiosRetry from "axios-retry";
+import { useEffect, useMemo, useState } from "react";
+import { useAuthContext } from "../../contexts/AuthProvider";
+import { formatISODate } from "@utils/index";
 
-function formatDate(isoString: string) {
-  const date = new Date(isoString);
-  const formattedDate = date.toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  return formattedDate;
-}
-
-interface TxHistoryItemProps extends Omit<Transaction, "id"> {
+interface TxHistoryItemProps
+  extends Pick<Payment, "status" | "amount_paid" | "created_at"> {
   index: number;
   txLength: number;
 }
 
 function TxHistoryItem({
   status,
-  duration_in_months,
-  paid_at,
-  expired_at,
-  price,
-  qr_url,
+  amount_paid,
+  created_at,
   index,
   txLength,
 }: TxHistoryItemProps) {
   const user = useStore((state) => state.user);
-  const setSubsDuration = useStore((state) => state.setSubsDuration);
 
-  const secondsInMonth = 60 * 60 * 24 * 30;
-  const totalDurationInMs = secondsInMonth * duration_in_months * 1000;
-
-  const currentTime = new Date();
-  const subsDurationTime = new Date(
-    new Date(status === "PAID" ? paid_at : expired_at).getTime() +
-      totalDurationInMs
-  );
-
-  const subsDurationISOString = formatDate(
-    toZonedTime(subsDurationTime, user!.timeZone!).toISOString()
-  );
-
-  if (
-    Math.round(subsDurationTime.getTime() / 1000) >
-    Math.round(currentTime.getTime() / 1000)
-  ) {
-    setSubsDuration(subsDurationISOString);
-  }
+  const statusColor = useMemo((): string => {
+    switch (status) {
+      case "paid":
+        return "border-[#67ACE8] text-[#67ACE8]";
+      case "expired":
+        return "border-[#7B7B7B] text-[#7B7B7B]";
+      case "failed":
+        return "border-[#D9534F] text-[#D9534F]";
+      case "refund":
+        return "border-[#7866AE] text-[#7866AE]";
+    }
+  }, [status]);
 
   return (
     <div
       className={`${index === txLength - 1 ? "mb-0" : "mb-4"} border border-[#C2C2C2] rounded-2xl p-6 mx-6`}
     >
-      <div className="flex items-center gap-3">
-        <Badge className="bg-[#BF8E50] hover:bg-[#BF8E50] text-white">
-          Premium
-        </Badge>
+      <Badge
+        variant="outline"
+        className={`${statusColor} capitalize py-1 px-2`}
+      >
+        {status}
+      </Badge>
 
-        <Badge
-          variant="outline"
-          className={`${status === "PAID" ? "border-[#67ACE8] text-[#67ACE8]" : "border-[#E89895] text-[#E89895]"}`}
-        >
-          {status === "PAID" ? "Paid" : "Unpaid"}
-        </Badge>
-      </div>
-
-      <p className="text-[#7B7B7B] font-medium text-sm my-4">
-        Berlaku hingga:&nbsp;
-        {status === "PAID"
-          ? subsDurationISOString
-          : formatDate(toZonedTime(expired_at, user!.timeZone!).toISOString())}
+      <p className="text-[#363636] font-bold my-4">
+        Rp{Intl.NumberFormat("id-ID").format(amount_paid)}
       </p>
 
-      <div className="flex justify-between items-center">
-        <p className="text-[#363636] font-bold">
-          Rp{Intl.NumberFormat("id-ID").format(price)}
-        </p>
-
-        {status === "PAID" ? (
-          <></>
-        ) : (
-          <Button
-            asChild
-            className="text-white hover:text-white bg-[#BF8E50] hover:bg-[#BF8E50]/90 w-24"
-          >
-            <Link to={qr_url} target="_blank" rel="noopener">
-              Bayar
-            </Link>
-          </Button>
-        )}
-      </div>
+      <p className="text-[#7B7B7B] font-medium text-sm flex justify-between items-center">
+        <span>Dibayar pada:</span>
+        <span>{formatISODate(created_at, user!.timezone)}</span>
+      </p>
     </div>
   );
 }
 
 function TxHistory() {
   const user = useStore((state) => state.user);
-  const transactions = useStore((state) => state.transactions);
-  const setTransactions = useStore((state) => state.setTransactions);
-  const [isLoading, setIsLoading] = useState(false);
+  const payments = useStore((state) => state.payments);
+  const setPayments = useStore((state) => state.setPayments);
 
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
+  const { retryWithRefresh } = useAuthContext();
 
   useEffect(() => {
-    if (transactions !== undefined) return;
+    if (payments !== undefined) return;
     setIsLoading(true);
 
     (async () => {
       try {
-        const resp = await createAxiosInstance().get<Transaction[]>(
-          "/transactions",
-          { headers: { Authorization: `Bearer ${user!.idToken}` } }
-        );
-
-        if (resp.status === 200) {
-          setTransactions(resp.data);
-        } else {
-          throw new Error(`unknown response status code ${resp.status}`);
+        const res = await retryWithRefresh.get<Payment[]>("/payments");
+        if (res.status === 200) {
+          setPayments(res.data);
         }
       } catch (error) {
-        console.error(
-          new Error("failed to get transactions", { cause: error })
-        );
+        const status = (error as AxiosError).response?.status;
+        if (
+          axiosRetry.isNetworkError(error as AxiosError) ||
+          (status || 0) >= 500
+        ) {
+          toast({
+            description: "Gagal menampilkan daftar riwayat transaksi.",
+            variant: "destructive",
+          });
+        }
 
-        toast({
-          description: "Gagal menampilkan daftar riwayat transaksi",
-          variant: "destructive",
-        });
+        console.error(new Error("failed to get payments", { cause: error }));
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [transactions, user, toast, createAxiosInstance, setTransactions]);
+  }, [payments, user, toast, retryWithRefresh, setPayments]);
 
   if (isLoading) {
     return (
@@ -152,7 +104,7 @@ function TxHistory() {
     );
   }
 
-  if (transactions === undefined || transactions.length === 0) {
+  if (payments === undefined || payments.length === 0) {
     return (
       <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6">
         Belum ada transaksi
@@ -160,17 +112,14 @@ function TxHistory() {
     );
   }
 
-  return transactions.map((item, index) => (
+  return payments.map((item, index) => (
     <TxHistoryItem
       key={item.id}
-      duration_in_months={item.duration_in_months}
-      expired_at={item.expired_at}
+      amount_paid={item.amount_paid}
+      created_at={item.created_at}
       index={index}
-      paid_at={item.paid_at}
-      price={item.price}
-      qr_url={item.qr_url}
       status={item.status}
-      txLength={transactions.length}
+      txLength={payments.length}
     />
   ));
 }

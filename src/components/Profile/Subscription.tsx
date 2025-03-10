@@ -63,7 +63,11 @@ function Subscription() {
   }, [activeSubscription, setActiveSubscription, retryWithRefresh, toast]);
 
   if (isLoading) {
-    return <></>;
+    return (
+      <p className="text-[#7B7B7B] text-center font-bold italic border border-[#C2C2C2] rounded-2xl p-6 mx-6">
+        Loading...
+      </p>
+    );
   }
 
   if (activeSubscription === undefined) {
