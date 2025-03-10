@@ -1,16 +1,15 @@
 import { useStore } from "@hooks/useStore";
 import { NavLink } from "react-router";
 import { Chart } from "./Icons/Chart";
-import { CheckList } from "./Icons/CheckList";
 import { PersonCircle } from "./Icons/PersonCircle";
 
 function NavigationBar() {
-  const user = useStore((state) => state.user);
+  const activeSubscription = useStore((state) => state.activeSubscription);
 
   return (
-    <nav className="bg-white border border-[#E1E1E1] fixed bottom-0 w-full max-w-sm px-6">
+    <nav className="bg-white border border-[#E1E1E1] fixed z-20 bottom-0 w-full max-w-sm px-6">
       <ul
-        className={`${user?.accountType === "PREMIUM" ? "justify-between" : "justify-evenly"} flex items-center py-2`}
+        className={`${activeSubscription !== undefined ? "justify-between" : "justify-evenly"} flex items-center py-2`}
       >
         <li>
           <NavLink
@@ -24,7 +23,7 @@ function NavigationBar() {
           </NavLink>
         </li>
 
-        {user?.accountType === "PREMIUM" ? (
+        {/* {activeSubscription !== undefined ? (
           <li>
             <NavLink
               to="/to-do-list"
@@ -38,7 +37,7 @@ function NavigationBar() {
           </li>
         ) : (
           <></>
-        )}
+        )} */}
 
         <li>
           <NavLink
