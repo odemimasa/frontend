@@ -20,6 +20,7 @@ const PricingListDialog = lazy(() =>
 function Subscription() {
   const user = useStore((state) => state.user);
   const activeSubscription = useStore((state) => state.activeSubscription);
+  const activeInvoice = useStore((state) => state.activeInvoice);
   const setActiveSubscription = useStore(
     (state) => state.setActiveSubscription
   );
@@ -82,6 +83,7 @@ function Subscription() {
         </p>
 
         <Button
+          disabled={activeInvoice !== undefined}
           onClick={() => setPricingListOpened(true)}
           type="button"
           variant="outline"
