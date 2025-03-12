@@ -1,7 +1,6 @@
 import { Article } from "@components/Home/Article";
 import { Footer } from "@components/Home/Footer";
 import { LoginAndRegister } from "@components/Home/LoginAndRegister";
-import { PricingPlan } from "@components/Home/PricingPlan";
 import { Surah } from "@components/Home/Surah";
 import { VisiMisi } from "@components/Home/VisiMisi";
 
@@ -17,7 +16,6 @@ export default function Home(): JSX.Element {
       </div>
 
       <VisiMisi />
-      <PricingPlan />
       <Surah />
       <Article />
       <LoginAndRegister />
