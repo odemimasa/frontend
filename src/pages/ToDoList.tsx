@@ -1,10 +1,12 @@
 import { Button } from "@components/shadcn/Button";
 import { Skeleton } from "@components/shadcn/Skeleton";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { useStore, type ToDoList } from "@hooks/useStore";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { lazy, useEffect, useState } from "react";
+import { useAuthContext } from "../contexts/AuthProvider";
+import axiosRetry from "axios-retry";
+import type { AxiosError } from "axios";
 
 const CreateToDoListDialog = lazy(() =>
   import("@components/ToDoList/CreateToDoListDialog").then(
@@ -21,41 +23,42 @@ const ToDoListItem = lazy(() =>
 );
 
 export default function ToDoList() {
-  const user = useStore((state) => state.user);
-  const toDoLists = useStore((state) => state.toDoLists);
-  const setToDoLists = useStore((state) => state.setToDoLists);
-
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const toDoLists = useStore((state) => state.toDoLists);
+  const setToDoLists = useStore((state) => state.setToDoLists);
+
+  const { retryWithRefresh } = useAuthContext();
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
 
   useEffect(() => {
     if (toDoLists !== undefined) return;
     (async () => {
       setIsLoading(true);
       try {
-        const resp = await createAxiosInstance().get<ToDoList[]>("/tasks", {
-          headers: { Authorization: `Bearer ${user!.idToken}` },
-        });
-
-        if (resp.status === 200) {
-          setToDoLists(resp.data);
-        } else {
-          throw new Error(`unknown response status code ${resp.status}`);
+        const res = await retryWithRefresh.get<ToDoList[]>("/tasks");
+        if (res.status === 200) {
+          setToDoLists(res.data);
         }
       } catch (error) {
+        const status = (error as AxiosError).response?.status;
+        if (
+          axiosRetry.isNetworkError(error as AxiosError) ||
+          (status || 0) >= 500
+        ) {
+          toast({
+            description: "Gagal menampilkan daftar ibadah.",
+            variant: "destructive",
+          });
+        }
+
         console.error(new Error("failed to get to-do lists", { cause: error }));
-        toast({
-          description: "Gagal menampilkan daftar ibadah.",
-          variant: "destructive",
-        });
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [setToDoLists, createAxiosInstance, toast, user, toDoLists]);
+  }, [setToDoLists, retryWithRefresh, toast, toDoLists]);
 
   if (isLoading) {
     return (

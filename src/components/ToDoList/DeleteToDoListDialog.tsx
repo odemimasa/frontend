@@ -9,10 +9,12 @@ import {
 } from "@components/shadcn/AlertDialog";
 import { Button, buttonVariants } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { useStore } from "@hooks/useStore";
 import { cn } from "@libs/shadcn";
 import { useState, type Dispatch, type SetStateAction } from "react";
+import { useAuthContext } from "../../contexts/AuthProvider";
+import axiosRetry from "axios-retry";
+import type { AxiosError } from "axios";
 
 interface DeleteToDoListDialogProps {
   id: string;
@@ -27,21 +29,16 @@ function DeleteToDoListDialog({
   open,
   setOpen,
 }: DeleteToDoListDialogProps) {
-  const user = useStore((state) => state.user);
-  const setToDoLists = useStore((state) => state.setToDoLists);
-
   const [isLoading, setIsLoading] = useState(false);
+  const setToDoLists = useStore((state) => state.setToDoLists);
+  const { retryWithRefresh } = useAuthContext();
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
 
   const handleDeleteTask = async () => {
     setIsLoading(true);
     try {
-      const resp = await createAxiosInstance().delete(`/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${user!.idToken}` },
-      });
-
-      if (resp.status === 200) {
+      const res = await retryWithRefresh.delete(`/tasks/${id}`);
+      if (res.status === 200) {
         toast({
           description: "Berhasil menghapus ibadah.",
           variant: "default",
@@ -53,15 +50,20 @@ function DeleteToDoListDialog({
           return toDoLists;
         });
         setOpen(false);
-      } else {
-        throw new Error(`unknown response status code ${resp.status}`);
       }
     } catch (error) {
+      const status = (error as AxiosError).response?.status;
+      if (
+        axiosRetry.isNetworkError(error as AxiosError) ||
+        (status || 0) >= 500
+      ) {
+        toast({
+          description: "Gagal menghapus ibadah.",
+          variant: "destructive",
+        });
+      }
+
       console.error(new Error("failed to delete to-do list", { cause: error }));
-      toast({
-        description: "Gagal menghapus ibadah.",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }

@@ -19,9 +19,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStore } from "@hooks/useStore";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { Button } from "@components/shadcn/Button";
 import { Textarea } from "@components/shadcn/Textarea";
+import { useAuthContext } from "../../contexts/AuthProvider";
+import axiosRetry from "axios-retry";
+import type { AxiosError } from "axios";
 
 interface UpdateToDoListDialogProps {
   id: string;
@@ -45,12 +47,10 @@ function UpdateToDoListDialog({
   open,
   setOpen,
 }: UpdateToDoListDialogProps) {
-  const user = useStore((state) => state.user);
-  const setToDoLists = useStore((state) => state.setToDoLists);
-
   const [isLoading, setIsLoading] = useState(false);
+  const setToDoLists = useStore((state) => state.setToDoLists);
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
+  const { retryWithRefresh } = useAuthContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,18 +60,17 @@ function UpdateToDoListDialog({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const resp = await createAxiosInstance().put(
+      const res = await retryWithRefresh.put(
         `/tasks/${id}`,
-        { name: values.name, description: values.description, checked },
         {
-          headers: {
-            Authorization: `Bearer ${user!.idToken}`,
-            "Content-Type": "application/json",
-          },
-        }
+          name: values.name,
+          description: values.description,
+          checked,
+        },
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      if (resp.status === 200) {
+      if (res.status === 200) {
         toast({
           description: "Berhasil mengubah ibadah.",
           variant: "default",
@@ -84,17 +83,20 @@ function UpdateToDoListDialog({
           return toDoLists;
         });
         setOpen(false);
-      } else if (resp.status === 400) {
-        throw new Error("invalid request body");
-      } else {
-        throw new Error(`unknown response status code ${resp.status}`);
       }
     } catch (error) {
+      const status = (error as AxiosError).response?.status;
+      if (
+        axiosRetry.isNetworkError(error as AxiosError) ||
+        (status || 0) >= 500
+      ) {
+        toast({
+          description: "Gagal mengubah ibadah.",
+          variant: "destructive",
+        });
+      }
+
       console.error(new Error("failed to update to-do list", { cause: error }));
-      toast({
-        description: "Gagal mengubah ibadah.",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }

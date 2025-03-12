@@ -2,6 +2,7 @@ import { useStore } from "@hooks/useStore";
 import { NavLink } from "react-router";
 import { Chart } from "./Icons/Chart";
 import { PersonCircle } from "./Icons/PersonCircle";
+import { CheckList } from "./Icons/CheckList";
 
 function NavigationBar() {
   const activeSubscription = useStore((state) => state.activeSubscription);
@@ -23,7 +24,7 @@ function NavigationBar() {
           </NavLink>
         </li>
 
-        {/* {activeSubscription !== undefined ? (
+        {activeSubscription !== undefined ? (
           <li>
             <NavLink
               to="/to-do-list"
@@ -37,7 +38,7 @@ function NavigationBar() {
           </li>
         ) : (
           <></>
-        )} */}
+        )}
 
         <li>
           <NavLink

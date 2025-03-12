@@ -1,6 +1,5 @@
 import { Button } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { useStore, type ToDoList } from "@hooks/useStore";
 import {
   BoxIcon,
@@ -9,6 +8,9 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import { lazy, useState } from "react";
+import { useAuthContext } from "../../contexts/AuthProvider";
+import axiosRetry from "axios-retry";
+import type { AxiosError } from "axios";
 
 const UpdateToDoListDialog = lazy(() =>
   import("@components/ToDoList/UpdateToDoListDialog").then(
@@ -27,35 +29,28 @@ const DeleteToDoListDialog = lazy(() =>
 );
 
 function ToDoListItem({ id, name, description, checked }: ToDoList) {
-  const user = useStore((state) => state.user);
-  const setToDoLists = useStore((state) => state.setToDoLists);
-
   const [isLoading, setIsLoading] = useState(false);
   const [updateDialogOpened, setUpdateDialogOpened] = useState(false);
   const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
 
+  const setToDoLists = useStore((state) => state.setToDoLists);
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
+  const { retryWithRefresh } = useAuthContext();
 
   const handleToggleToDoList = async () => {
     setIsLoading(true);
     try {
-      const resp = await createAxiosInstance().put(
+      const res = await retryWithRefresh.put(
         `/tasks/${id}`,
         {
           name: name,
           description: description,
           checked: checked ? false : true,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${user!.idToken}`,
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      if (resp.status === 200) {
+      if (res.status === 200) {
         toast({
           description: checked
             ? "Berhasil tidak mencentang ibadah."
@@ -68,19 +63,22 @@ function ToDoListItem({ id, name, description, checked }: ToDoList) {
           toDoLists![idx].checked = checked ? false : true;
           return toDoLists;
         });
-      } else if (resp.status === 400) {
-        throw new Error("invalid request body");
-      } else {
-        throw new Error(`unknown response status code ${resp.status}`);
       }
     } catch (error) {
+      const status = (error as AxiosError).response?.status;
+      if (
+        axiosRetry.isNetworkError(error as AxiosError) ||
+        (status || 0) >= 500
+      ) {
+        toast({
+          description: checked
+            ? "Gagal tidak mencentang ibadah."
+            : "Gagal mencentang ibadah.",
+          variant: "destructive",
+        });
+      }
+
       console.error(new Error("failed to update to-do list", { cause: error }));
-      toast({
-        description: checked
-          ? "Gagal tidak mencentang ibadah."
-          : "Gagal mencentang ibadah.",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }

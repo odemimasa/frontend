@@ -19,9 +19,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStore, type ToDoList } from "@hooks/useStore";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useAxios } from "@hooks/useAxios";
 import { Button } from "@components/shadcn/Button";
 import { Textarea } from "@components/shadcn/Textarea";
+import { useAuthContext } from "../../contexts/AuthProvider";
+import axiosRetry from "axios-retry";
+import type { AxiosError } from "axios";
 
 interface CreateToDoListDialogProps {
   open: boolean;
@@ -34,12 +36,10 @@ const formSchema = z.object({
 });
 
 function CreateToDoListDialog({ open, setOpen }: CreateToDoListDialogProps) {
-  const user = useStore((state) => state.user);
-  const setToDoLists = useStore((state) => state.setToDoLists);
-
   const [isLoading, setIsLoading] = useState(false);
+  const setToDoLists = useStore((state) => state.setToDoLists);
   const { toast } = useToast();
-  const createAxiosInstance = useAxios();
+  const { retryWithRefresh } = useAuthContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,18 +49,16 @@ function CreateToDoListDialog({ open, setOpen }: CreateToDoListDialogProps) {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const resp = await createAxiosInstance().post<ToDoList>(
+      const res = await retryWithRefresh.post<ToDoList>(
         "/tasks",
-        { name: values.name, description: values.description },
         {
-          headers: {
-            Authorization: `Bearer ${user!.idToken}`,
-            "Content-Type": "application/json",
-          },
-        }
+          name: values.name,
+          description: values.description,
+        },
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      if (resp.status === 201) {
+      if (res.status === 201) {
         toast({
           description: "Berhasil membuat ibadah.",
           variant: "default",
@@ -68,23 +66,26 @@ function CreateToDoListDialog({ open, setOpen }: CreateToDoListDialogProps) {
 
         setToDoLists((toDoLists) => {
           if (toDoLists === undefined) {
-            return new Array<ToDoList>(resp.data);
+            return new Array<ToDoList>(res.data);
           } else {
-            return [...toDoLists, resp.data];
+            return [...toDoLists, res.data];
           }
         });
         setOpen(false);
-      } else if (resp.status === 400) {
-        throw new Error("invalid request body");
-      } else {
-        throw new Error(`unknown response status code ${resp.status}`);
       }
     } catch (error) {
+      const status = (error as AxiosError).response?.status;
+      if (
+        axiosRetry.isNetworkError(error as AxiosError) ||
+        (status || 0) >= 500
+      ) {
+        toast({
+          description: "Gagal membuat ibadah.",
+          variant: "destructive",
+        });
+      }
+
       console.error(new Error("failed to create to-do list", { cause: error }));
-      toast({
-        description: "Gagal membuat ibadah.",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }
