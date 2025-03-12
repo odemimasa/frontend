@@ -26,6 +26,7 @@ interface SubscriptionPlanButtonProps extends SubscriptionPlan {
 
 function SubscriptionPlanButton({
   id,
+  type,
   name,
   price,
   duration_in_months,
@@ -52,6 +53,7 @@ function SubscriptionPlanButton({
           customer_email: user?.email,
           plan: {
             id,
+            type,
             name,
             price,
             duration_in_months,
@@ -65,7 +67,7 @@ function SubscriptionPlanButton({
         setDialogOpened(false);
         setActiveInvoice({
           ...res.data,
-          plan: { id, name, price, duration_in_months, created_at },
+          plan: { id, type, name, price, duration_in_months, created_at },
         });
 
         toast({
@@ -101,7 +103,7 @@ function SubscriptionPlanButton({
         className="bg-[#BF8E50] rounded-lg py-2"
       >
         <span className="text-[#363636] block font-bold text-center">
-          Pilih Paket
+          {name}
         </span>
 
         <span className="text-white flex justify-center items-center gap-0.5">

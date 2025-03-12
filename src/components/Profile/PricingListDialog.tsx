@@ -38,16 +38,16 @@ function PricingListDialog({ open, setOpen }: PricingListDialogProps) {
         if (res.status === 200 && res.data.length !== 0) {
           const subsPlan = new Map<string, SubscriptionPlan[]>();
           for (let i = 0; i < res.data.length; i++) {
-            const subsPlanName = res.data[i].name;
-            const result = subsPlan.get(subsPlanName);
+            const subsPlanType = res.data[i].type;
+            const result = subsPlan.get(subsPlanType);
 
             if (result === undefined) {
               subsPlan.set(
-                subsPlanName,
+                subsPlanType,
                 new Array<SubscriptionPlan>(res.data[i])
               );
             } else {
-              subsPlan.set(subsPlanName, [...result, res.data[i]]);
+              subsPlan.set(subsPlanType, [...result, res.data[i]]);
             }
           }
 

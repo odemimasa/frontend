@@ -40,7 +40,7 @@ function SubscriptionPlans({
         key={key}
         className="border border-[#BF8E50] rounded-2xl overflow-hidden pb-6 mt-6"
       >
-        <h3 className="bg-[#BF8E50] text-white font-bold text-center text-xl py-3 mb-6">
+        <h3 className="bg-[#BF8E50] text-white font-bold text-center text-xl py-3 mb-6 capitalize">
           {key}
         </h3>
 
@@ -50,6 +50,7 @@ function SubscriptionPlans({
               <SubscriptionPlanButton
                 key={item.id}
                 id={item.id}
+                type={item.type}
                 name={item.name}
                 price={item.price}
                 duration_in_months={item.duration_in_months}

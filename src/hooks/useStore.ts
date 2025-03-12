@@ -34,6 +34,7 @@ interface Payment {
 
 interface SubscriptionPlan {
   id: string;
+  type: "premium";
   name: string;
   price: number;
   duration_in_months: number;
