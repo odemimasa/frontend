@@ -64,17 +64,17 @@ function SubscriptionPlans({
         <hr className="border-[#C2C2C2] my-7" />
 
         <ul className="flex flex-col gap-4 mx-6">
-          <li className="text-[#363636] text-sm flex items-center gap-3">
+          <li className="text-[#363636] text-sm flex items-center gap-3 line-through">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" /> Pengingat
-            salat 5 waktu melalui WhatsApp
+            salat 5 waktu melalui WhatsApp (Coming Soon)
           </li>
-          <li className="text-[#363636] text-sm flex items-center gap-3">
+          <li className="text-[#363636] text-sm flex items-center gap-3 line-through">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" /> Notifikasi
-            saat masuk waktu salat
+            saat masuk waktu salat (Coming Soon)
           </li>
-          <li className="text-[#363636] text-sm flex items-center gap-3">
+          <li className="text-[#363636] text-sm flex items-center gap-3 line-through">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" />
-            Notifikasi saat waktu salat tersisa 25%
+            Notifikasi saat waktu salat tersisa 25% (Coming Soon)
           </li>
           <li className="text-[#363636] text-sm flex items-center gap-3">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" />
@@ -83,6 +83,10 @@ function SubscriptionPlans({
           <li className="text-[#363636] text-sm flex items-center gap-3">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" /> Laporan
             kemajuan ibadah tak terbatas
+          </li>
+          <li className="text-[#363636] text-sm flex items-center gap-3">
+            <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" /> Grafik
+            salat 5 waktu
           </li>
         </ul>
       </div>
