@@ -16,6 +16,7 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/AuthProvider";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useStore, type User } from "@hooks/useStore";
+import { tokenStorage } from "@utils/token";
 
 const formSchema = z.object({
   username: z.string().min(2, { message: "Harus memiliki minimal 2 karakter" }),
@@ -58,6 +59,9 @@ function RegisterForm() {
           description: "Registrasi berhasil.",
           variant: "default",
         });
+
+        tokenStorage.setAccessToken(res.data.access_token);
+        tokenStorage.setRefreshToken(res.data.refresh_token);
         setUser(res.data.user);
       } else if (res.status === 409) {
         toast({

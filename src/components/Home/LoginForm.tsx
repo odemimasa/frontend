@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuthContext } from "../../contexts/AuthProvider";
+import { tokenStorage } from "@utils/token";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email invalid" }),
@@ -55,6 +56,9 @@ function LoginForm() {
           description: "Login berhasil.",
           variant: "default",
         });
+
+        tokenStorage.setAccessToken(res.data.access_token);
+        tokenStorage.setRefreshToken(res.data.refresh_token);
         setUser(res.data.user);
       } else if (res.status === 404) {
         toast({

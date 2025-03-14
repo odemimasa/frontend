@@ -102,7 +102,7 @@ function SubscriptionPlanButton({
         type="button"
         className="bg-[#BF8E50] rounded-lg py-2"
       >
-        <span className="text-[#363636] block font-bold text-center">
+        <span className="text-[#363636] block font-bold text-center mx-6 mb-2">
           {name}
         </span>
 

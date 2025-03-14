@@ -32,7 +32,7 @@ function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
     setIsLoading(true);
     try {
       const res = await retryWithRefresh.delete(`/users/${user?.id}`);
-      if (res.status === 200) {
+      if (res.status === 204) {
         setOpen(false);
         toast({
           description:

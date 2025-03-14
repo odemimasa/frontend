@@ -34,16 +34,19 @@ function UserLocation() {
 
         try {
           const res = await retryWithRefresh.put<{
-            time_zone: string;
+            timezone: string;
             city: string;
-          }>(`/users/${user?.id}`, { latitude, longitude });
+          }>(`/users/${user?.id}`, {
+            latitude: latitude.toString(),
+            longitude: longitude.toString(),
+          });
 
           if (res.status === 200) {
             setPrayers(undefined);
 
             setUser({
               ...user!,
-              timezone: res.data.time_zone,
+              timezone: res.data.timezone,
               city: res.data.city,
               latitude,
               longitude,
