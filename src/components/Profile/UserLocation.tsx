@@ -36,7 +36,7 @@ function UserLocation() {
           const res = await retryWithRefresh.put<{
             time_zone: string;
             city: string;
-          }>(`/users/${user?.id}/coordinates`, { latitude, longitude });
+          }>(`/users/${user?.id}`, { latitude, longitude });
 
           if (res.status === 200) {
             setPrayers(undefined);
