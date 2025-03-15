@@ -36,7 +36,7 @@ function UserLocation() {
           const res = await retryWithRefresh.put<{
             timezone: string;
             city: string;
-          }>(`/users/${user?.id}`, {
+          }>(`/users/me`, {
             latitude: latitude.toString(),
             longitude: longitude.toString(),
           });

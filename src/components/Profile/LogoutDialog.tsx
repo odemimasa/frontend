@@ -8,7 +8,6 @@ import {
 } from "@components/shadcn/AlertDialog";
 import { Button, buttonVariants } from "@components/shadcn/Button";
 import { useToast } from "@hooks/shadcn/useToast";
-import { useStore } from "@hooks/useStore";
 import { cn } from "@libs/shadcn";
 import { tokenStorage } from "@utils/token";
 import { useState, type Dispatch, type SetStateAction } from "react";
@@ -20,7 +19,6 @@ interface LogoutDialogProps {
 }
 
 function LogoutDialog({ open, setOpen }: LogoutDialogProps) {
-  const user = useStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const { retryWithoutRefresh } = useAuthContext();
   const { toast } = useToast();
@@ -29,11 +27,9 @@ function LogoutDialog({ open, setOpen }: LogoutDialogProps) {
     setIsLoading(true);
     try {
       const refreshToken = tokenStorage.getRefreshToken();
-      const res = await retryWithoutRefresh.post(
-        "/auth/logout",
-        { user_id: user?.id },
-        { headers: { Authorization: `Bearer ${refreshToken}` } }
-      );
+      const res = await retryWithoutRefresh.post("/auth/logout", undefined, {
+        headers: { Authorization: `Bearer ${refreshToken}` },
+      });
 
       if (res.status === 200) {
         setOpen(false);
