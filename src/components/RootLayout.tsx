@@ -5,12 +5,10 @@ import { useEffect, useState } from "react";
 import { useToast } from "@hooks/shadcn/useToast";
 import { NavigationBar } from "./NavigationBar";
 import { tokenStorage } from "@utils/token";
-import type { AxiosError } from "axios";
-import axiosRetry from "axios-retry";
 import { useAuthContext } from "../contexts/AuthProvider";
 
 function RootLayout(): JSX.Element {
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh, handleAxiosError } = useAuthContext();
   const user = useStore((state) => state.user);
   const setUser = useStore((state) => state.setUser);
 
@@ -35,23 +33,12 @@ function RootLayout(): JSX.Element {
           }
         }
       } catch (error) {
-        const status = (error as AxiosError).response?.status;
-        if (
-          axiosRetry.isNetworkError(error as AxiosError) ||
-          (status || 0) >= 500
-        ) {
-          toast({
-            description: "Gagal mendapatkan data pengguna.",
-            variant: "destructive",
-          });
-        }
-
-        console.error(new Error("failed to get me", { cause: error }));
+        handleAxiosError(error as Error);
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [setUser, toast, retryWithRefresh]);
+  }, [setUser, toast, retryWithRefresh, handleAxiosError]);
 
   useEffect(() => {
     if (isLoading) {
