@@ -6,6 +6,7 @@ import {
 } from "@components/shadcn/Tabs";
 import { useState } from "react";
 import { LoginView } from "./LoginView";
+import { RegisterView } from "./RegisterView";
 
 function AuthView() {
   const [selectedView, setSelectedView] = useState<"login" | "daftar">("login");
@@ -40,7 +41,9 @@ function AuthView() {
           <LoginView />
         </TabsContent>
 
-        <TabsContent value="daftar"></TabsContent>
+        <TabsContent value="daftar">
+          <RegisterView />
+        </TabsContent>
       </Tabs>
     </div>
   );

@@ -8,33 +8,57 @@ import {
 } from "@components/shadcn/Form";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { AuthModel } from "../../models/AuthModel";
-import { useLoginViewModel } from "../../viewmodels/home/useLoginViewModel";
 import { Input } from "@components/shadcn/Input";
 import { Button } from "@components/shadcn/Button";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { useRegisterViewModel } from "../../viewmodels/home/useRegisterViewModel";
 
-function LoginView() {
+function RegisterView() {
   const { retryWithoutRefresh } = useAxiosContext();
   const authModel = new AuthModel(retryWithoutRefresh);
-  const loginViewModel = useLoginViewModel(authModel);
+  const registerViewModel = useRegisterViewModel(authModel);
 
   return (
-    <Form {...loginViewModel.form}>
+    <Form {...registerViewModel.form}>
       <form
-        onSubmit={loginViewModel.form.handleSubmit(loginViewModel.onSubmit)}
+        onSubmit={registerViewModel.form.handleSubmit(
+          registerViewModel.onSubmit
+        )}
         autoComplete="off"
         className="space-y-6"
       >
         <FormField
-          control={loginViewModel.form.control}
-          name="email"
+          control={registerViewModel.form.control}
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#BF8E50]">Email</FormLabel>
+              <FormLabel className="text-[#6594AB]">Username</FormLabel>
 
               <FormControl>
                 <Input
-                  disabled={loginViewModel.isLoading}
+                  disabled={registerViewModel.isLoading}
+                  type="text"
+                  placeholder="John Doe"
+                  className="border border-[#B4B4B4]"
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={registerViewModel.form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-[#6594AB]">Email</FormLabel>
+
+              <FormControl>
+                <Input
+                  disabled={registerViewModel.isLoading}
                   type="email"
                   placeholder="example@gmail.com"
                   className="border border-[#B4B4B4]"
@@ -48,29 +72,29 @@ function LoginView() {
         />
 
         <FormField
-          control={loginViewModel.form.control}
+          control={registerViewModel.form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#BF8E50]">Password</FormLabel>
+              <FormLabel className="text-[#6594AB]">Password</FormLabel>
 
               <FormControl>
                 <div className="relative">
                   <Input
-                    disabled={loginViewModel.isLoading}
+                    disabled={registerViewModel.isLoading}
                     type={
-                      loginViewModel.isPasswordVisible ? "text" : "password"
+                      registerViewModel.isPasswordVisible ? "text" : "password"
                     }
                     className="border border-[#B4B4B4]"
                     {...field}
                   />
 
                   <button
-                    onClick={loginViewModel.togglePasswordVisibility}
+                    onClick={registerViewModel.togglePasswordVisibility}
                     type="button"
                     className="absolute w-6 h-6 top-1/2 -translate-y-1/2 right-3"
                   >
-                    {loginViewModel.isPasswordVisible ? (
+                    {registerViewModel.isPasswordVisible ? (
                       <EyeOpenIcon />
                     ) : (
                       <EyeClosedIcon />
@@ -85,15 +109,15 @@ function LoginView() {
         />
 
         <Button
-          disabled={loginViewModel.isLoading}
+          disabled={registerViewModel.isLoading}
           type="submit"
-          className="bg-[#BF8E50] hover:bg-[#BF8E50]/90 w-full"
+          className="bg-[#6594AB] hover:bg-[#6594AB]/90 w-full"
         >
-          {loginViewModel.isLoading ? "Loading..." : "Masuk"}
+          {registerViewModel.isLoading ? "Loading..." : "Daftar"}
         </Button>
       </form>
     </Form>
   );
 }
 
-export { LoginView };
+export { RegisterView };

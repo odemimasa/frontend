@@ -36,7 +36,11 @@ function useLoginViewModel(authModel: AuthModel) {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const res = await authModel.login(values.email, values.password);
+      const res = await authModel.login({
+        email: values.email,
+        password: values.password,
+      });
+
       if (res.status === 200) {
         toast({ description: "Login berhasil.", variant: "default" });
         tokenStorage.setAccessToken(res.data.access_token);
