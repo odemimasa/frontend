@@ -2,6 +2,7 @@ import { Mail } from "@components/Icons/Mail";
 import { WhatsApp } from "@components/Icons/WhatsApp";
 import { InstagramLogoIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router";
+import { AuthView } from "./AuthView";
 
 function HomePageView() {
   return (
@@ -99,6 +100,8 @@ function HomePageView() {
           dapat digunakan dengan bijaksana dan dengan niat ibadah yang bersih.
         </p>
       </article>
+
+      <AuthView />
 
       {/* Footer */}
       <div className="bg-black py-12 px-6">

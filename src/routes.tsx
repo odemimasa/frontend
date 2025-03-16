@@ -5,7 +5,12 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AxiosProvider } from "./contexts/AxiosProvider";
 
-const Home = lazy(() => import("./pages/Home"));
+const HomePageView = lazy(() =>
+  import("./views/home/HomePageView").then(({ HomePageView }) => ({
+    default: HomePageView,
+  }))
+);
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 const ToDoList = lazy(() => import("./pages/ToDoList"));
@@ -38,7 +43,7 @@ export const router = createBrowserRouter([
         index: true,
         element: (
           <Suspense fallback={<></>}>
-            <Home />
+            <HomePageView />
           </Suspense>
         ),
       },
