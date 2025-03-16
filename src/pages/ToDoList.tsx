@@ -4,7 +4,7 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { useStore, type ToDoList } from "@hooks/useStore";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { lazy, useEffect, useState } from "react";
-import { useAuthContext } from "../contexts/AuthProvider";
+import { useAxiosContext } from "../contexts/AxiosProvider";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
 
@@ -29,7 +29,7 @@ export default function ToDoList() {
   const toDoLists = useStore((state) => state.toDoLists);
   const setToDoLists = useStore((state) => state.setToDoLists);
 
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
   const { toast } = useToast();
 
   useEffect(() => {

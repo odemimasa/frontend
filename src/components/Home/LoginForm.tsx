@@ -15,7 +15,7 @@ import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { tokenStorage } from "@utils/token";
 
 const formSchema = z.object({
@@ -29,7 +29,7 @@ function LoginForm() {
 
   const setUser = useStore((state) => state.setUser);
   const { toast } = useToast();
-  const { retryWithoutRefresh } = useAuthContext();
+  const { retryWithoutRefresh } = useAxiosContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

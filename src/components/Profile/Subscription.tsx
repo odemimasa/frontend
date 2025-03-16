@@ -3,7 +3,7 @@ import { Badge } from "@components/shadcn/Badge";
 import { Button } from "@components/shadcn/Button";
 import { useStore, type ActiveSubscription } from "@hooks/useStore";
 import { lazy, useEffect, useState } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
 import { useToast } from "@hooks/shadcn/useToast";
@@ -28,7 +28,7 @@ function Subscription() {
   const [isLoading, setIsLoading] = useState(true);
   const [pricingListOpened, setPricingListOpened] = useState(false);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   useEffect(() => {
     if (activeSubscription !== undefined) return;

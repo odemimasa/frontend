@@ -12,7 +12,7 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { useStore } from "@hooks/useStore";
 import { cn } from "@libs/shadcn";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
 
@@ -31,7 +31,7 @@ function DeleteToDoListDialog({
 }: DeleteToDoListDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const setToDoLists = useStore((state) => state.setToDoLists);
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
   const { toast } = useToast();
 
   const handleDeleteTask = async () => {

@@ -21,13 +21,13 @@ type AxiosErrorHandler = (
   func?: (response: AxiosResponse) => void
 ) => void;
 
-interface AuthContextValue {
+interface AxiosContextValue {
   retryWithRefresh: AxiosInstance;
   retryWithoutRefresh: AxiosInstance;
   handleAxiosError: AxiosErrorHandler;
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const AxiosContext = createContext<AxiosContextValue | undefined>(undefined);
 
 const refreshClient = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -92,7 +92,7 @@ const commonErrorToastConfig: Pick<ToasterToast, "description" | "variant"> = {
   variant: "destructive",
 };
 
-function AuthProvider({ children }: PropsWithChildren) {
+function AxiosProvider({ children }: PropsWithChildren) {
   const { toast } = useToast();
 
   const handleAxiosError: AxiosErrorHandler = (
@@ -186,7 +186,7 @@ function AuthProvider({ children }: PropsWithChildren) {
   }, [toast]);
 
   return (
-    <AuthContext.Provider
+    <AxiosContext.Provider
       value={{
         retryWithRefresh: retryWithRefresh,
         retryWithoutRefresh: retryWithoutRefresh,
@@ -194,18 +194,18 @@ function AuthProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-    </AuthContext.Provider>
+    </AxiosContext.Provider>
   );
 }
 
-function useAuthContext() {
-  const auth = useContext(AuthContext);
-  if (auth === undefined) {
+function useAxiosContext() {
+  const axios = useContext(AxiosContext);
+  if (axios === undefined) {
     throw new Error(
-      `"useAuthContext" must be used within a "AuthContext.Provider"`
+      `"useAxiosContext" must be used within a "AxiosContext.Provider"`
     );
   }
-  return auth;
+  return axios;
 }
 
-export { AuthProvider, useAuthContext };
+export { AxiosProvider, useAxiosContext };

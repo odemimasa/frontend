@@ -10,7 +10,7 @@ import { getCurrentDate } from "@utils/index";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
 import { lazy, useEffect, useState } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 
 const PrayerLeaderboard = lazy(() =>
   import("@components/Dashboard/PrayerLeaderboard").then(
@@ -55,7 +55,7 @@ function createPrayerStatistic(
 }
 
 function PrayerReport() {
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
   const user = useStore((state) => state.user);
   const prayerStatistic = useStore((state) => state.prayerStatistic);
   const setPrayerStatistic = useStore((state) => state.setPrayerStatistic);

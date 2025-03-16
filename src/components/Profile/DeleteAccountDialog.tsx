@@ -13,7 +13,7 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { cn } from "@libs/shadcn";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { tokenStorage } from "@utils/token";
 
 interface DeleteAccountDialogProps {
@@ -24,7 +24,7 @@ interface DeleteAccountDialogProps {
 function DeleteAccountDialog({ open, setOpen }: DeleteAccountDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   const handleDeleteAccount = async () => {
     setIsLoading(true);

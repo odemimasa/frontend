@@ -11,7 +11,7 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { cn } from "@libs/shadcn";
 import { tokenStorage } from "@utils/token";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 
 interface LogoutDialogProps {
   open: boolean;
@@ -20,7 +20,7 @@ interface LogoutDialogProps {
 
 function LogoutDialog({ open, setOpen }: LogoutDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { retryWithoutRefresh } = useAuthContext();
+  const { retryWithoutRefresh } = useAxiosContext();
   const { toast } = useToast();
 
   const handleLogout = async () => {

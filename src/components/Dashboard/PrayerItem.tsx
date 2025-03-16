@@ -6,7 +6,7 @@ import { capitalizeWord, getCurrentDate, getPrayerTimes } from "@utils/index";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
 import { useState } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 
 function formatTimeFromUnixMilliseconds(unixTimeMs: number) {
   const date = new Date(unixTimeMs);
@@ -34,7 +34,7 @@ function PrayerItem({
   prayers,
   index,
 }: PrayerItemProps) {
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
   const user = useStore((state) => state.user);
   const setPrayers = useStore((state) => state.setPrayers);
   const setPrayerStatistic = useStore((state) => state.setPrayerStatistic);

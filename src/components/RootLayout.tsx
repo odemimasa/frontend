@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { useToast } from "@hooks/shadcn/useToast";
 import { NavigationBar } from "./NavigationBar";
 import { tokenStorage } from "@utils/token";
-import { useAuthContext } from "../contexts/AuthProvider";
+import { useAxiosContext } from "../contexts/AxiosProvider";
 
 function RootLayout(): JSX.Element {
-  const { retryWithRefresh, handleAxiosError } = useAuthContext();
+  const { retryWithRefresh, handleAxiosError } = useAxiosContext();
   const user = useStore((state) => state.user);
   const setUser = useStore((state) => state.setUser);
 

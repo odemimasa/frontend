@@ -10,7 +10,7 @@ import {
   SubscriptionPlans,
   SubscriptionPlanSkeleton,
 } from "./SubscriptionPlan";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
 
@@ -26,7 +26,7 @@ function PricingListDialog({ open, setOpen }: PricingListDialogProps) {
   const [couponCode, setCouponCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   useEffect(() => {
     if (subscriptionPlans !== undefined) return;
