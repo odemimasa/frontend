@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
-import { getPrayerTimes } from "@utils/index";
+import { getCurrentDate, getPrayerTimes } from "@utils/index";
 import type { PrayerModel, PrayerResponse } from "../../models/PrayerModel";
 
 type PrayerSchedule = Pick<PrayerResponse, "id" | "name" | "status"> & {
@@ -37,7 +37,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
         );
 
         if (res.data.length !== 0) {
-          setCurrentDate(prayerTimes.fajr);
+          setCurrentDate(getCurrentDate(user?.timezone ?? ""));
           setSunriseDate(prayerTimes.sunrise);
           setPrayers(res.data);
         }
@@ -58,6 +58,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
     prayerModel,
     user?.latitude,
     user?.longitude,
+    user?.timezone,
   ]);
 
   const prayerSchedule = useMemo((): PrayerSchedule[] => {
@@ -109,7 +110,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
     ];
 
     setIsLoading(false);
-    setCurrentDate(prayerTimes.fajr);
+    setCurrentDate(getCurrentDate(user?.timezone ?? ""));
     setSunriseDate(prayerTimes.sunrise);
 
     return prayerSchedule.map((item) => {
@@ -124,7 +125,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
 
       return item;
     });
-  }, [prayers, setPrayers, user?.latitude, user?.longitude]);
+  }, [prayers, setPrayers, user?.latitude, user?.longitude, user?.timezone]);
 
   return { isLoading, currentDate, sunriseDate, prayerSchedule };
 }

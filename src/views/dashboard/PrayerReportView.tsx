@@ -3,6 +3,7 @@ import { PrayerStatisticView } from "./PrayerStatisticView";
 import { usePrayerReportViewModel } from "../../viewmodels/dashboard/usePrayerReportViewModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { PrayerModel } from "../../models/PrayerModel";
+import { PrayerLeaderboardView } from "./PrayerLeaderboardView";
 
 function PrayerReportView() {
   const { retryWithRefresh } = useAxiosContext();
@@ -60,6 +61,10 @@ function PrayerReportView() {
 
   return (
     <div className="mt-16">
+      <PrayerLeaderboardView
+        prayerStatistic={prayerReportViewModel.prayerStatistic}
+      />
+
       <PrayerStatisticView
         prayerStatistic={prayerReportViewModel.prayerStatistic}
       />
