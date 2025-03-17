@@ -1,4 +1,15 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
+import type { PlanResponse } from "./PlanModel";
+
+interface InvoiceRequest {
+  coupon_code?: string;
+  customer_name: string;
+  customer_email: string;
+  plan: Pick<
+    PlanResponse,
+    "id" | "type" | "name" | "price" | "duration_in_months"
+  >;
+}
 
 interface InvoiceResponse {
   id: string;
@@ -21,7 +32,17 @@ class InvoiceModel {
   async getActiveInvoice(): Promise<AxiosResponse<InvoiceResponse>> {
     return await this.fetch.get<InvoiceResponse>("/invoices/active");
   }
+
+  async createInvoice(
+    invoiceRequest: InvoiceRequest
+  ): Promise<AxiosResponse<InvoiceResponse>> {
+    return await this.fetch.post<
+      InvoiceResponse,
+      AxiosResponse<InvoiceResponse>,
+      InvoiceRequest
+    >("/invoices", invoiceRequest);
+  }
 }
 
 export { InvoiceModel };
-export type { InvoiceResponse };
+export type { InvoiceResponse, InvoiceRequest };

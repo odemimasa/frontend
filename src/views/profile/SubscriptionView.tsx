@@ -5,6 +5,13 @@ import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { SubscriptionModel } from "../../models/SubscriptionModel";
 import { useSubscriptionViewModel } from "../../viewmodels/profile/useSubscriptionViewModel";
 import { formatISODate } from "@utils/index";
+import { lazy } from "react";
+
+const PlansDialogView = lazy(() =>
+  import("./PlansDialogView").then(({ PlansDialogView }) => ({
+    default: PlansDialogView,
+  }))
+);
 
 function SubscriptionView() {
   const { retryWithRefresh } = useAxiosContext();
@@ -41,10 +48,14 @@ function SubscriptionView() {
           Beli Paket
         </Button>
 
-        {/* <PricingListDialog
-          open={subscriptionViewModel.isOpen}
-          setOpen={subscriptionViewModel.setIsOpen}
-        /> */}
+        {subscriptionViewModel.isOpen ? (
+          <PlansDialogView
+            isOpen={subscriptionViewModel.isOpen}
+            setIsOpen={subscriptionViewModel.setIsOpen}
+          />
+        ) : (
+          <></>
+        )}
       </div>
     );
   }
