@@ -6,6 +6,8 @@ import { ShoppingBag } from "@components/Icons/ShoppingBag";
 import { SubscriptionView } from "./SubscriptionView";
 import { FileTextIcon } from "@radix-ui/react-icons";
 import { InvoiceView } from "./InvoiceView";
+import { PaymentsView } from "./PaymentsView";
+import { History } from "@components/Icons/History";
 
 function ProfilePageView() {
   const user = useStore((state) => state.user);
@@ -60,6 +62,13 @@ function ProfilePageView() {
       </div>
 
       <InvoiceView />
+
+      <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
+        <History className="fill-[#333333] w-5 h-5" />
+        <h2 className="text-[#7B7B7B] font-medium">Riwayat Transaksi</h2>
+      </div>
+
+      <PaymentsView />
     </>
   );
 }

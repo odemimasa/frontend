@@ -7,15 +7,22 @@ import {
 } from "./subscription";
 import { createInvoiceSlice, type InvoiceSlice } from "./invoice";
 import { createPlanSlice, type PlanSlice } from "./plan";
+import { createPaymentSlice, type PaymentSlice } from "./payment";
 
 const useStore = create<
-  UserSlice & PrayerSlice & SubscriptionSlice & InvoiceSlice & PlanSlice
+  UserSlice &
+    PrayerSlice &
+    SubscriptionSlice &
+    InvoiceSlice &
+    PlanSlice &
+    PaymentSlice
 >()((...a) => ({
   ...createUserSlice(...a),
   ...createPrayerSlice(...a),
   ...createSubscriptionSlice(...a),
   ...createInvoiceSlice(...a),
   ...createPlanSlice(...a),
+  ...createPaymentSlice(...a),
 }));
 
 export { useStore };
