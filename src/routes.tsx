@@ -25,7 +25,11 @@ const ProfilePageView = lazy(() =>
   }))
 );
 
-const ToDoList = lazy(() => import("./pages/ToDoList"));
+const TaskPageView = lazy(() =>
+  import("./views/task/TaskPageView").then(({ TaskPageView }) => ({
+    default: TaskPageView,
+  }))
+);
 
 const ErrorBoundary = lazy(() =>
   import("@components/ErrorBoundary").then(({ ErrorBoundary }) => ({
@@ -82,7 +86,7 @@ export const router = createBrowserRouter([
         path: "to-do-list",
         element: (
           <Suspense fallback={<></>}>
-            <ToDoList />
+            <TaskPageView />
           </Suspense>
         ),
       },

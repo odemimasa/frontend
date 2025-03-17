@@ -3,10 +3,10 @@ import { Toaster } from "@components/shadcn/Toaster";
 import { useStore as useStoreOld, type User } from "@hooks/useStore";
 import { useEffect, useState } from "react";
 import { useToast } from "@hooks/shadcn/useToast";
-import { NavigationBar } from "./NavigationBar";
 import { tokenStorage } from "@utils/token";
 import { useAxiosContext } from "../contexts/AxiosProvider";
 import { useStore } from "../stores";
+import { NavigationView } from "../views/NavigationView";
 
 function RootLayout(): JSX.Element {
   const { retryWithRefresh, handleAxiosError } = useAxiosContext();
@@ -85,7 +85,7 @@ function RootLayout(): JSX.Element {
         )}
 
         <Outlet />
-        {user !== undefined ? <NavigationBar /> : <></>}
+        {user !== undefined ? <NavigationView /> : <></>}
       </main>
     </>
   );
