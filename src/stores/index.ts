@@ -5,13 +5,15 @@ import {
   createSubscriptionSlice,
   type SubscriptionSlice,
 } from "./subscription";
+import { createInvoiceSlice, type InvoiceSlice } from "./invoice";
 
-const useStore = create<UserSlice & PrayerSlice & SubscriptionSlice>()(
-  (...a) => ({
-    ...createUserSlice(...a),
-    ...createPrayerSlice(...a),
-    ...createSubscriptionSlice(...a),
-  })
-);
+const useStore = create<
+  UserSlice & PrayerSlice & SubscriptionSlice & InvoiceSlice
+>()((...a) => ({
+  ...createUserSlice(...a),
+  ...createPrayerSlice(...a),
+  ...createSubscriptionSlice(...a),
+  ...createInvoiceSlice(...a),
+}));
 
 export { useStore };

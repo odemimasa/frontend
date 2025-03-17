@@ -5,8 +5,10 @@ import { useStore } from "../../stores";
 
 function useSubscriptionViewModel(subscriptionModel: SubscriptionModel) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const user = useStore((state) => state.user);
+  const invoice = useStore((state) => state.invoice);
   const subscription = useStore((state) => state.subscription);
   const setSubscription = useStore((state) => state.setSubscription);
 
@@ -33,8 +35,11 @@ function useSubscriptionViewModel(subscriptionModel: SubscriptionModel) {
 
   return {
     isLoading,
+    isOpen,
+    invoice,
     subscription,
     userTimezone: user?.timezone ?? "Asia/Jakarta",
+    setIsOpen,
   };
 }
 

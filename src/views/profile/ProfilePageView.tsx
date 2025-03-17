@@ -4,6 +4,8 @@ import { Mail } from "@components/Icons/Mail";
 import { UserLocationView } from "./UserLocationView";
 import { ShoppingBag } from "@components/Icons/ShoppingBag";
 import { SubscriptionView } from "./SubscriptionView";
+import { FileTextIcon } from "@radix-ui/react-icons";
+import { InvoiceView } from "./InvoiceView";
 
 function ProfilePageView() {
   const user = useStore((state) => state.user);
@@ -51,6 +53,13 @@ function ProfilePageView() {
       </div>
 
       <SubscriptionView />
+
+      <div className="flex items-center gap-3 mt-6 mx-6 mb-3.5">
+        <FileTextIcon className="text-[#333333] w-5 h-5" />
+        <h2 className="text-[#7B7B7B] font-medium">Tagihan Saya</h2>
+      </div>
+
+      <InvoiceView />
     </>
   );
 }

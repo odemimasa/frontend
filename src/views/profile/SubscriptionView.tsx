@@ -31,8 +31,8 @@ function SubscriptionView() {
         </p>
 
         <Button
-          // disabled={activeInvoice !== undefined}
-          // onClick={() => setPricingListOpened(true)}
+          disabled={subscriptionViewModel.invoice !== undefined}
+          onClick={() => subscriptionViewModel.setIsOpen(true)}
           type="button"
           variant="outline"
           className="text-[#363636] border-[#2F3D4A] mt-3.5"
@@ -41,14 +41,10 @@ function SubscriptionView() {
           Beli Paket
         </Button>
 
-        {/* {pricingListOpened ? (
-          <PricingListDialog
-            open={pricingListOpened}
-            setOpen={setPricingListOpened}
-          />
-        ) : (
-          <></>
-        )} */}
+        {/* <PricingListDialog
+          open={subscriptionViewModel.isOpen}
+          setOpen={subscriptionViewModel.setIsOpen}
+        /> */}
       </div>
     );
   }
