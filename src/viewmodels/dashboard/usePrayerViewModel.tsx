@@ -20,6 +20,7 @@ function usePrayerViewModel(prayerModel: PrayerModel) {
 
   const user = useStore((state) => state.user);
   const setPrayers = useStore((state) => state.setPrayers);
+  const setThisMonthPrayers = useStore((state) => state.setThisMonthPrayers);
 
   const { toast } = useToast();
   const { handleAxiosError } = useAxiosContext();
@@ -88,7 +89,15 @@ function usePrayerViewModel(prayerModel: PrayerModel) {
           return [...prayers];
         });
 
-        // TODO: update prayer statistic
+        setThisMonthPrayers((thisMonthPrayers) => {
+          if (thisMonthPrayers === undefined) {
+            return thisMonthPrayers;
+          }
+
+          const idx = thisMonthPrayers.findIndex((item) => item.id === id);
+          thisMonthPrayers[idx].status = status;
+          return [...thisMonthPrayers];
+        });
       }
     } catch (error) {
       handleAxiosError(error as Error, (response) => {

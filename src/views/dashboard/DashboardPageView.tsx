@@ -1,3 +1,4 @@
+import { PrayerReportView } from "./PrayerReportView";
 import { PrayersView } from "./PrayersView";
 
 function DashboardPageView() {
@@ -14,6 +15,7 @@ function DashboardPageView() {
       </div>
 
       <PrayersView />
+      <PrayerReportView />
     </>
   );
 }

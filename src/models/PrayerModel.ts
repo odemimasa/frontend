@@ -26,11 +26,14 @@ class PrayerModel {
   async getPrayers(
     year: number,
     month: number,
-    day: number
+    day?: number
   ): Promise<AxiosResponse<PrayerResponse[]>> {
-    return await this.fetch.get<PrayerResponse[]>(
-      `/prayers?year=${year}&month=${month}&day=${day}`
-    );
+    let URL = `/prayers?year=${year}&month=${month}`;
+    if (day) {
+      URL = `/prayers?year=${year}&month=${month}&day=${day}`;
+    }
+
+    return await this.fetch.get<PrayerResponse[]>(URL);
   }
 
   async updatePrayer(
