@@ -3,6 +3,10 @@ import type { AxiosInstance, AxiosResponse } from "axios";
 type PrayerName = "subuh" | "zuhur" | "asar" | "magrib" | "isya";
 type PrayerStatus = "pending" | "on_time" | "late" | "missed";
 
+interface PrayerRequest {
+  status: PrayerStatus;
+}
+
 interface PrayerResponse {
   id: string;
   name: PrayerName;
@@ -27,6 +31,17 @@ class PrayerModel {
     return await this.fetch.get<PrayerResponse[]>(
       `/prayers?year=${year}&month=${month}&day=${day}`
     );
+  }
+
+  async updatePrayer(
+    id: string,
+    prayerRequest: PrayerRequest
+  ): Promise<AxiosResponse<PrayerResponse>> {
+    return await this.fetch.put<
+      PrayerResponse,
+      AxiosResponse<PrayerResponse>,
+      PrayerRequest
+    >(`/prayers/${id}`, prayerRequest);
   }
 }
 

@@ -72,6 +72,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
 
     if (prayerTimes.fajr.getDate() !== prayers[0].day) {
       setPrayers([]);
+      return [];
     }
 
     const prayerSchedule: PrayerSchedule[] = [

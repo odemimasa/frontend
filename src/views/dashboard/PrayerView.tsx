@@ -2,8 +2,12 @@ import { Button } from "@components/shadcn/Button";
 import { BoxIcon, CheckboxIcon } from "@radix-ui/react-icons";
 import { formatTimeFromUnixMs } from "@utils/index";
 import type { PrayerSchedule } from "../../viewmodels/dashboard/usePrayersViewModel";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
+import { PrayerModel } from "../../models/PrayerModel";
+import { usePrayerViewModel } from "../../viewmodels/dashboard/usePrayerViewModel";
 
 interface PrayerViewProps {
+  prayerSchedule: PrayerSchedule[];
   prayer: PrayerSchedule;
   currentDate: Date;
   sunriseDate: Date;
@@ -11,13 +15,27 @@ interface PrayerViewProps {
 }
 
 function PrayerView({
+  prayerSchedule,
   prayer,
   currentDate,
   sunriseDate,
   index,
 }: PrayerViewProps) {
-  console.log(sunriseDate);
-  console.log(index);
+  const { retryWithRefresh } = useAxiosContext();
+  const prayerModel = new PrayerModel(retryWithRefresh);
+  const prayerViewModel = usePrayerViewModel(prayerModel);
+
+  const handleCheckPrayer = () => {
+    const status = prayerViewModel.determinePrayerStatus({
+      prayerDate: prayer.date,
+      prayerName: prayer.name,
+      prayerSchedule,
+      sunriseDate,
+      index,
+    });
+
+    prayerViewModel.checkPrayer(prayer.id, status);
+  };
 
   return (
     <div className="break-words border border-[#E1E1E1] rounded-lg flex justify-between items-center p-3">
@@ -32,7 +50,9 @@ function PrayerView({
       </div>
 
       <Button
+        onClick={handleCheckPrayer}
         disabled={
+          prayerViewModel.isLoading ||
           currentDate.getTime() < prayer.date.getTime() ||
           prayer.status !== "pending"
         }

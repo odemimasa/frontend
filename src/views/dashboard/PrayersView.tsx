@@ -45,6 +45,7 @@ function PrayersView() {
         {prayersViewModel.prayerSchedule.map((item, index) => (
           <PrayerView
             key={item.id}
+            prayerSchedule={prayersViewModel.prayerSchedule}
             prayer={item}
             currentDate={prayersViewModel.currentDate}
             sunriseDate={prayersViewModel.sunriseDate}
