@@ -9,13 +9,18 @@ import { createInvoiceSlice, type InvoiceSlice } from "./invoice";
 import { createPlanSlice, type PlanSlice } from "./plan";
 import { createPaymentSlice, type PaymentSlice } from "./payment";
 
+type ResetAction = {
+  reset: () => void;
+};
+
 const useStore = create<
   UserSlice &
     PrayerSlice &
     SubscriptionSlice &
     InvoiceSlice &
     PlanSlice &
-    PaymentSlice
+    PaymentSlice &
+    ResetAction
 >()((...a) => ({
   ...createUserSlice(...a),
   ...createPrayerSlice(...a),
@@ -23,6 +28,17 @@ const useStore = create<
   ...createInvoiceSlice(...a),
   ...createPlanSlice(...a),
   ...createPaymentSlice(...a),
+  reset: () => {
+    a[0]({
+      user: undefined,
+      prayers: [],
+      thisMonthPrayers: [],
+      subscription: undefined,
+      invoice: undefined,
+      plans: [],
+      payments: [],
+    });
+  },
 }));
 
 export { useStore };
