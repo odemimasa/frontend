@@ -11,7 +11,14 @@ const HomePageView = lazy(() =>
   }))
 );
 
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+const DashboardPageView = lazy(() =>
+  import("./views/dashboard/DashboardPageView").then(
+    ({ DashboardPageView }) => ({
+      default: DashboardPageView,
+    })
+  )
+);
+
 const Profile = lazy(() => import("./pages/Profile"));
 const ToDoList = lazy(() => import("./pages/ToDoList"));
 
@@ -52,7 +59,7 @@ export const router = createBrowserRouter([
         path: "dashboard",
         element: (
           <Suspense fallback={<></>}>
-            <Dashboard />
+            <DashboardPageView />
           </Suspense>
         ),
       },

@@ -47,4 +47,3 @@ class AuthModel {
 }
 
 export { AuthModel };
-export type { LoginRequest, RegisterRequest };
