@@ -9,7 +9,7 @@ import type { PrayerName } from "@hooks/useStore";
 // the first index is the number of missed salat
 // the second index is the number of late salat
 // the third index is the number of on time salat
-type PrayerStatistic = Map<PrayerName, number[]>;
+type PrayerStatistics = Map<PrayerName, number[]>;
 
 function usePrayerReportViewModel(prayerModel: PrayerModel) {
   const [isLoading, setIsLoading] = useState(true);
@@ -54,20 +54,20 @@ function usePrayerReportViewModel(prayerModel: PrayerModel) {
     setThisMonthPrayers,
   ]);
 
-  const prayerStatistic = useMemo((): PrayerStatistic => {
+  const prayerStatistics = useMemo((): PrayerStatistics => {
     if (thisMonthPrayers.length === 0) {
       return new Map<PrayerName, number[]>();
     }
 
-    const prayerStatistic = new Map<PrayerName, number[]>();
-    prayerStatistic.set("subuh", [0, 0, 0]);
-    prayerStatistic.set("zuhur", [0, 0, 0]);
-    prayerStatistic.set("asar", [0, 0, 0]);
-    prayerStatistic.set("magrib", [0, 0, 0]);
-    prayerStatistic.set("isya", [0, 0, 0]);
+    const prayerStatistics = new Map<PrayerName, number[]>();
+    prayerStatistics.set("subuh", [0, 0, 0]);
+    prayerStatistics.set("zuhur", [0, 0, 0]);
+    prayerStatistics.set("asar", [0, 0, 0]);
+    prayerStatistics.set("magrib", [0, 0, 0]);
+    prayerStatistics.set("isya", [0, 0, 0]);
 
     for (const prayer of thisMonthPrayers) {
-      const statistic = prayerStatistic.get(prayer.name)!;
+      const statistic = prayerStatistics.get(prayer.name)!;
       if (prayer.status === "on_time") {
         statistic[2]++;
       } else if (prayer.status === "late") {
@@ -76,14 +76,14 @@ function usePrayerReportViewModel(prayerModel: PrayerModel) {
         statistic[0]++;
       }
 
-      prayerStatistic.set(prayer.name, statistic);
+      prayerStatistics.set(prayer.name, statistic);
     }
 
-    return prayerStatistic;
+    return prayerStatistics;
   }, [thisMonthPrayers]);
 
-  return { isLoading, prayerStatistic };
+  return { isLoading, prayerStatistics };
 }
 
 export { usePrayerReportViewModel };
-export type { PrayerStatistic };
+export type { PrayerStatistics };

@@ -1,5 +1,5 @@
 import type { PrayerName } from "@hooks/useStore";
-import type { PrayerStatistic } from "./usePrayerReportViewModel";
+import type { PrayerStatistics } from "./usePrayerReportViewModel";
 
 interface PrayerStatus {
   prayerName: PrayerName;
@@ -19,7 +19,7 @@ function getMostFrequentPrayer(
 }
 
 function usePrayerLeaderboardViewModel() {
-  const findMostOnTimePrayer = (prayerStatistic: PrayerStatistic) => {
+  const findMostOnTimePrayer = (prayerStatistics: PrayerStatistics) => {
     const prayerNames: PrayerName[] = [
       "subuh",
       "zuhur",
@@ -30,13 +30,13 @@ function usePrayerLeaderboardViewModel() {
 
     const prayerOnTimeStats: PrayerStatus[] = prayerNames.map((name) => ({
       prayerName: name,
-      statusCount: prayerStatistic.get(name)?.[2] ?? 0,
+      statusCount: prayerStatistics.get(name)?.[2] ?? 0,
     }));
 
     return getMostFrequentPrayer(prayerOnTimeStats);
   };
 
-  const findMostLatePrayer = (prayerStatistic: PrayerStatistic) => {
+  const findMostLatePrayer = (prayerStatistics: PrayerStatistics) => {
     const prayerNames: PrayerName[] = [
       "subuh",
       "zuhur",
@@ -47,13 +47,13 @@ function usePrayerLeaderboardViewModel() {
 
     const prayerLateStats: PrayerStatus[] = prayerNames.map((name) => ({
       prayerName: name,
-      statusCount: prayerStatistic.get(name)?.[1] ?? 0,
+      statusCount: prayerStatistics.get(name)?.[1] ?? 0,
     }));
 
     return getMostFrequentPrayer(prayerLateStats);
   };
 
-  const findMostMissedPrayer = (prayerStatistic: PrayerStatistic) => {
+  const findMostMissedPrayer = (prayerStatistics: PrayerStatistics) => {
     const prayerNames: PrayerName[] = [
       "subuh",
       "zuhur",
@@ -64,7 +64,7 @@ function usePrayerLeaderboardViewModel() {
 
     const prayerMissedStats: PrayerStatus[] = prayerNames.map((name) => ({
       prayerName: name,
-      statusCount: prayerStatistic.get(name)?.[0] ?? 0,
+      statusCount: prayerStatistics.get(name)?.[0] ?? 0,
     }));
 
     return getMostFrequentPrayer(prayerMissedStats);

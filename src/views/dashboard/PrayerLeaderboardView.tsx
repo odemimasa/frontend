@@ -1,21 +1,21 @@
 import { Button } from "@components/shadcn/Button";
 import { Link } from "react-router";
 import { usePrayerLeaderboardViewModel } from "../../viewmodels/dashboard/usePrayerLeaderboardViewModel";
-import type { PrayerStatistic } from "../../viewmodels/dashboard/usePrayerReportViewModel";
+import type { PrayerStatistics } from "../../viewmodels/dashboard/usePrayerReportViewModel";
 
 function PrayerLeaderboardView({
-  prayerStatistic,
+  prayerStatistics,
 }: {
-  prayerStatistic: PrayerStatistic;
+  prayerStatistics: PrayerStatistics;
 }) {
   const prayerLeaderboardViewModel = usePrayerLeaderboardViewModel();
 
   const mostOnTimePrayer =
-    prayerLeaderboardViewModel.findMostOnTimePrayer(prayerStatistic);
+    prayerLeaderboardViewModel.findMostOnTimePrayer(prayerStatistics);
   const mostLatePrayer =
-    prayerLeaderboardViewModel.findMostLatePrayer(prayerStatistic);
+    prayerLeaderboardViewModel.findMostLatePrayer(prayerStatistics);
   const mostMissedPrayer =
-    prayerLeaderboardViewModel.findMostMissedPrayer(prayerStatistic);
+    prayerLeaderboardViewModel.findMostMissedPrayer(prayerStatistics);
 
   const isSubscribed = false;
 

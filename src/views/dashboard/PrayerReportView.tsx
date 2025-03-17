@@ -1,5 +1,5 @@
 import { Skeleton } from "@components/shadcn/Skeleton";
-import { PrayerStatisticView } from "./PrayerStatisticView";
+import { PrayerStatisticsView } from "./PrayerStatisticsView";
 import { usePrayerReportViewModel } from "../../viewmodels/dashboard/usePrayerReportViewModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { PrayerModel } from "../../models/PrayerModel";
@@ -51,7 +51,7 @@ function PrayerReportView() {
     );
   }
 
-  if (prayerReportViewModel.prayerStatistic.size === 0) {
+  if (prayerReportViewModel.prayerStatistics.size === 0) {
     return (
       <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6 mt-16">
         Tidak dapat menampilkan statistik ibadah salat.
@@ -62,11 +62,11 @@ function PrayerReportView() {
   return (
     <div className="mt-16">
       <PrayerLeaderboardView
-        prayerStatistic={prayerReportViewModel.prayerStatistic}
+        prayerStatistics={prayerReportViewModel.prayerStatistics}
       />
 
-      <PrayerStatisticView
-        prayerStatistic={prayerReportViewModel.prayerStatistic}
+      <PrayerStatisticsView
+        prayerStatistics={prayerReportViewModel.prayerStatistics}
       />
     </div>
   );

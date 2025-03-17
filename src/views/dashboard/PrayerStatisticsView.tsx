@@ -11,7 +11,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { Link } from "react-router";
-import type { PrayerStatistic } from "../../viewmodels/dashboard/usePrayerReportViewModel";
+import type { PrayerStatistics } from "../../viewmodels/dashboard/usePrayerReportViewModel";
 
 ChartJS.register(
   CategoryScale,
@@ -23,10 +23,10 @@ ChartJS.register(
   Legend
 );
 
-function PrayerStatisticView({
-  prayerStatistic,
+function PrayerStatisticsView({
+  prayerStatistics,
 }: {
-  prayerStatistic: PrayerStatistic;
+  prayerStatistics: PrayerStatistics;
 }) {
   const isSubscribed = false;
 
@@ -66,35 +66,35 @@ function PrayerStatisticView({
           datasets: [
             {
               label: "Subuh",
-              data: prayerStatistic.get("subuh")!,
+              data: prayerStatistics.get("subuh")!,
               borderColor: "#82A3D8",
               backgroundColor: "#82A3D8",
               fill: false,
             },
             {
               label: "Zuhur",
-              data: prayerStatistic.get("zuhur")!,
+              data: prayerStatistics.get("zuhur")!,
               borderColor: "#F7EA78",
               backgroundColor: "#F7EA78",
               fill: false,
             },
             {
               label: "Asar",
-              data: prayerStatistic.get("asar")!,
+              data: prayerStatistics.get("asar")!,
               borderColor: "#F1B25B",
               backgroundColor: "#F1B25B",
               fill: false,
             },
             {
               label: "Magrib",
-              data: prayerStatistic.get("magrib")!,
+              data: prayerStatistics.get("magrib")!,
               borderColor: "#BF7155",
               backgroundColor: "#BF7155",
               fill: false,
             },
             {
               label: "Isya",
-              data: prayerStatistic.get("isya")!,
+              data: prayerStatistics.get("isya")!,
               borderColor: "#7866AE",
               backgroundColor: "#7866AE",
               fill: false,
@@ -121,4 +121,4 @@ function PrayerStatisticView({
   );
 }
 
-export { PrayerStatisticView };
+export { PrayerStatisticsView };
