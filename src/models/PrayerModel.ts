@@ -4,7 +4,7 @@ type PrayerName = "subuh" | "zuhur" | "asar" | "magrib" | "isya";
 type PrayerStatus = "pending" | "on_time" | "late" | "missed";
 
 interface PrayerRequest {
-  status: PrayerStatus;
+  status?: PrayerStatus;
 }
 
 interface PrayerResponse {

@@ -1,3 +1,13 @@
+import type { AxiosInstance, AxiosResponse } from "axios";
+
+interface UserRequest {
+  username?: string;
+  email?: string;
+  password?: string;
+  latitude?: string;
+  longitude?: string;
+}
+
 interface UserResponse {
   id: string;
   email: string;
@@ -10,7 +20,21 @@ interface UserResponse {
 }
 
 class UserModel {
-  constructor() {}
+  readonly fetch: AxiosInstance;
+
+  constructor(fetch: AxiosInstance) {
+    this.fetch = fetch;
+  }
+
+  async updateUser(
+    userRequest: UserRequest
+  ): Promise<AxiosResponse<UserResponse>> {
+    return await this.fetch.put<
+      UserResponse,
+      AxiosResponse<UserResponse>,
+      UserRequest
+    >("/users/me", userRequest);
+  }
 }
 
 export { UserModel };

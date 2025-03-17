@@ -11,8 +11,10 @@ import createAuthRefreshInterceptor from "axios-auth-refresh";
 import axiosRetry from "axios-retry";
 import {
   createContext,
+  useCallback,
   useContext,
   useLayoutEffect,
+  useMemo,
   type PropsWithChildren,
 } from "react";
 
@@ -95,34 +97,34 @@ const commonErrorToastConfig: Pick<ToasterToast, "description" | "variant"> = {
 function AxiosProvider({ children }: PropsWithChildren) {
   const { toast } = useToast();
 
-  const handleAxiosError: AxiosErrorHandler = (
-    error: Error,
-    func?: (response: AxiosResponse) => void
-  ) => {
-    if (axios.isAxiosError(error)) {
-      if (axiosRetry.isNetworkError(error)) {
-        toast(networkErrorToastConfig);
-        console.error(new Error("network error", { cause: error }));
-      } else if (error.response) {
-        if (error.response.status === 401) {
-          // ignore the error, it's already handled by the refreshAuthLogic function
-        } else if (error.response.status >= 500) {
-          toast(commonErrorToastConfig);
-          console.error(new Error("server error", { cause: error }));
-        } else {
-          if (func) {
-            func(error.response);
+  const handleAxiosError: AxiosErrorHandler = useCallback(
+    (error: Error, func?: (response: AxiosResponse) => void) => {
+      if (axios.isAxiosError(error)) {
+        if (axiosRetry.isNetworkError(error)) {
+          toast(networkErrorToastConfig);
+          console.error(new Error("network error", { cause: error }));
+        } else if (error.response) {
+          if (error.response.status === 401) {
+            // ignore the error, it's already handled by the refreshAuthLogic function
+          } else if (error.response.status >= 500) {
+            toast(commonErrorToastConfig);
+            console.error(new Error("server error", { cause: error }));
+          } else {
+            if (func) {
+              func(error.response);
+            }
           }
+        } else {
+          toast(commonErrorToastConfig);
+          console.error(new Error("unexpected error", { cause: error }));
         }
       } else {
         toast(commonErrorToastConfig);
         console.error(new Error("unexpected error", { cause: error }));
       }
-    } else {
-      toast(commonErrorToastConfig);
-      console.error(new Error("unexpected error", { cause: error }));
-    }
-  };
+    },
+    [toast]
+  );
 
   useLayoutEffect(() => {
     const refreshAuthLogic = async (failedRequest: AxiosError) => {
@@ -185,14 +187,16 @@ function AxiosProvider({ children }: PropsWithChildren) {
     });
   }, [toast]);
 
+  const contextValue = useMemo(() => {
+    return {
+      retryWithRefresh: retryWithRefresh,
+      retryWithoutRefresh: retryWithoutRefresh,
+      handleAxiosError,
+    };
+  }, [handleAxiosError]);
+
   return (
-    <AxiosContext.Provider
-      value={{
-        retryWithRefresh: retryWithRefresh,
-        retryWithoutRefresh: retryWithoutRefresh,
-        handleAxiosError,
-      }}
-    >
+    <AxiosContext.Provider value={contextValue}>
       {children}
     </AxiosContext.Provider>
   );

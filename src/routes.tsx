@@ -19,7 +19,12 @@ const DashboardPageView = lazy(() =>
   )
 );
 
-const Profile = lazy(() => import("./pages/Profile"));
+const ProfilePageView = lazy(() =>
+  import("./views/profile/ProfilePageView").then(({ ProfilePageView }) => ({
+    default: ProfilePageView,
+  }))
+);
+
 const ToDoList = lazy(() => import("./pages/ToDoList"));
 
 const ErrorBoundary = lazy(() =>
@@ -68,7 +73,7 @@ export const router = createBrowserRouter([
         path: "profile",
         element: (
           <Suspense fallback={<></>}>
-            <Profile />
+            <ProfilePageView />
           </Suspense>
         ),
       },

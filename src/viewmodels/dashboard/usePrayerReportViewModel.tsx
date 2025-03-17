@@ -79,6 +79,7 @@ function usePrayerReportViewModel(prayerModel: PrayerModel) {
       prayerStatistics.set(prayer.name, statistic);
     }
 
+    setIsLoading(false);
     return prayerStatistics;
   }, [thisMonthPrayers]);
 
