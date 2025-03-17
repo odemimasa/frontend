@@ -35,6 +35,10 @@ class UserModel {
       UserRequest
     >("/users/me", userRequest);
   }
+
+  async deleteUser(): Promise<AxiosResponse> {
+    return await this.fetch.delete("/users/me");
+  }
 }
 
 export { UserModel };

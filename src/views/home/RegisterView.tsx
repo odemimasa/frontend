@@ -22,7 +22,7 @@ function RegisterView() {
     <Form {...registerViewModel.form}>
       <form
         onSubmit={registerViewModel.form.handleSubmit(
-          registerViewModel.onSubmit
+          registerViewModel.register
         )}
         autoComplete="off"
         className="space-y-6"

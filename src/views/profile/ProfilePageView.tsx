@@ -4,12 +4,13 @@ import { Mail } from "@components/Icons/Mail";
 import { UserLocationView } from "./UserLocationView";
 import { ShoppingBag } from "@components/Icons/ShoppingBag";
 import { SubscriptionView } from "./SubscriptionView";
-import { FileTextIcon } from "@radix-ui/react-icons";
+import { FileTextIcon, TrashIcon } from "@radix-ui/react-icons";
 import { InvoiceView } from "./InvoiceView";
 import { PaymentsView } from "./PaymentsView";
 import { History } from "@components/Icons/History";
 import { Logout } from "@components/Icons/Logout";
 import { LogoutView } from "./LogoutView";
+import { DeleteAccountView } from "./DeleteAccountView";
 
 function ProfilePageView() {
   const user = useStore((state) => state.user);
@@ -78,6 +79,13 @@ function ProfilePageView() {
       </div>
 
       <LogoutView />
+
+      <div className="flex items-center gap-3 mt-6 mb-3.5 mx-6">
+        <TrashIcon className="text-[#333333] w-5 h-5" />
+        <h2 className="text-[#7B7B7B] font-medium">Hapus Akun</h2>
+      </div>
+
+      <DeleteAccountView />
     </>
   );
 }

@@ -21,7 +21,7 @@ function LoginView() {
   return (
     <Form {...loginViewModel.form}>
       <form
-        onSubmit={loginViewModel.form.handleSubmit(loginViewModel.onSubmit)}
+        onSubmit={loginViewModel.form.handleSubmit(loginViewModel.login)}
         autoComplete="off"
         className="space-y-6"
       >

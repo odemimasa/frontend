@@ -48,6 +48,7 @@ function PaymentsView() {
 
     return (
       <div
+        key={item.id}
         className={`${index === paymentsViewModel.payments.length - 1 ? "mb-0" : "mb-4"} border border-[#C2C2C2] rounded-2xl p-6 mx-6`}
       >
         <Badge

@@ -33,7 +33,7 @@ function useLoginViewModel(authModel: AuthModel) {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const login = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
       const res = await authModel.login({
@@ -66,7 +66,7 @@ function useLoginViewModel(authModel: AuthModel) {
     isLoading,
     isPasswordVisible,
     form,
-    onSubmit,
+    login,
     setIsPasswordVisible,
     togglePasswordVisibility,
   };

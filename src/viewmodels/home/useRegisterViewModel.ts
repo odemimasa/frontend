@@ -25,6 +25,7 @@ function useRegisterViewModel(authModel: AuthModel) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: "",
       email: "",
       password: "",
     },
@@ -34,7 +35,7 @@ function useRegisterViewModel(authModel: AuthModel) {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const register = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
       const res = await authModel.register({
@@ -67,7 +68,7 @@ function useRegisterViewModel(authModel: AuthModel) {
     isLoading,
     isPasswordVisible,
     form,
-    onSubmit,
+    register,
     setIsPasswordVisible,
     togglePasswordVisibility,
   };
