@@ -4,7 +4,7 @@ import type { SubscriptionModel } from "../../models/SubscriptionModel";
 import { useStore } from "../../stores";
 
 function useSubscriptionViewModel(subscriptionModel: SubscriptionModel) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const user = useStore((state) => state.user);
@@ -18,7 +18,7 @@ function useSubscriptionViewModel(subscriptionModel: SubscriptionModel) {
     if (subscription !== undefined) {
       return;
     }
-
+    setIsLoading(true);
     (async () => {
       try {
         const res = await subscriptionModel.getActiveSubscription();

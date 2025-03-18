@@ -17,8 +17,8 @@ function useTaskPageViewModel(taskModel: TaskModel) {
       return;
     }
 
+    setIsLoading(true);
     (async () => {
-      setIsLoading(true);
       try {
         const res = await taskModel.getTasks();
         if (res.data.length > 0) {

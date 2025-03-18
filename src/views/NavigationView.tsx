@@ -27,7 +27,7 @@ function NavigationView() {
         {subscription !== undefined ? (
           <li>
             <NavLink
-              to="/to-do-list"
+              to="/task"
               className={({ isActive }) =>
                 `${isActive ? "font-bold py-2 border-b-black" : "border-b-transparent font-medium"} text-sm flex border-b-4 flex-col justify-center gap-1 items-center w-24`
               }
