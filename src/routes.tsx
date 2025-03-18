@@ -3,12 +3,33 @@ import { createBrowserRouter } from "react-router";
 import { RootLayout } from "@components/RootLayout";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { AuthProvider } from "./contexts/AuthProvider";
+import { AxiosProvider } from "./contexts/AxiosProvider";
 
-const Home = lazy(() => import("./pages/Home"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Profile = lazy(() => import("./pages/Profile"));
-const ToDoList = lazy(() => import("./pages/ToDoList"));
+const HomePageView = lazy(() =>
+  import("./views/home/HomePageView").then(({ HomePageView }) => ({
+    default: HomePageView,
+  }))
+);
+
+const DashboardPageView = lazy(() =>
+  import("./views/dashboard/DashboardPageView").then(
+    ({ DashboardPageView }) => ({
+      default: DashboardPageView,
+    })
+  )
+);
+
+const ProfilePageView = lazy(() =>
+  import("./views/profile/ProfilePageView").then(({ ProfilePageView }) => ({
+    default: ProfilePageView,
+  }))
+);
+
+const TaskPageView = lazy(() =>
+  import("./views/task/TaskPageView").then(({ TaskPageView }) => ({
+    default: TaskPageView,
+  }))
+);
 
 const ErrorBoundary = lazy(() =>
   import("@components/ErrorBoundary").then(({ ErrorBoundary }) => ({
@@ -20,11 +41,13 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <AuthProvider>
-        <RootLayout />
+      <>
+        <AxiosProvider>
+          <RootLayout />
+        </AxiosProvider>
         <Analytics />
         <SpeedInsights />
-      </AuthProvider>
+      </>
     ),
     errorElement: (
       <Suspense fallback={<></>}>
@@ -36,7 +59,7 @@ export const router = createBrowserRouter([
         index: true,
         element: (
           <Suspense fallback={<></>}>
-            <Home />
+            <HomePageView />
           </Suspense>
         ),
       },
@@ -45,7 +68,7 @@ export const router = createBrowserRouter([
         path: "dashboard",
         element: (
           <Suspense fallback={<></>}>
-            <Dashboard />
+            <DashboardPageView />
           </Suspense>
         ),
       },
@@ -54,7 +77,7 @@ export const router = createBrowserRouter([
         path: "profile",
         element: (
           <Suspense fallback={<></>}>
-            <Profile />
+            <ProfilePageView />
           </Suspense>
         ),
       },
@@ -63,7 +86,7 @@ export const router = createBrowserRouter([
         path: "to-do-list",
         element: (
           <Suspense fallback={<></>}>
-            <ToDoList />
+            <TaskPageView />
           </Suspense>
         ),
       },

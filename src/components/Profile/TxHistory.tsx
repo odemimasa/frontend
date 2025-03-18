@@ -4,7 +4,7 @@ import { useStore, type Payment } from "@hooks/useStore";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
 import { useEffect, useMemo, useState } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { formatISODate } from "@utils/index";
 
 interface TxHistoryItemProps
@@ -65,7 +65,7 @@ function TxHistory() {
 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   useEffect(() => {
     if (payments !== undefined) return;

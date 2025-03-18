@@ -1,133 +1,90 @@
-import { useToast } from "@hooks/shadcn/useToast";
-import { tokenStorage } from "@utils/token";
-import type {
-  AxiosError,
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-} from "axios";
-import axios from "axios";
-import createAuthRefreshInterceptor from "axios-auth-refresh";
-import axiosRetry from "axios-retry";
 import {
   createContext,
   useContext,
-  useLayoutEffect,
+  useEffect,
+  useMemo,
+  useState,
   type PropsWithChildren,
 } from "react";
+import { useAxiosContext } from "./AxiosProvider";
+import { useStore } from "../stores";
+import { tokenStorage } from "@utils/token";
+import { UserModel } from "../models/UserModel";
+import { SubscriptionModel } from "../models/SubscriptionModel";
+import { useToast } from "@hooks/shadcn/useToast";
 
 interface AuthContextValue {
-  retryWithRefresh: AxiosInstance;
-  retryWithoutRefresh: AxiosInstance;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const refreshClient = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-});
-
-axiosRetry(refreshClient, {
-  retries: 2,
-  retryDelay: axiosRetry.exponentialDelay,
-  retryCondition: (error) => {
-    const status = error.response?.status;
-    return axiosRetry.isNetworkError(error) || (status || 0) >= 500;
-  },
-});
-
-const retryWithRefresh = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-});
-
-retryWithRefresh.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const accessToken = tokenStorage.getAccessToken();
-    config.headers.Authorization = `Bearer ${accessToken}`;
-    return config;
-  }
-);
-
-axiosRetry(retryWithRefresh, {
-  retries: 2,
-  retryDelay: axiosRetry.exponentialDelay,
-  retryCondition: (error) => {
-    const status = error.response?.status;
-    return axiosRetry.isNetworkError(error) || (status || 0) >= 500;
-  },
-});
-
-const retryWithoutRefresh = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-  validateStatus: (status) => {
-    return status >= 200 && status < 500;
-  },
-});
-
-axiosRetry(retryWithoutRefresh, {
-  retries: 2,
-  retryDelay: axiosRetry.exponentialDelay,
-  retryCondition: (error) => {
-    const status = error.response?.status;
-    return axiosRetry.isNetworkError(error) || (status || 0) >= 500;
-  },
-});
-
 function AuthProvider({ children }: PropsWithChildren) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const setUser = useStore((state) => state.setUser);
+  const setSubscription = useStore((state) => state.setSubscription);
+
   const { toast } = useToast();
+  const { retryWithRefresh, handleAxiosError } = useAxiosContext();
 
-  useLayoutEffect(() => {
-    const refreshAuthLogic = async (failedRequest: AxiosError) => {
+  const userModel = useMemo((): UserModel => {
+    return new UserModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
+  const subscriptionModel = useMemo((): SubscriptionModel => {
+    return new SubscriptionModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
+  useEffect(() => {
+    const accessToken = tokenStorage.getAccessToken();
+    const refreshToken = tokenStorage.getRefreshToken();
+
+    (async () => {
       try {
-        const refreshToken = tokenStorage.getRefreshToken();
-        const response = await refreshClient.get<{
-          access_token: string;
-          refresh_token: string;
-        }>("/auth/refresh", {
-          headers: { Authorization: `Bearer ${refreshToken}` },
-        });
-
-        tokenStorage.setAccessToken(response.data.access_token);
-        tokenStorage.setRefreshToken(response.data.refresh_token);
-
-        if (failedRequest.response?.config.headers) {
-          failedRequest.response.config.headers.Authorization = `Bearer ${response.data.access_token}`;
-        }
-
-        return Promise.resolve();
-      } catch (error) {
-        if ((error as AxiosError).response?.status === 401) {
-          toast({
-            description:
-              "Sesi telah berakhir. Kamu akan diarahkan ke halaman Beranda dalam 3 detik.",
-            variant: "destructive",
-          });
-
-          setTimeout(() => {
-            tokenStorage.removeAccessToken();
-            tokenStorage.removeRefreshToken();
-            window.location.reload();
-          }, 3000);
+        if (accessToken === "" || refreshToken === "") {
+          tokenStorage.removeAccessToken();
+          tokenStorage.removeRefreshToken();
         } else {
-          throw error;
-        }
-      }
-    };
+          const userRes = await userModel.getUser();
+          if (userRes.data) {
+            const subscriptionRes =
+              await subscriptionModel.getActiveSubscription();
 
-    createAuthRefreshInterceptor(retryWithRefresh, refreshAuthLogic, {
-      statusCodes: [401],
-      pauseInstanceWhileRefreshing: true,
-    });
-  }, [toast]);
+            setUser(userRes.data);
+            if (subscriptionRes.data) {
+              setSubscription(subscriptionRes.data);
+            }
+          }
+        }
+      } catch (error) {
+        handleAxiosError(error as Error, (response) => {
+          if (response.status === 404) {
+            toast({
+              description: "Akun tidak ditemukan.",
+              variant: "destructive",
+            });
+          }
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [
+    userModel,
+    subscriptionModel,
+    toast,
+    handleAxiosError,
+    setUser,
+    setSubscription,
+  ]);
+
+  const contextValue = useMemo(() => {
+    return { isLoading };
+  }, [isLoading]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        retryWithRefresh: retryWithRefresh,
-        retryWithoutRefresh: retryWithoutRefresh,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 
@@ -135,7 +92,7 @@ function useAuthContext() {
   const auth = useContext(AuthContext);
   if (auth === undefined) {
     throw new Error(
-      `"useAuthContext" must be used within a "AuthContext.Provider"`
+      `"useAuthContext" must be used within the "AuthContext.Provider"`
     );
   }
   return auth;

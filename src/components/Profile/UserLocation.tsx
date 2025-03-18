@@ -6,7 +6,7 @@ import { UpdateIcon } from "@radix-ui/react-icons";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
 import { useState } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 
 function UserLocation() {
   const user = useStore((state) => state.user);
@@ -14,7 +14,7 @@ function UserLocation() {
   const setPrayers = useStore((state) => state.setPrayers);
 
   const [isLoading, setIsLoading] = useState(false);
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
   const { toast } = useToast();
 
   const updateLocation = async () => {
@@ -36,7 +36,7 @@ function UserLocation() {
           const res = await retryWithRefresh.put<{
             timezone: string;
             city: string;
-          }>(`/users/${user?.id}`, {
+          }>(`/users/me`, {
             latitude: latitude.toString(),
             longitude: longitude.toString(),
           });

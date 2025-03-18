@@ -21,7 +21,7 @@ import { useStore } from "@hooks/useStore";
 import { useToast } from "@hooks/shadcn/useToast";
 import { Button } from "@components/shadcn/Button";
 import { Textarea } from "@components/shadcn/Textarea";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
 
@@ -50,7 +50,7 @@ function UpdateToDoListDialog({
   const [isLoading, setIsLoading] = useState(false);
   const setToDoLists = useStore((state) => state.setToDoLists);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

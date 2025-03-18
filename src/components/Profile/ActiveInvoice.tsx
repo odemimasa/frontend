@@ -5,7 +5,7 @@ import {
   type SubscriptionPlan,
 } from "@hooks/useStore";
 import { useEffect, useState } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
 import { formatISODateTime } from "@utils/index";
@@ -20,7 +20,7 @@ function ActiveInvoice() {
 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   useEffect(() => {
     if (activeInvoice !== undefined) return;

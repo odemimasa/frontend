@@ -8,7 +8,7 @@ import {
   TrashIcon,
 } from "@radix-ui/react-icons";
 import { lazy, useState } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import axiosRetry from "axios-retry";
 import type { AxiosError } from "axios";
 
@@ -35,7 +35,7 @@ function ToDoListItem({ id, name, description, checked }: ToDoList) {
 
   const setToDoLists = useStore((state) => state.setToDoLists);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   const handleToggleToDoList = async () => {
     setIsLoading(true);

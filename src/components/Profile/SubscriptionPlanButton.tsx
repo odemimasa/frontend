@@ -5,7 +5,7 @@ import {
   type SubscriptionPlan,
 } from "@hooks/useStore";
 import { useState, type Dispatch, type SetStateAction } from "react";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
 import {
@@ -40,7 +40,7 @@ function SubscriptionPlanButton({
   const [isLoading, setIsLoading] = useState(false);
   const [dialogOpened, setDialogOpened] = useState(false);
   const { toast } = useToast();
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
 
   const handleCreateInvoice = async () => {
     setIsLoading(true);

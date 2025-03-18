@@ -65,10 +65,20 @@ function formatISODateTime(isoString: string, timezone: string) {
   return `${dateFormatter.format(date)}, ${timeFormatter.format(date)}`;
 }
 
+function formatTimeFromUnixMs(unixTimeMs: number) {
+  const date = new Date(unixTimeMs);
+  return date.toLocaleTimeString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
 export {
   getCurrentDate,
   getPrayerTimes,
   capitalizeWord,
   formatISODate,
   formatISODateTime,
+  formatTimeFromUnixMs,
 };

@@ -1,17 +1,17 @@
 import { Outlet, useLocation, useNavigate } from "react-router";
 import { Toaster } from "@components/shadcn/Toaster";
-import { useStore, type User } from "@hooks/useStore";
+import { useStore as useStoreOld, type User } from "@hooks/useStore";
 import { useEffect, useState } from "react";
 import { useToast } from "@hooks/shadcn/useToast";
-import { NavigationBar } from "./NavigationBar";
 import { tokenStorage } from "@utils/token";
-import type { AxiosError } from "axios";
-import axiosRetry from "axios-retry";
-import { useAuthContext } from "../contexts/AuthProvider";
+import { useAxiosContext } from "../contexts/AxiosProvider";
+import { useStore } from "../stores";
+import { NavigationView } from "../views/NavigationView";
 
 function RootLayout(): JSX.Element {
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh, handleAxiosError } = useAxiosContext();
   const user = useStore((state) => state.user);
+  const setUserOld = useStoreOld((state) => state.setUser);
   const setUser = useStore((state) => state.setUser);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -31,27 +31,17 @@ function RootLayout(): JSX.Element {
         } else {
           const res = await retryWithRefresh.get<User>("/users/me");
           if (res.status === 200) {
+            setUserOld(res.data);
             setUser(res.data);
           }
         }
       } catch (error) {
-        const status = (error as AxiosError).response?.status;
-        if (
-          axiosRetry.isNetworkError(error as AxiosError) ||
-          (status || 0) >= 500
-        ) {
-          toast({
-            description: "Gagal mendapatkan data pengguna.",
-            variant: "destructive",
-          });
-        }
-
-        console.error(new Error("failed to get me", { cause: error }));
+        handleAxiosError(error as Error);
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [setUser, toast, retryWithRefresh]);
+  }, [setUser, toast, retryWithRefresh, handleAxiosError, setUserOld]);
 
   useEffect(() => {
     if (isLoading) {
@@ -95,7 +85,7 @@ function RootLayout(): JSX.Element {
         )}
 
         <Outlet />
-        {user !== undefined ? <NavigationBar /> : <></>}
+        {user !== undefined ? <NavigationView /> : <></>}
       </main>
     </>
   );

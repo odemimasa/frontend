@@ -5,7 +5,7 @@ import { useToast } from "@hooks/shadcn/useToast";
 import { getCurrentDate, getPrayerTimes } from "@utils/index";
 import type { AxiosError } from "axios";
 import axiosRetry from "axios-retry";
-import { useAuthContext } from "../../contexts/AuthProvider";
+import { useAxiosContext } from "../../contexts/AxiosProvider";
 
 const PrayerItem = lazy(() =>
   import("@components/Dashboard/PrayerItem").then(({ PrayerItem }) => ({
@@ -41,7 +41,7 @@ function PrayerCompletionIndicator({
 }
 
 function PrayerList() {
-  const { retryWithRefresh } = useAuthContext();
+  const { retryWithRefresh } = useAxiosContext();
   const user = useStore((state) => state.user);
   const prayers = useStore((state) => state.prayers);
   const setPrayers = useStore((state) => state.setPrayers);
