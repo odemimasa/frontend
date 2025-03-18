@@ -6,7 +6,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tokenStorage } from "@utils/token";
-import { useStore } from "../../stores";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email invalid" }),
@@ -17,7 +16,6 @@ function useLoginViewModel(authModel: AuthModel) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const setUser = useStore((state) => state.setUser);
   const { toast } = useToast();
   const { handleAxiosError } = useAxiosContext();
 
@@ -45,7 +43,9 @@ function useLoginViewModel(authModel: AuthModel) {
         toast({ description: "Login berhasil.", variant: "default" });
         tokenStorage.setAccessToken(res.data.access_token);
         tokenStorage.setRefreshToken(res.data.refresh_token);
-        setUser(res.data.user);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else if (res.status === 400) {
         throw new Error("invalid request body");
       } else if (res.status === 404) {

@@ -10,10 +10,6 @@ import { createPlanSlice, type PlanSlice } from "./plan";
 import { createPaymentSlice, type PaymentSlice } from "./payment";
 import { createTaskSlice, type TaskSlice } from "./task";
 
-type ResetAction = {
-  reset: () => void;
-};
-
 const useStore = create<
   UserSlice &
     PrayerSlice &
@@ -21,8 +17,7 @@ const useStore = create<
     InvoiceSlice &
     PlanSlice &
     PaymentSlice &
-    TaskSlice &
-    ResetAction
+    TaskSlice
 >()((...a) => ({
   ...createUserSlice(...a),
   ...createPrayerSlice(...a),
@@ -31,18 +26,6 @@ const useStore = create<
   ...createPlanSlice(...a),
   ...createPaymentSlice(...a),
   ...createTaskSlice(...a),
-  reset: () => {
-    a[0]({
-      user: undefined,
-      prayers: [],
-      thisMonthPrayers: [],
-      subscription: undefined,
-      invoice: undefined,
-      plans: [],
-      payments: [],
-      tasks: [],
-    });
-  },
 }));
 
 export { useStore };

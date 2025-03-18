@@ -114,9 +114,6 @@ function AxiosProvider({ children }: PropsWithChildren) {
               func(error.response);
             }
           }
-        } else {
-          toast(commonErrorToastConfig);
-          console.error(new Error("unexpected error", { cause: error }));
         }
       } else {
         toast(commonErrorToastConfig);
@@ -154,8 +151,7 @@ function AxiosProvider({ children }: PropsWithChildren) {
           } else if (error.response) {
             if (error.response.status === 401) {
               toast({
-                description:
-                  "Sesi telah berakhir. Anda akan diarahkan ke halaman Beranda dalam 3 detik.",
+                description: "Sesi telah berakhir.",
                 variant: "destructive",
               });
 
@@ -163,16 +159,13 @@ function AxiosProvider({ children }: PropsWithChildren) {
               tokenStorage.removeRefreshToken();
               setTimeout(() => {
                 window.location.reload();
-              }, 3000);
+              }, 1000);
             } else if (error.response.status >= 500) {
               toast(commonErrorToastConfig);
               console.error(new Error("server error", { cause: error }));
             } else {
               throw error;
             }
-          } else {
-            toast(commonErrorToastConfig);
-            console.error(new Error("unexpected error", { cause: error }));
           }
         } else {
           toast(commonErrorToastConfig);
@@ -206,7 +199,7 @@ function useAxiosContext() {
   const axios = useContext(AxiosContext);
   if (axios === undefined) {
     throw new Error(
-      `"useAxiosContext" must be used within a "AxiosContext.Provider"`
+      `"useAxiosContext" must be used within the "AxiosContext.Provider"`
     );
   }
   return axios;

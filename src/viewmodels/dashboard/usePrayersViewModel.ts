@@ -19,7 +19,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
   const { handleAxiosError } = useAxiosContext();
 
   useEffect(() => {
-    if (prayers.length !== 0) {
+    if (prayers.length > 0) {
       return;
     }
 

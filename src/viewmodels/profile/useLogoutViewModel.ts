@@ -26,7 +26,9 @@ function useLogoutViewModel(authModel: AuthModel) {
       setIsOpen(false);
       tokenStorage.removeAccessToken();
       tokenStorage.removeRefreshToken();
-      // TODO: reset state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       handleAxiosError(error as Error);
     } finally {

@@ -1,8 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider } from "react-router";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { App } from "./App.tsx";
 
-import { router } from "./routes.tsx";
 import "./index.css";
 
 const root = document.getElementById("root") as HTMLElement;
@@ -14,6 +15,8 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 
 createRoot(root).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <App />
+    <Analytics />
+    <SpeedInsights />
   </StrictMode>
 );

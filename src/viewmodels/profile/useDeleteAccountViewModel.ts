@@ -19,7 +19,9 @@ function useDeleteAccountViewModel(userModel: UserModel) {
       setIsOpen(false);
       tokenStorage.removeAccessToken();
       tokenStorage.removeRefreshToken();
-      // TODO: reset state
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       handleAxiosError(error as Error, (response) => {
         if (response.status === 404) {

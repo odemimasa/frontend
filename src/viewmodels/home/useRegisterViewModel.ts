@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { AuthModel } from "../../models/AuthModel";
-import { useStore } from "../../stores";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useForm } from "react-hook-form";
@@ -18,7 +17,6 @@ function useRegisterViewModel(authModel: AuthModel) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const setUser = useStore((state) => state.setUser);
   const { toast } = useToast();
   const { handleAxiosError } = useAxiosContext();
 
@@ -48,7 +46,9 @@ function useRegisterViewModel(authModel: AuthModel) {
         toast({ description: "Registrasi berhasil.", variant: "default" });
         tokenStorage.setAccessToken(res.data.access_token);
         tokenStorage.setRefreshToken(res.data.refresh_token);
-        setUser(res.data.user);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else if (res.status === 400) {
         throw new Error("invalid request body");
       } else if (res.status === 409) {

@@ -26,6 +26,10 @@ class UserModel {
     this.fetch = fetch;
   }
 
+  async getUser(): Promise<AxiosResponse<UserResponse>> {
+    return await this.fetch.get<UserResponse>("/users/me");
+  }
+
   async updateUser(
     userRequest: UserRequest
   ): Promise<AxiosResponse<UserResponse>> {
