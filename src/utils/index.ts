@@ -28,11 +28,6 @@ function getPrayerTimes(
   return prayerTimes;
 }
 
-function capitalizeWord(word: string): string {
-  const firstLetter = word[0];
-  return firstLetter.toUpperCase() + word.slice(1);
-}
-
 function formatISODate(isoString: string, timezone: string) {
   const date = new Date(isoString);
 
@@ -77,7 +72,6 @@ function formatTimeFromUnixMs(unixTimeMs: number) {
 export {
   getCurrentDate,
   getPrayerTimes,
-  capitalizeWord,
   formatISODate,
   formatISODateTime,
   formatTimeFromUnixMs,

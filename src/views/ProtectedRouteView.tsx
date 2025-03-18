@@ -1,11 +1,11 @@
 import { Toaster } from "@components/shadcn/Toaster";
-import { useAuthContext } from "./contexts/AuthProvider";
-import { useStore } from "./stores";
+import { useAuthContext } from "../contexts/AuthProvider";
+import { useStore } from "../stores";
 import { Outlet, useLocation, useNavigate } from "react-router";
-import { NavigationView } from "./views/NavigationView";
+import { NavigationView } from "./NavigationView";
 import { useEffect } from "react";
 
-function ProtectedRoute() {
+function ProtectedRouteView() {
   const user = useStore((state) => state.user);
   const location = useLocation();
   const navigate = useNavigate();
@@ -59,4 +59,4 @@ function ProtectedRoute() {
   );
 }
 
-export { ProtectedRoute };
+export { ProtectedRouteView };

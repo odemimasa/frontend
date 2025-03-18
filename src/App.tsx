@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { AxiosProvider } from "./contexts/AxiosProvider";
 import { lazy, Suspense } from "react";
-import { ProtectedRoute } from "./ProtectedRoute";
+import { ProtectedRouteView } from "./views/ProtectedRouteView";
 
 const HomePageView = lazy(() =>
   import("./views/home/HomePageView").then(({ HomePageView }) => ({
@@ -30,13 +30,26 @@ const TaskPageView = lazy(() =>
   }))
 );
 
+const ErrorBoundaryView = lazy(() =>
+  import("./views/ErrorBoundaryView").then(({ ErrorBoundaryView }) => ({
+    default: ErrorBoundaryView,
+  }))
+);
+
 function App() {
   return (
     <BrowserRouter>
       <AxiosProvider>
         <AuthProvider>
           <Routes>
-            <Route element={<ProtectedRoute />}>
+            <Route
+              element={<ProtectedRouteView />}
+              errorElement={
+                <Suspense fallback={<></>}>
+                  <ErrorBoundaryView />
+                </Suspense>
+              }
+            >
               <Route
                 path="/"
                 element={
