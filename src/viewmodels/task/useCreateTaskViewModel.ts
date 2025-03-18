@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { TaskModel, TaskRequest } from "../../models/TaskModel";
+import type { TaskModel, CreateTaskRequest } from "../../models/TaskModel";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
@@ -29,12 +29,12 @@ function useCreateTaskViewModel(taskModel: TaskModel) {
   });
 
   const createTask = async (
-    taskRequest: TaskRequest,
+    createTaskRequest: CreateTaskRequest,
     setIsOpen: Dispatch<SetStateAction<boolean>>
   ) => {
     setIsLoading(true);
     try {
-      const res = await taskModel.createTask(taskRequest);
+      const res = await taskModel.createTask(createTaskRequest);
       toast({ description: "Berhasil membuat ibadah.", variant: "default" });
       setIsOpen(false);
       setTasks((tasks) => {

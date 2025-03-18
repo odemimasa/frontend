@@ -1,8 +1,14 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
 
-interface TaskRequest {
+interface CreateTaskRequest {
   name: string;
   description: string;
+}
+
+interface UpdateTaskRequest {
+  name?: string;
+  description?: string;
+  checked?: boolean;
 }
 
 interface TaskResponse {
@@ -24,15 +30,26 @@ class TaskModel {
   }
 
   async createTask(
-    taskRequest: TaskRequest
+    createTaskRequest: CreateTaskRequest
   ): Promise<AxiosResponse<TaskResponse>> {
     return this.fetch.post<
       TaskResponse,
       AxiosResponse<TaskResponse>,
-      TaskRequest
-    >("/tasks", taskRequest);
+      CreateTaskRequest
+    >("/tasks", createTaskRequest);
+  }
+
+  async updateTask(
+    id: string,
+    updateTaskRequest: UpdateTaskRequest
+  ): Promise<AxiosResponse<TaskResponse>> {
+    return this.fetch.put<
+      TaskResponse,
+      AxiosResponse<TaskResponse>,
+      UpdateTaskRequest
+    >(`/tasks/${id}`, updateTaskRequest);
   }
 }
 
 export { TaskModel };
-export type { TaskResponse, TaskRequest };
+export type { TaskResponse, CreateTaskRequest, UpdateTaskRequest };
