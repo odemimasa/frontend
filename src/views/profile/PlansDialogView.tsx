@@ -9,6 +9,7 @@ import { PlanModel } from "../../models/PlanModel";
 import { Skeleton } from "@components/shadcn/Skeleton";
 import { usePlansDialogViewModel } from "../../viewmodels/profile/usePlansDialogViewModel";
 import { PlansView } from "./PlansView";
+import { CouponModel } from "../../models/CouponModel";
 
 interface PlansViewProps {
   isOpen: boolean;
@@ -17,11 +18,16 @@ interface PlansViewProps {
 
 function PlansDialogView({ isOpen, setIsOpen }: PlansViewProps) {
   const { retryWithRefresh } = useAxiosContext();
+
   const planModel = useMemo((): PlanModel => {
     return new PlanModel(retryWithRefresh);
   }, [retryWithRefresh]);
 
-  const plansDialogViewModel = usePlansDialogViewModel(planModel);
+  const couponModel = useMemo((): CouponModel => {
+    return new CouponModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
+  const plansDialogViewModel = usePlansDialogViewModel(planModel, couponModel);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -37,13 +43,22 @@ function PlansDialogView({ isOpen, setIsOpen }: PlansViewProps) {
             </button>
           </div>
 
-          <div className="border border-[#C2C2C2] rounded-2xl px-5 py-3">
-            <Label
-              htmlFor="coupon_code"
-              className="text-black font-bold text-base mb-2 block"
-            >
-              Kode Influencer
-            </Label>
+          <form
+            action=""
+            className="border border-[#C2C2C2] rounded-2xl px-5 py-3"
+          >
+            <div className="flex justify-between items-center">
+              <Label
+                htmlFor="coupon_code"
+                className="text-black font-bold text-base mb-2 block"
+              >
+                Kode Influencer
+              </Label>
+
+              <p className="text-[#757575] text-xs font-medium">
+                Sisa Kode: {plansDialogViewModel.coupon?.quota ?? "_"}
+              </p>
+            </div>
 
             <Input
               value={plansDialogViewModel.couponCode}
@@ -55,9 +70,28 @@ function PlansDialogView({ isOpen, setIsOpen }: PlansViewProps) {
               autoComplete="off"
               className="mb-4"
             />
-          </div>
 
-          {plansDialogViewModel.isLoading ? (
+            <Button
+              onClick={() =>
+                plansDialogViewModel.getCoupon(plansDialogViewModel.couponCode)
+              }
+              disabled={
+                plansDialogViewModel.couponCode === "" ||
+                plansDialogViewModel.isLoading
+              }
+              type="submit"
+              variant="outline"
+              className="border-[#2F3D4A]"
+            >
+              {plansDialogViewModel.couponCode !== "" &&
+              plansDialogViewModel.isLoading
+                ? "Loading..."
+                : "Cek Kuota"}
+            </Button>
+          </form>
+
+          {plansDialogViewModel.couponCode === "" &&
+          plansDialogViewModel.isLoading ? (
             <div className="animate-pulse border rounded-2xl overflow-hidden flex flex-col space-y-6 my-6 pb-6">
               <Skeleton className="h-16" />
               <Skeleton className="h-8 w-32 mx-auto rounded-xl" />

@@ -2,17 +2,48 @@ import { useEffect, useMemo, useState } from "react";
 import type { PlanModel, PlanResponse } from "../../models/PlanModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
+import type { CouponModel, CouponResponse } from "../../models/CouponModel";
+import { useToast } from "@hooks/shadcn/useToast";
 
 type PricingPlan = Map<string, PlanResponse[]>;
 
-function usePlansDialogViewModel(planModel: PlanModel) {
+function usePlansDialogViewModel(
+  planModel: PlanModel,
+  couponModel: CouponModel
+) {
   const [isLoading, setIsLoading] = useState(true);
   const [couponCode, setCouponCode] = useState("");
+  const [coupon, setCoupon] = useState<CouponResponse | undefined>(undefined);
 
   const plans = useStore((state) => state.plans);
   const setPlans = useStore((state) => state.setPlans);
 
+  const { toast } = useToast();
   const { handleAxiosError } = useAxiosContext();
+
+  const getCoupon = async (code: string) => {
+    setIsLoading(true);
+    try {
+      const res = await couponModel.getCoupon(code);
+      toast({
+        description: `Kupon ditemukan. Sisa kode adalah ${res.data.quota}.`,
+        variant: "default",
+      });
+      setCoupon(res.data);
+    } catch (error) {
+      handleAxiosError(error as Error, (response) => {
+        if (response.status === 404) {
+          setCoupon(undefined);
+          toast({
+            description: "Kupon tidak ditemukan.",
+            variant: "destructive",
+          });
+        }
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (plans.length > 0) {
@@ -52,7 +83,14 @@ function usePlansDialogViewModel(planModel: PlanModel) {
     return pricingPlan;
   }, [plans]);
 
-  return { isLoading, couponCode, pricingPlan, setCouponCode };
+  return {
+    isLoading,
+    couponCode,
+    coupon,
+    pricingPlan,
+    setCouponCode,
+    getCoupon,
+  };
 }
 
 export { usePlansDialogViewModel };
