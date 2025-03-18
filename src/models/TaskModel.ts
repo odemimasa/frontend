@@ -49,6 +49,10 @@ class TaskModel {
       UpdateTaskRequest
     >(`/tasks/${id}`, updateTaskRequest);
   }
+
+  async deleteTask(id: string): Promise<AxiosResponse> {
+    return this.fetch.delete(`/tasks/${id}`);
+  }
 }
 
 export { TaskModel };

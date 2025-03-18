@@ -66,8 +66,8 @@ function TaskView({ task }: { task: TaskResponse }) {
 
         <DeleteTaskView
           task={task}
-          isOpen={taskViewModel.isUpdateOpen}
-          setIsOpen={taskViewModel.setIsUpdateOpen}
+          isOpen={taskViewModel.isDeleteOpen}
+          setIsOpen={taskViewModel.setIsDeleteOpen}
         />
       </div>
 
