@@ -5,7 +5,7 @@ import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { SubscriptionModel } from "../../models/SubscriptionModel";
 import { useSubscriptionViewModel } from "../../viewmodels/profile/useSubscriptionViewModel";
 import { formatISODate } from "@utils/index";
-import { lazy } from "react";
+import { lazy, useMemo } from "react";
 
 const PlansDialogView = lazy(() =>
   import("./PlansDialogView").then(({ PlansDialogView }) => ({
@@ -15,7 +15,10 @@ const PlansDialogView = lazy(() =>
 
 function SubscriptionView() {
   const { retryWithRefresh } = useAxiosContext();
-  const subscriptionModel = new SubscriptionModel(retryWithRefresh);
+  const subscriptionModel = useMemo((): SubscriptionModel => {
+    return new SubscriptionModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
   const subscriptionViewModel = useSubscriptionViewModel(subscriptionModel);
 
   if (subscriptionViewModel.isLoading) {

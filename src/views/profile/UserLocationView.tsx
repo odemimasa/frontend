@@ -4,10 +4,14 @@ import { UserModel } from "../../models/UserModel";
 import { useUserLocationViewModel } from "../../viewmodels/profile/useUserLocationViewModel";
 import { Button } from "@components/shadcn/Button";
 import { UpdateIcon } from "@radix-ui/react-icons";
+import { useMemo } from "react";
 
 function UserLocationView() {
   const { retryWithRefresh } = useAxiosContext();
-  const userModel = new UserModel(retryWithRefresh);
+  const userModel = useMemo((): UserModel => {
+    return new UserModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
   const userLocationViewModel = useUserLocationViewModel(userModel);
 
   return (

@@ -4,10 +4,14 @@ import { PrayerModel } from "../../models/PrayerModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { PrayerProgressView } from "./PrayerProgressView";
 import { PrayerView } from "./PrayerView";
+import { useMemo } from "react";
 
 function PrayersView() {
   const { retryWithRefresh } = useAxiosContext();
-  const prayerModel = new PrayerModel(retryWithRefresh);
+  const prayerModel = useMemo((): PrayerModel => {
+    return new PrayerModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
   const prayersViewModel = usePrayersViewModel(prayerModel);
 
   if (prayersViewModel.isLoading) {

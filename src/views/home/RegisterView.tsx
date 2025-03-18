@@ -12,10 +12,14 @@ import { Input } from "@components/shadcn/Input";
 import { Button } from "@components/shadcn/Button";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { useRegisterViewModel } from "../../viewmodels/home/useRegisterViewModel";
+import { useMemo } from "react";
 
 function RegisterView() {
   const { retryWithoutRefresh } = useAxiosContext();
-  const authModel = new AuthModel(retryWithoutRefresh);
+  const authModel = useMemo((): AuthModel => {
+    return new AuthModel(retryWithoutRefresh);
+  }, [retryWithoutRefresh]);
+
   const registerViewModel = useRegisterViewModel(authModel);
 
   return (

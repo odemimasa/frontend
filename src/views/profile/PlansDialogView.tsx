@@ -3,7 +3,7 @@ import { Dialog, DialogContent } from "@components/shadcn/Dialog";
 import { Input } from "@components/shadcn/Input";
 import { Label } from "@components/shadcn/Label";
 import { CheckIcon, Cross2Icon } from "@radix-ui/react-icons";
-import type { Dispatch, SetStateAction } from "react";
+import { useMemo, type Dispatch, type SetStateAction } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { PlanModel } from "../../models/PlanModel";
 import { Skeleton } from "@components/shadcn/Skeleton";
@@ -17,7 +17,10 @@ interface PlansViewProps {
 
 function PlansDialogView({ isOpen, setIsOpen }: PlansViewProps) {
   const { retryWithRefresh } = useAxiosContext();
-  const planModel = new PlanModel(retryWithRefresh);
+  const planModel = useMemo((): PlanModel => {
+    return new PlanModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
   const plansDialogViewModel = usePlansDialogViewModel(planModel);
 
   return (

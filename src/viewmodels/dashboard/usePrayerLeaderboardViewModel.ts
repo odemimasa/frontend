@@ -1,5 +1,6 @@
 import type { PrayerName } from "@hooks/useStore";
 import type { PrayerStatistics } from "./usePrayerReportViewModel";
+import { useStore } from "../../stores";
 
 interface PrayerStatus {
   prayerName: PrayerName;
@@ -19,6 +20,8 @@ function getMostFrequentPrayer(
 }
 
 function usePrayerLeaderboardViewModel() {
+  const subscription = useStore((state) => state.subscription);
+
   const findMostOnTimePrayer = (prayerStatistics: PrayerStatistics) => {
     const prayerNames: PrayerName[] = [
       "subuh",
@@ -70,7 +73,12 @@ function usePrayerLeaderboardViewModel() {
     return getMostFrequentPrayer(prayerMissedStats);
   };
 
-  return { findMostOnTimePrayer, findMostLatePrayer, findMostMissedPrayer };
+  return {
+    subscription,
+    findMostOnTimePrayer,
+    findMostLatePrayer,
+    findMostMissedPrayer,
+  };
 }
 
 export { usePrayerLeaderboardViewModel };

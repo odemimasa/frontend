@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useMemo, type Dispatch, type SetStateAction } from "react";
 import type { PlanResponse } from "../../models/PlanModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { InvoiceModel } from "../../models/InvoiceModel";
@@ -22,7 +22,10 @@ interface PlanButtonViewProps {
 
 function PlanButtonView({ plan, couponCode, setIsOpen }: PlanButtonViewProps) {
   const { retryWithRefresh } = useAxiosContext();
-  const invoiceModel = new InvoiceModel(retryWithRefresh);
+  const invoiceModel = useMemo((): InvoiceModel => {
+    return new InvoiceModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
   const planButtonViewModel = usePlanButtonViewModel(invoiceModel);
 
   return (

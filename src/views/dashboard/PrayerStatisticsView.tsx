@@ -12,6 +12,7 @@ import {
 import { Line } from "react-chartjs-2";
 import { Link } from "react-router";
 import type { PrayerStatistics } from "../../viewmodels/dashboard/usePrayerReportViewModel";
+import { useStore } from "../../stores";
 
 ChartJS.register(
   CategoryScale,
@@ -28,11 +29,11 @@ function PrayerStatisticsView({
 }: {
   prayerStatistics: PrayerStatistics;
 }) {
-  const isSubscribed = false;
+  const subscription = useStore((state) => state.subscription);
 
   return (
     <div className="relative overflow-hidden mx-6">
-      {isSubscribed ? (
+      {subscription === undefined ? (
         <div className="absolute inset-0 z-10 bg-white/20 backdrop-blur-sm flex justify-center items-center">
           <div className="bg-white rounded-xl shadow-md drop-shadow-md w-full max-w-[80%] text-center p-4">
             <h3 className="text-[#363636] text-lg font-bold mb-2">

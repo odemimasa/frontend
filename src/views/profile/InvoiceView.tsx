@@ -6,11 +6,18 @@ import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { InvoiceModel } from "../../models/InvoiceModel";
 import { useInvoiceViewModel } from "../../viewmodels/profile/useInvoiceViewModel";
 import { PlanModel } from "../../models/PlanModel";
+import { useMemo } from "react";
 
 function InvoiceView() {
   const { retryWithRefresh } = useAxiosContext();
-  const invoiceModel = new InvoiceModel(retryWithRefresh);
-  const planModel = new PlanModel(retryWithRefresh);
+  const invoiceModel = useMemo((): InvoiceModel => {
+    return new InvoiceModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
+  const planModel = useMemo((): PlanModel => {
+    return new PlanModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
   const invoiceViewModel = useInvoiceViewModel(invoiceModel, planModel);
 
   if (invoiceViewModel.isLoading) {

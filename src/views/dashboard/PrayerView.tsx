@@ -5,6 +5,7 @@ import type { PrayerSchedule } from "../../viewmodels/dashboard/usePrayersViewMo
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { PrayerModel } from "../../models/PrayerModel";
 import { usePrayerViewModel } from "../../viewmodels/dashboard/usePrayerViewModel";
+import { useMemo } from "react";
 
 interface PrayerViewProps {
   prayerSchedule: PrayerSchedule[];
@@ -22,7 +23,10 @@ function PrayerView({
   index,
 }: PrayerViewProps) {
   const { retryWithRefresh } = useAxiosContext();
-  const prayerModel = new PrayerModel(retryWithRefresh);
+  const prayerModel = useMemo((): PrayerModel => {
+    return new PrayerModel(retryWithRefresh);
+  }, [retryWithRefresh]);
+
   const prayerViewModel = usePrayerViewModel(prayerModel);
 
   const handleCheckPrayer = () => {
