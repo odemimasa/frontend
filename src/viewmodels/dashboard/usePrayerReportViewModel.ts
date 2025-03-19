@@ -12,7 +12,7 @@ import type { PrayerName } from "../../dtos/PrayerDTO";
 type PrayerStatistics = Map<PrayerName, number[]>;
 
 function usePrayerReportViewModel(prayerModel: PrayerModel) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const user = useStore((state) => state.user);
   const thisMonthPrayers = useStore((state) => state.thisMonthPrayers);
@@ -21,11 +21,13 @@ function usePrayerReportViewModel(prayerModel: PrayerModel) {
   const { handleAxiosError } = useAxiosContext();
 
   useEffect(() => {
-    if (thisMonthPrayers.length !== 0) {
+    if (thisMonthPrayers !== undefined) {
       return;
     }
 
+    setIsLoading(true);
     const currentTime = getCurrentDate(user?.timezone ?? "");
+
     (async () => {
       try {
         const res = await prayerModel.getPrayers(
@@ -33,9 +35,7 @@ function usePrayerReportViewModel(prayerModel: PrayerModel) {
           currentTime.getMonth() + 1
         );
 
-        if (res.data.length !== 0) {
-          setThisMonthPrayers(res.data);
-        }
+        setThisMonthPrayers(res.data);
       } catch (error) {
         handleAxiosError(error as Error, (response) => {
           if (response.status === 400) {
@@ -54,17 +54,21 @@ function usePrayerReportViewModel(prayerModel: PrayerModel) {
     setThisMonthPrayers,
   ]);
 
-  const prayerStatistics = useMemo((): PrayerStatistics => {
-    if (thisMonthPrayers.length === 0) {
-      return new Map<PrayerName, number[]>();
+  const prayerStatistics = useMemo((): PrayerStatistics | undefined => {
+    if (thisMonthPrayers === undefined) {
+      return undefined;
     }
 
-    const prayerStatistics = new Map<PrayerName, number[]>();
+    const prayerStatistics: PrayerStatistics = new Map();
     prayerStatistics.set("subuh", [0, 0, 0]);
     prayerStatistics.set("zuhur", [0, 0, 0]);
     prayerStatistics.set("asar", [0, 0, 0]);
     prayerStatistics.set("magrib", [0, 0, 0]);
     prayerStatistics.set("isya", [0, 0, 0]);
+
+    if (thisMonthPrayers.length === 0) {
+      return prayerStatistics;
+    }
 
     for (const prayer of thisMonthPrayers) {
       const statistic = prayerStatistics.get(prayer.name)!;
@@ -79,7 +83,6 @@ function usePrayerReportViewModel(prayerModel: PrayerModel) {
       prayerStatistics.set(prayer.name, statistic);
     }
 
-    setIsLoading(false);
     return prayerStatistics;
   }, [thisMonthPrayers]);
 

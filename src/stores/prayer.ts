@@ -2,23 +2,29 @@ import type { StateCreator } from "zustand";
 import type { PrayerResponse } from "../dtos/PrayerDTO";
 
 interface PrayerSlice {
-  prayers: PrayerResponse[];
-  thisMonthPrayers: PrayerResponse[];
+  prayers: PrayerResponse[] | undefined;
+  thisMonthPrayers: PrayerResponse[] | undefined;
   setPrayers: (
     prayers:
-      | ((prayers: PrayerResponse[]) => PrayerResponse[])
+      | ((
+          prayers: PrayerResponse[] | undefined
+        ) => PrayerResponse[] | undefined)
       | PrayerResponse[]
+      | undefined
   ) => void;
   setThisMonthPrayers: (
     thisMonthPrayers:
-      | ((thisMonthPrayers: PrayerResponse[]) => PrayerResponse[])
+      | ((
+          thisMonthPrayers: PrayerResponse[] | undefined
+        ) => PrayerResponse[] | undefined)
       | PrayerResponse[]
+      | undefined
   ) => void;
 }
 
 const createPrayerSlice: StateCreator<PrayerSlice> = (set) => ({
-  prayers: [],
-  thisMonthPrayers: [],
+  prayers: undefined,
+  thisMonthPrayers: undefined,
   setPrayers: (prayers) => {
     set((state) => {
       if (typeof prayers === "function") {

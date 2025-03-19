@@ -5,14 +5,12 @@ import { getCurrentDate } from "@utils/index";
 import type { PrayerModel } from "../../models/PrayerModel";
 import type { PrayerSchedule } from "./usePrayersViewModel";
 import { useToast } from "@hooks/shadcn/useToast";
-import type { PrayerName, PrayerStatus } from "../../dtos/PrayerDTO";
+import type { PrayerStatus } from "../../dtos/PrayerDTO";
 
 interface DeterminePrayerStatusParams {
-  prayerSchedule: PrayerSchedule[];
-  prayerDate: Date;
-  prayerName: PrayerName;
-  sunriseDate: Date;
-  index: number;
+  nextPrayer: PrayerSchedule;
+  currentPrayer: PrayerSchedule;
+  currentSunriseDate: Date;
 }
 
 function usePrayerViewModel(prayerModel: PrayerModel) {
@@ -26,18 +24,16 @@ function usePrayerViewModel(prayerModel: PrayerModel) {
   const { handleAxiosError } = useAxiosContext();
 
   const determinePrayerStatus = ({
-    prayerSchedule,
-    prayerDate,
-    prayerName,
-    sunriseDate,
-    index,
+    nextPrayer,
+    currentPrayer,
+    currentSunriseDate,
   }: DeterminePrayerStatusParams): PrayerStatus => {
     let nextPrayerTime = 0;
-    if (prayerName === "subuh") {
-      nextPrayerTime = sunriseDate.getTime() / 1000;
-    } else if (prayerName === "isya") {
-      const nextDate = new Date(prayerDate);
-      nextDate.setDate(prayerDate.getDate() + 1);
+    if (currentPrayer.name === "subuh") {
+      nextPrayerTime = currentSunriseDate.getTime() / 1000;
+    } else if (currentPrayer.name === "isya") {
+      const nextDate = new Date(currentPrayer.date);
+      nextDate.setDate(currentPrayer.date.getDate() + 1);
 
       const nextPrayerTimes = prayerModel.getPrayerTimes(
         user?.latitude ?? 0,
@@ -47,10 +43,10 @@ function usePrayerViewModel(prayerModel: PrayerModel) {
 
       nextPrayerTime = nextPrayerTimes.fajr.getTime() / 1000;
     } else {
-      nextPrayerTime = prayerSchedule[index + 1].date.getTime() / 1000;
+      nextPrayerTime = nextPrayer.date.getTime() / 1000;
     }
 
-    const currentPrayerTime = prayerDate.getTime() / 1000;
+    const currentPrayerTime = currentPrayer.date.getTime() / 1000;
     const prayerTimeDifference = nextPrayerTime - currentPrayerTime;
     const idealTime = prayerTimeDifference * 0.75;
 

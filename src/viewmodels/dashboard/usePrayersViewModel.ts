@@ -10,7 +10,7 @@ type PrayerSchedule = Pick<PrayerResponse, "id" | "name" | "status"> & {
 };
 
 function usePrayersViewModel(prayerModel: PrayerModel) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [sunriseDate, setSunriseDate] = useState(new Date());
 
@@ -20,10 +20,11 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
   const { handleAxiosError } = useAxiosContext();
 
   useEffect(() => {
-    if (prayers.length > 0) {
+    if (prayers !== undefined) {
       return;
     }
 
+    setIsLoading(true);
     const prayerTimes = prayerModel.getPrayerTimes(
       user?.latitude ?? 0,
       user?.longitude ?? 0
@@ -37,11 +38,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
           prayerTimes.fajr.getDate()
         );
 
-        if (res.data.length !== 0) {
-          setCurrentDate(getCurrentDate(user?.timezone ?? ""));
-          setSunriseDate(prayerTimes.sunrise);
-          setPrayers(res.data);
-        }
+        setPrayers(res.data);
       } catch (error) {
         handleAxiosError(error as Error, (response) => {
           if (response.status === 400) {
@@ -62,7 +59,11 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
     user?.timezone,
   ]);
 
-  const prayerSchedule = useMemo((): PrayerSchedule[] => {
+  const prayerSchedule = useMemo((): PrayerSchedule[] | undefined => {
+    if (prayers === undefined) {
+      return undefined;
+    }
+
     if (prayers.length === 0) {
       return [];
     }
@@ -73,8 +74,8 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
     );
 
     if (prayerTimes.fajr.getDate() !== prayers[0].day) {
-      setPrayers([]);
-      return [];
+      setPrayers(undefined);
+      return undefined;
     }
 
     const prayerSchedule: PrayerSchedule[] = [
@@ -110,7 +111,6 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
       },
     ];
 
-    setIsLoading(false);
     setCurrentDate(getCurrentDate(user?.timezone ?? ""));
     setSunriseDate(prayerTimes.sunrise);
 
@@ -126,7 +126,14 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
 
       return item;
     });
-  }, [prayers, setPrayers, user?.latitude, user?.longitude, user?.timezone]);
+  }, [
+    prayers,
+    prayerModel,
+    setPrayers,
+    user?.latitude,
+    user?.longitude,
+    user?.timezone,
+  ]);
 
   return { isLoading, currentDate, sunriseDate, prayerSchedule };
 }

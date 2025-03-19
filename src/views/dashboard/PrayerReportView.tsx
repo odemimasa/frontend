@@ -55,7 +55,7 @@ function PrayerReportView() {
     );
   }
 
-  if (prayerReportViewModel.prayerStatistics.size === 0) {
+  if (prayerReportViewModel.prayerStatistics === undefined) {
     return (
       <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6 mt-16">
         Tidak dapat menampilkan statistik ibadah salat.

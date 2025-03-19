@@ -33,10 +33,18 @@ function PrayersView() {
     );
   }
 
-  if (prayersViewModel.prayerSchedule.length === 0) {
+  if (prayersViewModel.prayerSchedule === undefined) {
     return (
       <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6">
         Tidak dapat menampilkan daftar salat hari ini.
+      </p>
+    );
+  }
+
+  if (prayersViewModel.prayerSchedule.length === 0) {
+    return (
+      <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6">
+        Daftar salat hari ini kosong.
       </p>
     );
   }
@@ -46,14 +54,13 @@ function PrayersView() {
       <h2 className="text-[#1A6355] font-bold text-xl mb-3">Daftar Salat</h2>
 
       <div className="flex flex-col gap-3 mb-6">
-        {prayersViewModel.prayerSchedule.map((item, index) => (
+        {prayersViewModel.prayerSchedule.map((item, index, prayerSchedule) => (
           <PrayerView
             key={item.id}
-            prayerSchedule={prayersViewModel.prayerSchedule}
-            prayer={item}
+            nextPrayer={prayerSchedule[index + 1]}
+            currentPrayer={item}
             currentDate={prayersViewModel.currentDate}
-            sunriseDate={prayersViewModel.sunriseDate}
-            index={index}
+            currentSunriseDate={prayersViewModel.sunriseDate}
           />
         ))}
       </div>

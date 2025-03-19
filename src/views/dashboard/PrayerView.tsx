@@ -8,19 +8,17 @@ import { usePrayerViewModel } from "../../viewmodels/dashboard/usePrayerViewMode
 import { useMemo } from "react";
 
 interface PrayerViewProps {
-  prayerSchedule: PrayerSchedule[];
-  prayer: PrayerSchedule;
+  nextPrayer: PrayerSchedule;
+  currentPrayer: PrayerSchedule;
   currentDate: Date;
-  sunriseDate: Date;
-  index: number;
+  currentSunriseDate: Date;
 }
 
 function PrayerView({
-  prayerSchedule,
-  prayer,
+  nextPrayer,
+  currentPrayer,
   currentDate,
-  sunriseDate,
-  index,
+  currentSunriseDate,
 }: PrayerViewProps) {
   const { retryWithRefresh } = useAxiosContext();
   const prayerModel = useMemo((): PrayerModel => {
@@ -31,25 +29,23 @@ function PrayerView({
 
   const handleCheckPrayer = () => {
     const status = prayerViewModel.determinePrayerStatus({
-      prayerDate: prayer.date,
-      prayerName: prayer.name,
-      prayerSchedule,
-      sunriseDate,
-      index,
+      currentPrayer,
+      currentSunriseDate,
+      nextPrayer,
     });
 
-    prayerViewModel.checkPrayer(prayer.id, status);
+    prayerViewModel.checkPrayer(currentPrayer.id, status);
   };
 
   return (
     <div className="break-words border border-[#E1E1E1] rounded-lg flex justify-between items-center p-3">
       <div className="flex flex-col gap-1">
         <h4 className="text-[#363636] font-bold capitalize">
-          Salat {prayer.name}
+          Salat {currentPrayer.name}
         </h4>
 
         <time className="text-sm text-[#363636]/75">
-          {formatTimeFromUnixMs(prayer.date.getTime())}
+          {formatTimeFromUnixMs(currentPrayer.date.getTime())}
         </time>
       </div>
 
@@ -57,14 +53,14 @@ function PrayerView({
         onClick={handleCheckPrayer}
         disabled={
           prayerViewModel.isLoading ||
-          currentDate.getTime() < prayer.date.getTime() ||
-          prayer.status !== "pending"
+          currentDate.getTime() < currentPrayer.date.getTime() ||
+          currentPrayer.status !== "pending"
         }
         type="button"
         variant="link"
         className="[&_svg]:size-6"
       >
-        {prayer.status !== "pending" ? (
+        {currentPrayer.status !== "pending" ? (
           <CheckboxIcon className="text-[#1F1F1F]" />
         ) : (
           <BoxIcon className="text-[#1F1F1F]" />
