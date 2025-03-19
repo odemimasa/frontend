@@ -19,7 +19,9 @@ function PrayerLeaderboardView({
 
   return (
     <div className="relative overflow-hidden border border-[#C2C2C2] rounded-3xl py-5 px-4 mx-6 mb-16">
-      {prayerLeaderboardViewModel.subscription === undefined ? (
+      {prayerLeaderboardViewModel.subscription ? (
+        <></>
+      ) : (
         <div className="absolute inset-0 z-10 bg-white/20 backdrop-blur-sm flex justify-center items-center">
           <div className="bg-white rounded-xl shadow-md drop-shadow-md w-full max-w-[80%] text-center p-4">
             <h3 className="text-[#363636] text-lg font-bold mb-2">
@@ -35,8 +37,6 @@ function PrayerLeaderboardView({
             </Button>
           </div>
         </div>
-      ) : (
-        <></>
       )}
 
       <h2 className="text-[#363636] font-bold text-center text-2xl mb-8">
