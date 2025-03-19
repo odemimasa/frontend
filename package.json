@@ -70,7 +70,7 @@
     "*/**/*.{ts,tsx}": [
       "prettier --write",
       "eslint",
-      "tsc --noEmit -p tsconfig.app.json"
+      "bash -c tsc --noEmit -p tsconfig.app.json"
     ],
     "*/**/*.css": [
       "prettier --write"

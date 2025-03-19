@@ -176,7 +176,6 @@ function AxiosProvider({ children }: PropsWithChildren) {
 
     createAuthRefreshInterceptor(retryWithRefresh, refreshAuthLogic, {
       statusCodes: [401],
-      pauseInstanceWhileRefreshing: true,
     });
   }, [toast]);
 

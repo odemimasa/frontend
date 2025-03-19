@@ -46,15 +46,14 @@ function AuthProvider({ children }: PropsWithChildren) {
           tokenStorage.removeAccessToken();
           tokenStorage.removeRefreshToken();
         } else {
-          const userRes = await userModel.getUser();
-          if (userRes.data) {
-            const subscriptionRes =
-              await subscriptionModel.getActiveSubscription();
+          const [userRes, subscriptionRes] = await Promise.all([
+            userModel.getUser(),
+            subscriptionModel.getActiveSubscription(),
+          ]);
 
-            setUser(userRes.data);
-            if (subscriptionRes.data) {
-              setSubscription(subscriptionRes.data);
-            }
+          setUser(userRes.data);
+          if (subscriptionRes.data) {
+            setSubscription(subscriptionRes.data);
           }
         }
       } catch (error) {
