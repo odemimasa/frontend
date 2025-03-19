@@ -2,16 +2,19 @@ import type { StateCreator } from "zustand";
 import type { PaymentResponse } from "../dtos/PaymentDTO";
 
 interface PaymentSlice {
-  payments: PaymentResponse[];
+  payments: PaymentResponse[] | undefined;
   setPayments: (
     payments:
-      | ((payments: PaymentResponse[]) => PaymentResponse[])
+      | ((
+          payments: PaymentResponse[] | undefined
+        ) => PaymentResponse[] | undefined)
       | PaymentResponse[]
+      | undefined
   ) => void;
 }
 
 const createPaymentSlice: StateCreator<PaymentSlice> = (set) => ({
-  payments: [],
+  payments: undefined,
   setPayments: (payments) => {
     set((state) => {
       if (typeof payments === "function") {

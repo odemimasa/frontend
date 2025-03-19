@@ -21,15 +21,23 @@ function PaymentsView() {
     );
   }
 
-  if (paymentsViewModel.payments.length === 0) {
+  if (paymentsViewModel.payments === undefined) {
     return (
-      <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6">
-        Belum ada transaksi
+      <p className="text-[#D9534F] text-center font-medium border border-[#D9534F] rounded-2xl p-6 mx-6">
+        Tidak dapat menampilkan daftar transaksi.
       </p>
     );
   }
 
-  return paymentsViewModel.payments.map((item, index) => {
+  if (paymentsViewModel.payments.length === 0) {
+    return (
+      <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6">
+        Belum ada transaksi.
+      </p>
+    );
+  }
+
+  return paymentsViewModel.payments.map((item, index, payments) => {
     let statusColor = "";
     switch (item.status) {
       case "paid":
@@ -49,7 +57,7 @@ function PaymentsView() {
     return (
       <div
         key={item.id}
-        className={`${index === paymentsViewModel.payments.length - 1 ? "mb-0" : "mb-4"} border border-[#C2C2C2] rounded-2xl p-6 mx-6`}
+        className={`${index === payments.length - 1 ? "mb-0" : "mb-4"} border border-[#C2C2C2] rounded-2xl p-6 mx-6`}
       >
         <Badge
           variant="outline"

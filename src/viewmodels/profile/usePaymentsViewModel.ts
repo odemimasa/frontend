@@ -13,23 +13,19 @@ function usePaymentsViewModel(paymentModel: PaymentModel) {
   const { handleAxiosError } = useAxiosContext();
 
   useEffect(() => {
-    if (payments.length > 0) {
-      return;
-    }
-
-    setIsLoading(true);
-    (async () => {
-      try {
-        const res = await paymentModel.getPayments();
-        if (res.data.length > 0) {
+    if (payments === undefined) {
+      setIsLoading(true);
+      (async () => {
+        try {
+          const res = await paymentModel.getPayments();
           setPayments(res.data);
+        } catch (error) {
+          handleAxiosError(error as Error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        handleAxiosError(error as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+      })();
+    }
   }, [payments, setPayments, handleAxiosError, paymentModel]);
 
   return {
