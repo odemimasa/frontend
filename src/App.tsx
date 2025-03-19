@@ -95,7 +95,7 @@ function App() {
                 }
               >
                 <Route
-                  path="/task"
+                  path="/tasks"
                   element={
                     <Suspense fallback={<></>}>
                       <TaskPageView />

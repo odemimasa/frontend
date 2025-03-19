@@ -7,6 +7,7 @@ import { useEffect } from "react";
 
 function ProtectedRouteView() {
   const user = useStore((state) => state.user);
+  const subscription = useStore((state) => state.subscription);
   const location = useLocation();
   const navigate = useNavigate();
   const { isLoading } = useAuthContext();
@@ -17,9 +18,15 @@ function ProtectedRouteView() {
         navigate("/");
       } else if (user !== undefined && location.pathname === "/") {
         navigate("/dashboard");
+      } else if (
+        user !== undefined &&
+        subscription === undefined &&
+        location.pathname === "/tasks"
+      ) {
+        navigate("/dashboard");
       }
     }
-  }, [isLoading, user, location, navigate]);
+  }, [isLoading, user, subscription, location, navigate]);
 
   if (isLoading) {
     return (
