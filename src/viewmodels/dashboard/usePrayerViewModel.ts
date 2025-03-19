@@ -3,9 +3,9 @@ import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
 import { getCurrentDate, getPrayerTimes } from "@utils/index";
 import type { PrayerModel } from "../../models/PrayerModel";
-import type { PrayerName, PrayerStatus } from "@hooks/useStore";
 import type { PrayerSchedule } from "./usePrayersViewModel";
 import { useToast } from "@hooks/shadcn/useToast";
+import type { PrayerName, PrayerStatus } from "../../dtos/PrayerDTO";
 
 interface DeterminePrayerStatusParams {
   prayerSchedule: PrayerSchedule[];

@@ -1,5 +1,5 @@
 import { useMemo, type Dispatch, type SetStateAction } from "react";
-import { TaskModel, type TaskResponse } from "../../models/TaskModel";
+import { TaskModel } from "../../models/TaskModel";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -13,6 +13,7 @@ import { Button, buttonVariants } from "@components/shadcn/Button";
 import { cn } from "@libs/shadcn";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useDeleteTaskViewModel } from "../../viewmodels/task/useDeleteTaskViewModel";
+import type { TaskResponse } from "../../dtos/TaskDTO";
 
 interface DeleteTaskViewProps {
   task: TaskResponse;

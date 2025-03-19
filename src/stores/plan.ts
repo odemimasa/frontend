@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { PlanResponse } from "../models/PlanModel";
+import type { PlanResponse } from "../dtos/PlanDTO";
 
 interface PlanSlice {
   plans: PlanResponse[];

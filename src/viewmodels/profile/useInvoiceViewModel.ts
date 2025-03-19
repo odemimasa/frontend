@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../../stores";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
-import type { InvoiceModel, InvoiceResponse } from "../../models/InvoiceModel";
-import type { PlanModel, PlanResponse } from "../../models/PlanModel";
+import type { InvoiceModel } from "../../models/InvoiceModel";
+import type { PlanModel } from "../../models/PlanModel";
+import type { PlanResponse } from "../../dtos/PlanDTO";
+import type { InvoiceResponse } from "../../dtos/InvoiceDTO";
 
 interface InvoiceWithPlan extends InvoiceResponse {
   plan: PlanResponse;

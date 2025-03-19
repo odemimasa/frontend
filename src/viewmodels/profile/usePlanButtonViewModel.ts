@@ -3,7 +3,7 @@ import type { InvoiceModel } from "../../models/InvoiceModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useStore } from "../../stores";
-import type { PlanResponse } from "../../models/PlanModel";
+import type { PlanResponse } from "../../dtos/PlanDTO";
 
 function usePlanButtonViewModel(invoiceModel: InvoiceModel) {
   const [isLoading, setIsLoading] = useState(false);

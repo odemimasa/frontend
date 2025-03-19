@@ -1,6 +1,6 @@
-import type { PrayerName } from "@hooks/useStore";
 import type { PrayerStatistics } from "./usePrayerReportViewModel";
 import { useStore } from "../../stores";
+import type { PrayerName } from "../../dtos/PrayerDTO";
 
 interface PrayerStatus {
   prayerName: PrayerName;

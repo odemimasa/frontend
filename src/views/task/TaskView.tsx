@@ -1,5 +1,5 @@
 import { Button } from "@components/shadcn/Button";
-import { TaskModel, type TaskResponse } from "../../models/TaskModel";
+import { TaskModel } from "../../models/TaskModel";
 import {
   BoxIcon,
   CheckboxIcon,
@@ -11,6 +11,7 @@ import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useMemo } from "react";
 import { UpdateTaskView } from "./UpdateTaskView";
 import { DeleteTaskView } from "./DeleteTaskView";
+import type { TaskResponse } from "../../dtos/TaskDTO";
 
 function TaskView({ task }: { task: TaskResponse }) {
   const { retryWithRefresh } = useAxiosContext();

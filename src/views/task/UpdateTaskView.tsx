@@ -1,9 +1,5 @@
 import { useMemo, type Dispatch, type SetStateAction } from "react";
-import {
-  TaskModel,
-  type TaskResponse,
-  type UpdateTaskRequest,
-} from "../../models/TaskModel";
+import { TaskModel } from "../../models/TaskModel";
 import { Dialog, DialogContent, DialogTitle } from "@components/shadcn/Dialog";
 import { AlertDialogHeader } from "@components/shadcn/AlertDialog";
 import {
@@ -22,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useUpdateTaskViewModel } from "../../viewmodels/task/useUpdateTaskViewModel";
+import type { TaskResponse, UpdateTaskRequest } from "../../dtos/TaskDTO";
 
 interface UpdateTaskViewProps {
   task: TaskResponse;

@@ -1,22 +1,9 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-import type { UserResponse } from "./UserModel";
-
-interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-}
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface AuthResponse {
-  refresh_token: string;
-  access_token: string;
-  user: UserResponse;
-}
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+} from "../dtos/AuthDTO";
 
 class AuthModel {
   readonly fetch: AxiosInstance;

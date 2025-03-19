@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { UserResponse } from "../models/UserModel";
+import type { UserResponse } from "../dtos/UserDTO";
 
 interface UserSlice {
   user: UserResponse | undefined;

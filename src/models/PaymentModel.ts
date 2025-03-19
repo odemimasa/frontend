@@ -1,14 +1,5 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-
-type PaymentStatus = "paid" | "expired" | "failed" | "refund";
-
-interface PaymentResponse {
-  id: string;
-  invoice_id: string;
-  amount_paid: number;
-  status: PaymentStatus;
-  created_at: string;
-}
+import type { PaymentResponse } from "../dtos/PaymentDTO";
 
 class PaymentModel {
   readonly fetch: AxiosInstance;
@@ -23,4 +14,3 @@ class PaymentModel {
 }
 
 export { PaymentModel };
-export type { PaymentResponse };

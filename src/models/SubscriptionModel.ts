@@ -1,12 +1,5 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-
-interface SubscriptionResponse {
-  id: string;
-  plan_id: string;
-  payment_id: string;
-  start_date: string;
-  end_date: string;
-}
+import type { SubscriptionResponse } from "../dtos/SubscriptionDTO";
 
 class SubscriptionModel {
   readonly fetch: AxiosInstance;
@@ -21,4 +14,3 @@ class SubscriptionModel {
 }
 
 export { SubscriptionModel };
-export type { SubscriptionResponse };

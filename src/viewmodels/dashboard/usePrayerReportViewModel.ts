@@ -3,7 +3,7 @@ import type { PrayerModel } from "../../models/PrayerModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
 import { getCurrentDate } from "@utils/index";
-import type { PrayerName } from "@hooks/useStore";
+import type { PrayerName } from "../../dtos/PrayerDTO";
 
 // the value of the map will only have 3 length
 // the first index is the number of missed salat

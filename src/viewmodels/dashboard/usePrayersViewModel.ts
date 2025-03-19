@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
 import { getCurrentDate, getPrayerTimes } from "@utils/index";
-import type { PrayerModel, PrayerResponse } from "../../models/PrayerModel";
+import type { PrayerModel } from "../../models/PrayerModel";
+import type { PrayerResponse } from "../../dtos/PrayerDTO";
 
 type PrayerSchedule = Pick<PrayerResponse, "id" | "name" | "status"> & {
   date: Date;

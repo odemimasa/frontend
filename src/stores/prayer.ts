@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { PrayerResponse } from "../models/PrayerModel";
+import type { PrayerResponse } from "../dtos/PrayerDTO";
 
 interface PrayerSlice {
   prayers: PrayerResponse[];

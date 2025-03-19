@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { TaskResponse } from "../models/TaskModel";
+import type { TaskResponse } from "../dtos/TaskDTO";
 
 interface TaskSlice {
   tasks: TaskResponse[];

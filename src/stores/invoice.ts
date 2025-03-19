@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { InvoiceResponse } from "../models/InvoiceModel";
+import type { InvoiceResponse } from "../dtos/InvoiceDTO";
 
 interface InvoiceSlice {
   invoice: InvoiceResponse | undefined;

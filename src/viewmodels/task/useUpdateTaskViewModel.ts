@@ -1,8 +1,9 @@
 import { useToast } from "@hooks/shadcn/useToast";
-import type { TaskModel, UpdateTaskRequest } from "../../models/TaskModel";
+import type { TaskModel } from "../../models/TaskModel";
 import { useStore } from "../../stores";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useState, type Dispatch, type SetStateAction } from "react";
+import type { UpdateTaskRequest } from "../../dtos/TaskDTO";
 
 function useUpdateTaskViewModel(taskModel: TaskModel) {
   const [isLoading, setIsLoading] = useState(false);

@@ -1,20 +1,5 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-
-type PrayerName = "subuh" | "zuhur" | "asar" | "magrib" | "isya";
-type PrayerStatus = "pending" | "on_time" | "late" | "missed";
-
-interface PrayerRequest {
-  status?: PrayerStatus;
-}
-
-interface PrayerResponse {
-  id: string;
-  name: PrayerName;
-  status: PrayerStatus;
-  year: number;
-  month: number;
-  day: number;
-}
+import type { PrayerRequest, PrayerResponse } from "../dtos/PrayerDTO";
 
 class PrayerModel {
   readonly fetch: AxiosInstance;
@@ -49,4 +34,3 @@ class PrayerModel {
 }
 
 export { PrayerModel };
-export type { PrayerResponse };

@@ -1,15 +1,5 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-
-type PlanType = "premium";
-
-interface PlanResponse {
-  id: string;
-  type: PlanType;
-  name: string;
-  price: number;
-  duration_in_months: number;
-  created_at: string;
-}
+import type { PlanResponse } from "../dtos/PlanDTO";
 
 class PlanModel {
   readonly fetch: AxiosInstance;
@@ -24,4 +14,3 @@ class PlanModel {
 }
 
 export { PlanModel };
-export type { PlanResponse };

@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { SubscriptionResponse } from "../models/SubscriptionModel";
+import type { SubscriptionResponse } from "../dtos/SubscriptionDTO";
 
 interface SubscriptionSlice {
   subscription: SubscriptionResponse | undefined;

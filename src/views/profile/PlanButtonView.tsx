@@ -1,5 +1,4 @@
 import { useMemo, type Dispatch, type SetStateAction } from "react";
-import type { PlanResponse } from "../../models/PlanModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { InvoiceModel } from "../../models/InvoiceModel";
 import { usePlanButtonViewModel } from "../../viewmodels/profile/usePlanButtonViewModel";
@@ -13,6 +12,7 @@ import {
   AlertDialogTitle,
 } from "@components/shadcn/AlertDialog";
 import { Button } from "@components/shadcn/Button";
+import type { PlanResponse } from "../../dtos/PlanDTO";
 
 interface PlanButtonViewProps {
   plan: PlanResponse;

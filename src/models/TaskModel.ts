@@ -1,22 +1,9 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-
-interface CreateTaskRequest {
-  name: string;
-  description: string;
-}
-
-interface UpdateTaskRequest {
-  name?: string;
-  description?: string;
-  checked?: boolean;
-}
-
-interface TaskResponse {
-  id: string;
-  name: string;
-  description: string;
-  checked: boolean;
-}
+import type {
+  CreateTaskRequest,
+  TaskResponse,
+  UpdateTaskRequest,
+} from "../dtos/TaskDTO";
 
 class TaskModel {
   readonly fetch: AxiosInstance;
@@ -56,4 +43,3 @@ class TaskModel {
 }
 
 export { TaskModel };
-export type { TaskResponse, CreateTaskRequest, UpdateTaskRequest };

@@ -1,23 +1,5 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-
-interface UserRequest {
-  username?: string;
-  email?: string;
-  password?: string;
-  latitude?: string;
-  longitude?: string;
-}
-
-interface UserResponse {
-  id: string;
-  email: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  city: string;
-  timezone: string;
-  created_at: string;
-}
+import type { UserRequest, UserResponse } from "../dtos/UserDTO";
 
 class UserModel {
   readonly fetch: AxiosInstance;
@@ -46,4 +28,3 @@ class UserModel {
 }
 
 export { UserModel };
-export type { UserResponse };

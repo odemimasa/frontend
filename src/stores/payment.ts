@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { PaymentResponse } from "../models/PaymentModel";
+import type { PaymentResponse } from "../dtos/PaymentDTO";
 
 interface PaymentSlice {
   payments: PaymentResponse[];

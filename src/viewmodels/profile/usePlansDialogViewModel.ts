@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import type { PlanModel, PlanResponse } from "../../models/PlanModel";
+import type { PlanModel } from "../../models/PlanModel";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
-import type { CouponModel, CouponResponse } from "../../models/CouponModel";
+import type { CouponModel } from "../../models/CouponModel";
 import { useToast } from "@hooks/shadcn/useToast";
+import type { CouponResponse } from "../../dtos/CouponDTO";
+import type { PlanResponse } from "../../dtos/PlanDTO";
 
 type PricingPlan = Map<string, PlanResponse[]>;
 

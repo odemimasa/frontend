@@ -1,11 +1,5 @@
 import type { AxiosInstance, AxiosResponse } from "axios";
-
-interface CouponResponse {
-  code: string;
-  influencer_username: string;
-  quota: number;
-  created_at: string;
-}
+import type { CouponResponse } from "../dtos/CouponDTO";
 
 class CouponModel {
   readonly fetch: AxiosInstance;
@@ -20,4 +14,3 @@ class CouponModel {
 }
 
 export { CouponModel };
-export type { CouponResponse };

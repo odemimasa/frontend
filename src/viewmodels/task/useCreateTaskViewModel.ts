@@ -1,11 +1,12 @@
 import { z } from "zod";
-import type { TaskModel, CreateTaskRequest } from "../../models/TaskModel";
+import type { TaskModel } from "../../models/TaskModel";
 import { useToast } from "@hooks/shadcn/useToast";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStore } from "../../stores";
+import type { CreateTaskRequest } from "../../dtos/TaskDTO";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Tidak boleh kosong." }),
