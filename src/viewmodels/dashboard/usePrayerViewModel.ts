@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
-import { getCurrentDate, getPrayerTimes } from "@utils/index";
+import { getCurrentDate } from "@utils/index";
 import type { PrayerModel } from "../../models/PrayerModel";
 import type { PrayerSchedule } from "./usePrayersViewModel";
 import { useToast } from "@hooks/shadcn/useToast";
@@ -39,7 +39,7 @@ function usePrayerViewModel(prayerModel: PrayerModel) {
       const nextDate = new Date(prayerDate);
       nextDate.setDate(prayerDate.getDate() + 1);
 
-      const nextPrayerTimes = getPrayerTimes(
+      const nextPrayerTimes = prayerModel.getPrayerTimes(
         user?.latitude ?? 0,
         user?.longitude ?? 0,
         nextDate

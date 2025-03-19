@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { useStore } from "../../stores";
-import { getCurrentDate, getPrayerTimes } from "@utils/index";
+import { getCurrentDate } from "@utils/index";
 import type { PrayerModel } from "../../models/PrayerModel";
 import type { PrayerResponse } from "../../dtos/PrayerDTO";
 
@@ -24,7 +24,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
       return;
     }
 
-    const prayerTimes = getPrayerTimes(
+    const prayerTimes = prayerModel.getPrayerTimes(
       user?.latitude ?? 0,
       user?.longitude ?? 0
     );
@@ -67,7 +67,7 @@ function usePrayersViewModel(prayerModel: PrayerModel) {
       return [];
     }
 
-    const prayerTimes = getPrayerTimes(
+    const prayerTimes = prayerModel.getPrayerTimes(
       user?.latitude ?? 0,
       user?.longitude ?? 0
     );
