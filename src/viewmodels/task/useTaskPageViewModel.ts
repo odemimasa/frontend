@@ -13,7 +13,7 @@ function useTaskPageViewModel(taskModel: TaskModel) {
   const { handleAxiosError } = useAxiosContext();
 
   useEffect(() => {
-    if (tasks.length > 0) {
+    if (tasks !== undefined) {
       return;
     }
 
@@ -21,9 +21,7 @@ function useTaskPageViewModel(taskModel: TaskModel) {
     (async () => {
       try {
         const res = await taskModel.getTasks();
-        if (res.data.length > 0) {
-          setTasks(res.data);
-        }
+        setTasks(res.data);
       } catch (error) {
         handleAxiosError(error as Error);
       } finally {

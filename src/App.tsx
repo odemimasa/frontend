@@ -24,6 +24,12 @@ const ProfilePageView = lazy(() =>
   }))
 );
 
+const TaskLayoutView = lazy(() =>
+  import("./views/task/TaskLayoutView").then(({ TaskLayoutView }) => ({
+    default: TaskLayoutView,
+  }))
+);
+
 const TaskPageView = lazy(() =>
   import("./views/task/TaskPageView").then(({ TaskPageView }) => ({
     default: TaskPageView,
@@ -43,7 +49,11 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route
-              element={<ProtectedRouteView />}
+              element={
+                <Suspense fallback={<></>}>
+                  <ProtectedRouteView />
+                </Suspense>
+              }
               errorElement={
                 <Suspense fallback={<></>}>
                   <ErrorBoundaryView />
@@ -78,13 +88,21 @@ function App() {
               />
 
               <Route
-                path="/task"
                 element={
                   <Suspense fallback={<></>}>
-                    <TaskPageView />
+                    <TaskLayoutView />
                   </Suspense>
                 }
-              />
+              >
+                <Route
+                  path="/task"
+                  element={
+                    <Suspense fallback={<></>}>
+                      <TaskPageView />
+                    </Suspense>
+                  }
+                />
+              </Route>
             </Route>
           </Routes>
         </AuthProvider>
