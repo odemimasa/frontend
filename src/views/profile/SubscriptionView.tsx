@@ -31,6 +31,14 @@ function SubscriptionView() {
 
   if (subscriptionViewModel.subscription === undefined) {
     return (
+      <p className="text-[#D9534F] text-center font-medium border border-[#D9534F] rounded-2xl p-6 mx-6">
+        Tidak dapat menampilkan langganan.
+      </p>
+    );
+  }
+
+  if (subscriptionViewModel.subscription === null) {
+    return (
       <div className="border border-[#C2C2C2] rounded-2xl p-6  mx-6">
         <Badge variant="outline" className="text-black border-[#E1E1E1]">
           Free
@@ -41,7 +49,7 @@ function SubscriptionView() {
         </p>
 
         <Button
-          disabled={subscriptionViewModel.invoice !== undefined}
+          disabled={!!subscriptionViewModel.invoice}
           onClick={() => subscriptionViewModel.setIsOpen(true)}
           type="button"
           variant="outline"

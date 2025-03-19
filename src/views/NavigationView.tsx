@@ -10,7 +10,7 @@ function NavigationView() {
   return (
     <nav className="bg-white border border-[#E1E1E1] fixed z-20 bottom-0 w-full max-w-sm px-6">
       <ul
-        className={`${subscription !== undefined ? "justify-between" : "justify-evenly"} flex items-center py-2`}
+        className={`${subscription ? "justify-between" : "justify-evenly"} flex items-center py-2`}
       >
         <li>
           <NavLink
@@ -24,7 +24,7 @@ function NavigationView() {
           </NavLink>
         </li>
 
-        {subscription !== undefined ? (
+        {subscription ? (
           <li>
             <NavLink
               to="/tasks"

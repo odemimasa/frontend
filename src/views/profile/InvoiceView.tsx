@@ -30,8 +30,16 @@ function InvoiceView() {
 
   if (invoiceViewModel.invoiceWithPlan === undefined) {
     return (
+      <p className="text-[#D9534F] text-center font-medium border border-[#D9534F] rounded-2xl p-6 mx-6">
+        Tidak dapat menampilkan tagihan.
+      </p>
+    );
+  }
+
+  if (invoiceViewModel.invoiceWithPlan === null) {
+    return (
       <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mx-6">
-        Belum ada tagihan
+        Belum ada tagihan.
       </p>
     );
   }

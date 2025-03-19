@@ -2,14 +2,15 @@ import type { StateCreator } from "zustand";
 import type { SubscriptionResponse } from "../dtos/SubscriptionDTO";
 
 interface SubscriptionSlice {
-  subscription: SubscriptionResponse | undefined;
+  subscription: SubscriptionResponse | undefined | null;
   setSubscription: (
     subscription:
       | ((
-          subscription: SubscriptionResponse | undefined
-        ) => SubscriptionResponse | undefined)
+          subscription: SubscriptionResponse | undefined | null
+        ) => SubscriptionResponse | undefined | null)
       | SubscriptionResponse
       | undefined
+      | null
   ) => void;
 }
 

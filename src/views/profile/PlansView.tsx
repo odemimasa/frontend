@@ -4,7 +4,7 @@ import type { PricingPlan } from "../../viewmodels/profile/usePlansDialogViewMod
 import { PlanButtonView } from "./PlanButtonView";
 
 interface PricingPlanViewProps {
-  pricingPlan: PricingPlan;
+  pricingPlan: PricingPlan | undefined;
   couponCode: string;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
@@ -14,9 +14,20 @@ function PlansView({
   couponCode,
   setIsOpen,
 }: PricingPlanViewProps) {
-  // TODO: handle empty pricing plan correctly
+  if (pricingPlan === undefined) {
+    return (
+      <p className="text-[#D9534F] text-center font-medium border border-[#D9534F] rounded-2xl p-6 mt-6">
+        Tidak dapat menampilkan daftar harga langganan.
+      </p>
+    );
+  }
+
   if (pricingPlan.size === 0) {
-    return <></>;
+    return (
+      <p className="text-[#7B7B7B] text-center font-medium border border-[#C2C2C2] rounded-2xl p-6 mt-6">
+        Daftar harga langganan kosong.
+      </p>
+    );
   }
 
   return Array.from(pricingPlan.entries()).map(([key, value]) => {

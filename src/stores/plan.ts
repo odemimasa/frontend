@@ -2,14 +2,17 @@ import type { StateCreator } from "zustand";
 import type { PlanResponse } from "../dtos/PlanDTO";
 
 interface PlanSlice {
-  plans: PlanResponse[];
+  plans: PlanResponse[] | undefined;
   setPlans: (
-    plans: ((plans: PlanResponse[]) => PlanResponse[]) | PlanResponse[]
+    plans:
+      | ((plans: PlanResponse[] | undefined) => PlanResponse[] | undefined)
+      | PlanResponse[]
+      | undefined
   ) => void;
 }
 
 const createPlanSlice: StateCreator<PlanSlice> = (set) => ({
-  plans: [],
+  plans: undefined,
   setPlans: (plans) => {
     set((state) => {
       if (typeof plans === "function") {

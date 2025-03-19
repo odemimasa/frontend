@@ -15,22 +15,23 @@ function useSubscriptionViewModel(subscriptionModel: SubscriptionModel) {
   const { handleAxiosError } = useAxiosContext();
 
   useEffect(() => {
-    if (subscription !== undefined) {
-      return;
-    }
-    setIsLoading(true);
-    (async () => {
-      try {
-        const res = await subscriptionModel.getActiveSubscription();
-        if (res.data !== null) {
-          setSubscription(res.data);
+    if (subscription === undefined) {
+      setIsLoading(true);
+      (async () => {
+        try {
+          const res = await subscriptionModel.getActiveSubscription();
+          if (res.data) {
+            setSubscription(res.data);
+          } else {
+            setSubscription(null);
+          }
+        } catch (error) {
+          handleAxiosError(error as Error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        handleAxiosError(error as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+      })();
+    }
   }, [subscription, setSubscription, handleAxiosError, subscriptionModel]);
 
   return {

@@ -2,12 +2,15 @@ import type { StateCreator } from "zustand";
 import type { InvoiceResponse } from "../dtos/InvoiceDTO";
 
 interface InvoiceSlice {
-  invoice: InvoiceResponse | undefined;
+  invoice: InvoiceResponse | undefined | null;
   setInvoice: (
     invoice:
-      | ((invoice: InvoiceResponse | undefined) => InvoiceResponse | undefined)
+      | ((
+          invoice: InvoiceResponse | undefined | null
+        ) => InvoiceResponse | undefined | null)
       | InvoiceResponse
       | undefined
+      | null
   ) => void;
 }
 

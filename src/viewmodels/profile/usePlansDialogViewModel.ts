@@ -13,7 +13,7 @@ function usePlansDialogViewModel(
   planModel: PlanModel,
   couponModel: CouponModel
 ) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<CouponResponse | undefined>(undefined);
 
@@ -48,25 +48,26 @@ function usePlansDialogViewModel(
   };
 
   useEffect(() => {
-    if (plans.length > 0) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const res = await planModel.getPlans();
-        if (res.data.length > 0) {
+    if (plans === undefined) {
+      setIsLoading(true);
+      (async () => {
+        try {
+          const res = await planModel.getPlans();
           setPlans(res.data);
+        } catch (error) {
+          handleAxiosError(error as Error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        handleAxiosError(error as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+      })();
+    }
   }, [plans, setPlans, handleAxiosError, planModel]);
 
-  const pricingPlan = useMemo((): PricingPlan => {
+  const pricingPlan = useMemo((): PricingPlan | undefined => {
+    if (plans === undefined) {
+      return undefined;
+    }
+
     if (plans.length === 0) {
       return new Map();
     }
@@ -81,7 +82,6 @@ function usePlansDialogViewModel(
       }
     }
 
-    setIsLoading(false);
     return pricingPlan;
   }, [plans]);
 

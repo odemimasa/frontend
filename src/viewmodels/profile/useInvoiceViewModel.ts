@@ -11,7 +11,7 @@ interface InvoiceWithPlan extends InvoiceResponse {
 }
 
 function useInvoiceViewModel(invoiceModel: InvoiceModel, planModel: PlanModel) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const user = useStore((state) => state.user);
   const plans = useStore((state) => state.plans);
@@ -22,60 +22,63 @@ function useInvoiceViewModel(invoiceModel: InvoiceModel, planModel: PlanModel) {
   const { handleAxiosError } = useAxiosContext();
 
   useEffect(() => {
-    if (invoice !== undefined) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const res = await invoiceModel.getActiveInvoice();
-        if (res.data !== null) {
-          setInvoice(res.data);
+    if (invoice === undefined) {
+      setIsLoading(true);
+      (async () => {
+        try {
+          const res = await invoiceModel.getActiveInvoice();
+          if (res.data) {
+            setInvoice(res.data);
+          } else {
+            setInvoice(null);
+          }
+        } catch (error) {
+          handleAxiosError(error as Error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        handleAxiosError(error as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+      })();
+    }
   }, [invoice, setInvoice, handleAxiosError, invoiceModel]);
 
   useEffect(() => {
-    if (invoice === undefined || plans.length > 0) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const res = await planModel.getPlans();
-        if (res.data.length > 0) {
+    if (invoice && plans === undefined) {
+      setIsLoading(true);
+      (async () => {
+        try {
+          const res = await planModel.getPlans();
           setPlans(res.data);
+        } catch (error) {
+          handleAxiosError(error as Error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        handleAxiosError(error as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+      })();
+    }
   }, [invoice, plans, setPlans, planModel, handleAxiosError]);
 
-  const invoiceWithPlan = useMemo((): InvoiceWithPlan | undefined => {
+  const invoiceWithPlan = useMemo((): InvoiceWithPlan | undefined | null => {
     if (invoice === undefined) {
       return undefined;
     }
 
-    if (plans.length === 0) {
-      return undefined;
+    if (invoice === null) {
+      return null;
+    }
+
+    if (plans === undefined) {
+      return null;
     }
 
     for (const plan of plans) {
-      if (plan.id !== invoice.plan_id) {
-        continue;
+      if (plan.id === invoice.plan_id) {
+        return { ...invoice, plan };
       }
-
-      return { ...invoice, plan };
     }
-  }, [invoice, plans]);
+
+    setInvoice(null);
+    return null;
+  }, [invoice, plans, setInvoice]);
 
   return {
     isLoading,
