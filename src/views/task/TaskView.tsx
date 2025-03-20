@@ -22,7 +22,7 @@ function TaskView({ task }: { task: TaskResponse }) {
   const taskViewModel = useTaskViewModel(taskModel);
 
   return (
-    <div className="break-words border border-[#C2C2C2] rounded-lg p-5">
+    <div className="break-words border border-[#C2C2C2] rounded-lg p-5 mx-6 mt-6">
       <div className="flex justify-between items-center">
         <h3 className="text-[#363636] font-bold text-lg">{task.name}</h3>
         <Button
@@ -36,7 +36,7 @@ function TaskView({ task }: { task: TaskResponse }) {
         </Button>
       </div>
 
-      <div className="flex items-center my-2">
+      <div className="flex items-center my-1">
         <Button
           onClick={() => taskViewModel.setIsUpdateOpen(true)}
           type="button"

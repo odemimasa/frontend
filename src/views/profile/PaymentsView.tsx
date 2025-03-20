@@ -4,6 +4,7 @@ import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { PaymentModel } from "../../models/PaymentModel";
 import { usePaymentsViewModel } from "../../viewmodels/profile/usePaymentsViewModel";
 import { useMemo } from "react";
+import { PaymentsSkeletonView } from "./PaymentsSkeletonView";
 
 function PaymentsView() {
   const { retryWithRefresh } = useAxiosContext();
@@ -14,11 +15,7 @@ function PaymentsView() {
   const paymentsViewModel = usePaymentsViewModel(paymentModel);
 
   if (paymentsViewModel.isLoading) {
-    return (
-      <p className="text-[#7B7B7B] text-center font-bold italic border border-[#C2C2C2] rounded-2xl p-6 mx-6">
-        Loading...
-      </p>
-    );
+    return <PaymentsSkeletonView />;
   }
 
   if (paymentsViewModel.payments === undefined) {

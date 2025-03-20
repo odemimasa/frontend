@@ -7,6 +7,7 @@ import { InvoiceModel } from "../../models/InvoiceModel";
 import { useInvoiceViewModel } from "../../viewmodels/profile/useInvoiceViewModel";
 import { PlanModel } from "../../models/PlanModel";
 import { useMemo } from "react";
+import { InvoiceSkeletonView } from "./InvoiceSkeletonView";
 
 function InvoiceView() {
   const { retryWithRefresh } = useAxiosContext();
@@ -21,11 +22,7 @@ function InvoiceView() {
   const invoiceViewModel = useInvoiceViewModel(invoiceModel, planModel);
 
   if (invoiceViewModel.isLoading) {
-    return (
-      <p className="text-[#7B7B7B] text-center font-bold italic border border-[#C2C2C2] rounded-2xl p-6 mx-6">
-        Loading...
-      </p>
-    );
+    return <InvoiceSkeletonView />;
   }
 
   if (invoiceViewModel.invoiceWithPlan === undefined) {

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { AuthProvider } from "./contexts/AuthProvider";
 import { AxiosProvider } from "./contexts/AxiosProvider";
 import { lazy, Suspense } from "react";
@@ -104,6 +104,8 @@ function App() {
                 />
               </Route>
             </Route>
+
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </AuthProvider>
       </AxiosProvider>

@@ -6,6 +6,7 @@ import { SubscriptionModel } from "../../models/SubscriptionModel";
 import { useSubscriptionViewModel } from "../../viewmodels/profile/useSubscriptionViewModel";
 import { formatISODate } from "@utils/index";
 import { lazy, useMemo } from "react";
+import { SubscriptionSkeletonView } from "./SubscriptionSkeletonView";
 
 const PlansDialogView = lazy(() =>
   import("./PlansDialogView").then(({ PlansDialogView }) => ({
@@ -22,11 +23,7 @@ function SubscriptionView() {
   const subscriptionViewModel = useSubscriptionViewModel(subscriptionModel);
 
   if (subscriptionViewModel.isLoading) {
-    return (
-      <p className="text-[#7B7B7B] text-center font-bold italic border border-[#C2C2C2] rounded-2xl p-6 mx-6">
-        Loading...
-      </p>
-    );
+    return <SubscriptionSkeletonView />;
   }
 
   if (subscriptionViewModel.subscription === undefined) {

@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useAxiosContext } from "../../contexts/AxiosProvider";
 import { TaskModel } from "../../models/TaskModel";
 import { useTaskPageViewModel } from "../../viewmodels/task/useTaskPageViewModel";
-import { Skeleton } from "@components/shadcn/Skeleton";
 import { TaskView } from "./TaskView";
+import { TaskSkeletonView } from "./TaskSkeletonView";
 
 function TaskPageView() {
   const { retryWithRefresh } = useAxiosContext();
@@ -14,12 +14,7 @@ function TaskPageView() {
   const taskPageViewModel = useTaskPageViewModel(taskModel);
 
   if (taskPageViewModel.isLoading) {
-    return (
-      <div className="animate-pulse border border-[#C2C2C2] rounded-lg flex flex-col space-y-3 mx-6 mt-6 p-5">
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-48" />
-      </div>
-    );
+    return <TaskSkeletonView />;
   }
 
   if (taskPageViewModel.tasks === undefined) {
