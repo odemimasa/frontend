@@ -41,7 +41,7 @@ function useUserLocationViewModel(userModel: UserModel) {
               variant: "default",
             });
 
-            setPrayers([]);
+            setPrayers(undefined);
             setUser((user) => {
               if (user === undefined) {
                 return user;
