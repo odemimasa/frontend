@@ -40,9 +40,24 @@ function PlanButtonView({ plan, couponCode, setIsOpen }: PlanButtonViewProps) {
           {plan.name}
         </span>
 
+        {plan.id === "d5891cd2-f790-480a-9730-17beef45bd1a" ? (
+          <span className="text-white flex justify-center items-center gap-0.5">
+            <span className="font-medium text-xs line-through">Rp</span>
+            <span className="font-bold text-2xl line-through">
+              {Intl.NumberFormat("id-ID").format(105000)}
+            </span>
+
+            <span className="font-medium text-xs line-through">
+              /{plan.duration_in_months} Bulan
+            </span>
+          </span>
+        ) : (
+          <></>
+        )}
+
         <span className="text-white flex justify-center items-center gap-0.5">
           <span className="font-medium text-xs">Rp</span>
-          <span className="font-bold text-[26px]">
+          <span className="font-bold text-2xl">
             {Intl.NumberFormat("id-ID").format(plan.price)}-
           </span>
 
