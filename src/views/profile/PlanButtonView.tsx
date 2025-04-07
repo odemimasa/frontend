@@ -40,11 +40,11 @@ function PlanButtonView({ plan, couponCode, setIsOpen }: PlanButtonViewProps) {
           {plan.name}
         </span>
 
-        {plan.id === "d5891cd2-f790-480a-9730-17beef45bd1a" ? (
+        {plan.id === "ad3a93ed-645a-45ab-8515-fb1336f71e97" ? (
           <span className="text-white flex justify-center items-center gap-0.5">
             <span className="font-medium text-xs line-through">Rp</span>
             <span className="font-bold text-2xl line-through">
-              {Intl.NumberFormat("id-ID").format(105000)}
+              {Intl.NumberFormat("id-ID").format(100000)}
             </span>
 
             <span className="font-medium text-xs line-through">
