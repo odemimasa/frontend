@@ -30,7 +30,6 @@ const ProfilePageSkeletonView = lazy(() =>
 
 function ProtectedRouteView() {
   const user = useStore((state) => state.user);
-  const subscription = useStore((state) => state.subscription);
   const location = useLocation();
   const navigate = useNavigate();
   const { isLoading } = useAuthContext();
@@ -43,13 +42,13 @@ function ProtectedRouteView() {
         navigate("/dashboard");
       } else if (
         user !== undefined &&
-        subscription === undefined &&
+        user.subscription === null &&
         location.pathname === "/tasks"
       ) {
         navigate("/dashboard");
       }
     }
-  }, [isLoading, user, subscription, location, navigate]);
+  }, [isLoading, location.pathname, navigate, user]);
 
   if (isLoading && location.pathname === "/tasks") {
     return (

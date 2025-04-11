@@ -10,7 +10,6 @@ import { useAxiosContext } from "./AxiosProvider";
 import { useStore } from "../stores";
 import { tokenStorage } from "@utils/token";
 import { UserModel } from "../models/UserModel";
-import { SubscriptionModel } from "../models/SubscriptionModel";
 import { useToast } from "@hooks/shadcn/useToast";
 
 interface AuthContextValue {
@@ -23,17 +22,11 @@ function AuthProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true);
 
   const setUser = useStore((state) => state.setUser);
-  const setSubscription = useStore((state) => state.setSubscription);
-
   const { toast } = useToast();
   const { retryWithRefresh, handleAxiosError } = useAxiosContext();
 
   const userModel = useMemo((): UserModel => {
     return new UserModel(retryWithRefresh);
-  }, [retryWithRefresh]);
-
-  const subscriptionModel = useMemo((): SubscriptionModel => {
-    return new SubscriptionModel(retryWithRefresh);
   }, [retryWithRefresh]);
 
   useEffect(() => {
@@ -46,15 +39,8 @@ function AuthProvider({ children }: PropsWithChildren) {
           tokenStorage.removeAccessToken();
           tokenStorage.removeRefreshToken();
         } else {
-          const [userRes, subscriptionRes] = await Promise.all([
-            userModel.getUser(),
-            subscriptionModel.getActiveSubscription(),
-          ]);
-
-          setUser(userRes.data);
-          if (subscriptionRes.data) {
-            setSubscription(subscriptionRes.data);
-          }
+          const res = await userModel.getUser();
+          setUser(res.data);
         }
       } catch (error) {
         handleAxiosError(error as Error, (response) => {
@@ -69,14 +55,7 @@ function AuthProvider({ children }: PropsWithChildren) {
         setIsLoading(false);
       }
     })();
-  }, [
-    userModel,
-    subscriptionModel,
-    toast,
-    handleAxiosError,
-    setUser,
-    setSubscription,
-  ]);
+  }, [handleAxiosError, setUser, toast, userModel]);
 
   const contextValue = useMemo(() => {
     return { isLoading };

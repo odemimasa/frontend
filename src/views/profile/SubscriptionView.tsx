@@ -1,12 +1,9 @@
 import { Wallet } from "@components/Icons/Wallet";
 import { Badge } from "@components/shadcn/Badge";
 import { Button } from "@components/shadcn/Button";
-import { useAxiosContext } from "../../contexts/AxiosProvider";
-import { SubscriptionModel } from "../../models/SubscriptionModel";
-import { useSubscriptionViewModel } from "../../viewmodels/profile/useSubscriptionViewModel";
 import { formatISODate } from "@utils/index";
-import { lazy, useMemo } from "react";
-import { SubscriptionSkeletonView } from "./SubscriptionSkeletonView";
+import { lazy, useState } from "react";
+import { useStore } from "../../stores";
 
 const PlansDialogView = lazy(() =>
   import("./PlansDialogView").then(({ PlansDialogView }) => ({
@@ -15,18 +12,12 @@ const PlansDialogView = lazy(() =>
 );
 
 function SubscriptionView() {
-  const { retryWithRefresh } = useAxiosContext();
-  const subscriptionModel = useMemo((): SubscriptionModel => {
-    return new SubscriptionModel(retryWithRefresh);
-  }, [retryWithRefresh]);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const subscriptionViewModel = useSubscriptionViewModel(subscriptionModel);
+  const user = useStore((state) => state.user);
+  const invoice = useStore((state) => state.invoice);
 
-  if (subscriptionViewModel.isLoading) {
-    return <SubscriptionSkeletonView />;
-  }
-
-  if (subscriptionViewModel.subscription === undefined) {
+  if (user === undefined) {
     return (
       <p className="text-[#D9534F] text-center font-medium border border-[#D9534F] rounded-2xl p-6 mx-6">
         Tidak dapat menampilkan langganan.
@@ -34,7 +25,7 @@ function SubscriptionView() {
     );
   }
 
-  if (subscriptionViewModel.subscription === null) {
+  if (user.subscription === null) {
     return (
       <div className="border border-[#C2C2C2] rounded-2xl p-6  mx-6">
         <Badge variant="outline" className="text-black border-[#E1E1E1]">
@@ -46,8 +37,8 @@ function SubscriptionView() {
         </p>
 
         <Button
-          disabled={!!subscriptionViewModel.invoice}
-          onClick={() => subscriptionViewModel.setIsOpen(true)}
+          disabled={!!invoice}
+          onClick={() => setIsOpen(true)}
           type="button"
           variant="outline"
           className="text-[#363636] border-[#2F3D4A] mt-3.5"
@@ -56,11 +47,8 @@ function SubscriptionView() {
           Beli Paket
         </Button>
 
-        {subscriptionViewModel.isOpen ? (
-          <PlansDialogView
-            isOpen={subscriptionViewModel.isOpen}
-            setIsOpen={subscriptionViewModel.setIsOpen}
-          />
+        {isOpen ? (
+          <PlansDialogView isOpen={isOpen} setIsOpen={setIsOpen} />
         ) : (
           <></>
         )}
@@ -75,10 +63,7 @@ function SubscriptionView() {
       <p className="text-white text-sm mt-3.5">
         Berlaku hingga:&nbsp;
         <strong>
-          {formatISODate(
-            subscriptionViewModel.subscription.end_date,
-            subscriptionViewModel.userTimezone
-          )}
+          {formatISODate(user.subscription.end_date, user.timezone)}
         </strong>
       </p>
 

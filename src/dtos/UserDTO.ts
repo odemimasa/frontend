@@ -6,6 +6,14 @@ interface UserRequest {
   longitude?: string;
 }
 
+interface UserSubscription {
+  id: string;
+  plan_id: string;
+  payment_id: string;
+  start_date: string;
+  end_date: string;
+}
+
 interface UserResponse {
   id: string;
   email: string;
@@ -15,6 +23,7 @@ interface UserResponse {
   city: string;
   timezone: string;
   created_at: string;
+  subscription: UserSubscription | null;
 }
 
-export type { UserRequest, UserResponse };
+export type { UserRequest, UserResponse, UserSubscription };
