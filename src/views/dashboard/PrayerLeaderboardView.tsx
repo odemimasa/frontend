@@ -19,7 +19,7 @@ function PrayerLeaderboardView({
 
   return (
     <div className="relative overflow-hidden border border-[#C2C2C2] rounded-3xl py-5 px-4 mx-6 mb-16">
-      {prayerLeaderboardViewModel.subscription ? (
+      {prayerLeaderboardViewModel.user?.subscription ? (
         <></>
       ) : (
         <div className="absolute inset-0 z-10 bg-white/20 backdrop-blur-sm flex justify-center items-center">

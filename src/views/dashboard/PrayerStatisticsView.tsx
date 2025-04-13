@@ -29,11 +29,11 @@ function PrayerStatisticsView({
 }: {
   prayerStatistics: PrayerStatistics;
 }) {
-  const subscription = useStore((state) => state.subscription);
+  const user = useStore((state) => state.user);
 
   return (
     <div className="relative overflow-hidden mx-6">
-      {subscription ? (
+      {user?.subscription ? (
         <></>
       ) : (
         <div className="absolute inset-0 z-10 bg-white/20 backdrop-blur-sm flex justify-center items-center">

@@ -20,7 +20,7 @@ function getMostFrequentPrayer(
 }
 
 function usePrayerLeaderboardViewModel() {
-  const subscription = useStore((state) => state.subscription);
+  const user = useStore((state) => state.user);
 
   const findMostOnTimePrayer = (prayerStatistics: PrayerStatistics) => {
     const prayerNames: PrayerName[] = [
@@ -74,7 +74,7 @@ function usePrayerLeaderboardViewModel() {
   };
 
   return {
-    subscription,
+    user,
     findMostOnTimePrayer,
     findMostLatePrayer,
     findMostMissedPrayer,
