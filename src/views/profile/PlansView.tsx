@@ -1,4 +1,4 @@
-import { CheckIcon } from "@radix-ui/react-icons";
+import { CheckIcon, TimerIcon } from "@radix-ui/react-icons";
 import type { Dispatch, SetStateAction } from "react";
 import type { PricingPlan } from "../../viewmodels/profile/usePlansDialogViewModel";
 import { PlanButtonView } from "./PlanButtonView";
@@ -58,23 +58,36 @@ function PlansView({
         <ul className="flex flex-col gap-4 mx-6">
           <li className="text-[#363636] text-sm flex items-center gap-3">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" />
-            Five-times prayer database
+            Gratis untuk mendapatkan update setiap fitur terbaru
           </li>
           <li className="text-[#363636] text-sm flex items-center gap-3">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" />
-            Daily prayer habit tracker database
+            Database salat 5 waktu
           </li>
           <li className="text-[#363636] text-sm flex items-center gap-3">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" />
-            Database daily salat checklist
+            Database habit tracker untuk setiap salat
           </li>
           <li className="text-[#363636] text-sm flex items-center gap-3">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" />
-            Prayer development chart
+            Multi-line chart untuk melihat grafik salat Anda setiap hari
           </li>
           <li className="text-[#363636] text-sm flex items-center gap-3">
             <CheckIcon className="text-[#F0AD4E] shrink-0 w-6 h-6" />
-            The most punctual prayer board
+            Leaderboard untuk melihat salat Anda yang paling sering ditunda
+          </li>
+          <li className="text-[#363636]/50 text-sm flex items-center gap-3">
+            <TimerIcon className="text-[#333] shrink-0 w-6 h-6 scale-75" />
+            <span>
+              Pengingat salat melalui WhatsApp (<strong>Coming Soon</strong>)
+            </span>
+          </li>
+          <li className="text-[#363636]/50 text-sm flex items-center gap-3">
+            <TimerIcon className="text-[#333] shrink-0 w-6 h-6 scale-75" />
+            <span>
+              Widget untuk home screen dan lock screen (
+              <strong>Coming Soon</strong>)
+            </span>
           </li>
         </ul>
       </div>

@@ -61,7 +61,7 @@ function PrayerReportView() {
         </h2>
 
         <p className="text-[#7B7B7B] text-center text-sm mb-8">
-          Semangat meningkatkan ketepatan waktu Shalat!
+          Semangat meningkatkan ketepatan waktu Salat!
         </p>
 
         <LineChartView lineChartData={prayerReportViewModel.lineChartData} />
