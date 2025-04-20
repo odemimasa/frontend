@@ -1,4 +1,4 @@
-import type { PrayerStatistics } from "./usePrayerReportViewModel";
+import type { LineChartData } from "./usePrayerReportViewModel";
 import { useStore } from "../../stores";
 import type { PrayerName } from "../../dtos/PrayerDTO";
 
@@ -22,7 +22,7 @@ function getMostFrequentPrayer(
 function usePrayerLeaderboardViewModel() {
   const user = useStore((state) => state.user);
 
-  const findMostOnTimePrayer = (prayerStatistics: PrayerStatistics) => {
+  const findMostOnTimePrayer = (lineChartData: LineChartData) => {
     const prayerNames: PrayerName[] = [
       "subuh",
       "zuhur",
@@ -33,13 +33,13 @@ function usePrayerLeaderboardViewModel() {
 
     const prayerOnTimeStats: PrayerStatus[] = prayerNames.map((name) => ({
       prayerName: name,
-      statusCount: prayerStatistics.get(name)?.[2] ?? 0,
+      statusCount: lineChartData.get(name)?.[2] ?? 0,
     }));
 
     return getMostFrequentPrayer(prayerOnTimeStats);
   };
 
-  const findMostLatePrayer = (prayerStatistics: PrayerStatistics) => {
+  const findMostLatePrayer = (lineChartData: LineChartData) => {
     const prayerNames: PrayerName[] = [
       "subuh",
       "zuhur",
@@ -50,13 +50,13 @@ function usePrayerLeaderboardViewModel() {
 
     const prayerLateStats: PrayerStatus[] = prayerNames.map((name) => ({
       prayerName: name,
-      statusCount: prayerStatistics.get(name)?.[1] ?? 0,
+      statusCount: lineChartData.get(name)?.[1] ?? 0,
     }));
 
     return getMostFrequentPrayer(prayerLateStats);
   };
 
-  const findMostMissedPrayer = (prayerStatistics: PrayerStatistics) => {
+  const findMostMissedPrayer = (lineChartData: LineChartData) => {
     const prayerNames: PrayerName[] = [
       "subuh",
       "zuhur",
@@ -67,7 +67,7 @@ function usePrayerLeaderboardViewModel() {
 
     const prayerMissedStats: PrayerStatus[] = prayerNames.map((name) => ({
       prayerName: name,
-      statusCount: prayerStatistics.get(name)?.[0] ?? 0,
+      statusCount: lineChartData.get(name)?.[0] ?? 0,
     }));
 
     return getMostFrequentPrayer(prayerMissedStats);

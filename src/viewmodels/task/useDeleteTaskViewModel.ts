@@ -22,6 +22,10 @@ function useDeleteTaskViewModel(taskModel: TaskModel) {
       toast({ description: "Berhasil menghapus ibadah.", variant: "default" });
       setIsOpen(false);
       setTasks((tasks) => {
+        if (tasks === undefined) {
+          return tasks;
+        }
+
         const idx = tasks.findIndex((item) => item.id === id);
         tasks.splice(idx, 1);
         return [...tasks];

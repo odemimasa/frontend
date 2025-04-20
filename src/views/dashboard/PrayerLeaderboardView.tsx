@@ -1,21 +1,21 @@
 import { Button } from "@components/shadcn/Button";
 import { Link } from "react-router";
 import { usePrayerLeaderboardViewModel } from "../../viewmodels/dashboard/usePrayerLeaderboardViewModel";
-import type { PrayerStatistics } from "../../viewmodels/dashboard/usePrayerReportViewModel";
+import type { LineChartData } from "../../viewmodels/dashboard/usePrayerReportViewModel";
 
 function PrayerLeaderboardView({
-  prayerStatistics,
+  lineChartData,
 }: {
-  prayerStatistics: PrayerStatistics;
+  lineChartData: LineChartData;
 }) {
   const prayerLeaderboardViewModel = usePrayerLeaderboardViewModel();
 
   const mostOnTimePrayer =
-    prayerLeaderboardViewModel.findMostOnTimePrayer(prayerStatistics);
+    prayerLeaderboardViewModel.findMostOnTimePrayer(lineChartData);
   const mostLatePrayer =
-    prayerLeaderboardViewModel.findMostLatePrayer(prayerStatistics);
+    prayerLeaderboardViewModel.findMostLatePrayer(lineChartData);
   const mostMissedPrayer =
-    prayerLeaderboardViewModel.findMostMissedPrayer(prayerStatistics);
+    prayerLeaderboardViewModel.findMostMissedPrayer(lineChartData);
 
   return (
     <div className="relative overflow-hidden border border-[#C2C2C2] rounded-3xl py-5 px-4 mx-6 mb-16">
