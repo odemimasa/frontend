@@ -40,11 +40,11 @@ function PlanButtonView({ plan, couponCode, setIsOpen }: PlanButtonViewProps) {
           {plan.name}
         </span>
 
-        {plan.id === "ad3a93ed-645a-45ab-8515-fb1336f71e97" ? (
+        {plan.id === "59561158-4063-4764-859f-256012de6d67" ? (
           <span className="text-white flex justify-center items-center gap-0.5">
             <span className="font-medium text-xs line-through">Rp</span>
             <span className="font-bold text-2xl line-through">
-              {Intl.NumberFormat("id-ID").format(100000)}
+              {Intl.NumberFormat("id-ID").format(40000)}
             </span>
 
             <span className="font-medium text-xs line-through">
@@ -52,7 +52,16 @@ function PlanButtonView({ plan, couponCode, setIsOpen }: PlanButtonViewProps) {
             </span>
           </span>
         ) : (
-          <></>
+          <span className="text-white flex justify-center items-center gap-0.5">
+            <span className="font-medium text-xs line-through">Rp</span>
+            <span className="font-bold text-2xl line-through">
+              {Intl.NumberFormat("id-ID").format(80000)}
+            </span>
+
+            <span className="font-medium text-xs line-through">
+              /{plan.duration_in_months} Bulan
+            </span>
+          </span>
         )}
 
         <span className="text-white flex justify-center items-center gap-0.5">
@@ -65,6 +74,16 @@ function PlanButtonView({ plan, couponCode, setIsOpen }: PlanButtonViewProps) {
             /{plan.duration_in_months} Bulan
           </span>
         </span>
+
+        {plan.id === "59561158-4063-4764-859f-256012de6d67" ? (
+          <p className="text-white/85 text-sm font-medium text-left ml-4 my-2">
+            *Hanya Rp4.800-an/bulan
+          </p>
+        ) : (
+          <p className="text-white/85 text-sm font-medium text-left ml-4 my-2">
+            *Hanya Rp4.000-an/bulan
+          </p>
+        )}
       </button>
 
       <AlertDialog

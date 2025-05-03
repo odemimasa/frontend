@@ -53,6 +53,11 @@ function PlansView({
           })}
         </div>
 
+        <p className="text-[#363636]/50 text-sm mx-6 font-medium mt-7">
+          <strong>Note</strong>: Harga di atas berlaku untuk 1000 pengguna
+          pertama
+        </p>
+
         <hr className="border-[#C2C2C2] my-7" />
 
         <ul className="flex flex-col gap-4 mx-6">
