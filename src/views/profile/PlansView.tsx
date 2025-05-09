@@ -41,16 +41,18 @@ function PlansView({
         </h3>
 
         <div className="flex flex-col gap-4 mb-4 mx-6">
-          {value.map((item) => {
-            return (
-              <PlanButtonView
-                key={item.id}
-                plan={item}
-                couponCode={couponCode}
-                setIsOpen={setIsOpen}
-              />
-            );
-          })}
+          {value
+            .sort((a, b) => a.duration_in_months - b.duration_in_months)
+            .map((item) => {
+              return (
+                <PlanButtonView
+                  key={item.id}
+                  plan={item}
+                  couponCode={couponCode}
+                  setIsOpen={setIsOpen}
+                />
+              );
+            })}
         </div>
 
         <p className="text-[#363636]/50 text-sm mx-6 font-medium mt-7">
